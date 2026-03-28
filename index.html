@@ -1,0 +1,1849 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WTE Power Plant - Construction Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        navy: { 800: '#1a1f3a', 900: '#0f1225', 950: '#0a0d1a' },
+        accent: { 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb' },
+        amber: { 400: '#fbbf24', 500: '#f59e0b' },
+        emerald: { 400: '#34d399', 500: '#10b981' }
+      }
+    }
+  }
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  * { font-family: 'Inter', sans-serif; }
+
+  /* ---- THEME VARIABLES ---- */
+  :root {
+    --bg-body: #0f1225; --text-main: #e2e8f0; --text-heading: #ffffff; --text-sub: #94a3b8; --text-muted: #64748b;
+    --sidebar-bg: rgba(26, 31, 58, 0.8); --sidebar-border: rgba(255,255,255,0.08);
+    --card-bg: linear-gradient(135deg, rgba(26,31,58,0.9), rgba(15,18,37,0.95)); --card-border: rgba(255,255,255,0.06); --card-hover-border: rgba(59,130,246,0.3); --card-hover-shadow: rgba(59,130,246,0.1);
+    --stat-blue: linear-gradient(135deg, #1e3a5f, #1a2744); --stat-green: linear-gradient(135deg, #1a3a2a, #152a20); --stat-amber: linear-gradient(135deg, #3a2a1a, #2a2015); --stat-red: linear-gradient(135deg, #3a1a1a, #2a1515);
+    --input-bg: rgba(255,255,255,0.05); --input-border: rgba(255,255,255,0.1); --input-text: #e2e8f0;
+    --table-header-bg: rgba(255,255,255,0.03); --table-border: rgba(255,255,255,0.04); --table-hover: rgba(59,130,246,0.03);
+    --scrollbar-track: #1a1f3a; --scrollbar-thumb: #3b82f6;
+    --modal-bg: rgba(26, 31, 58, 0.95); --modal-overlay: rgba(0,0,0,0.6);
+    --option-bg: #1a1f3a; --progress-track: rgba(255,255,255,0.1);
+    --sidebar-active-bg: rgba(59,130,246,0.1); --row-subtle: rgba(255,255,255,0.02);
+  }
+  [data-theme="light"] {
+    --bg-body: #f1f5f9; --text-main: #334155; --text-heading: #0f172a; --text-sub: #64748b; --text-muted: #94a3b8;
+    --sidebar-bg: rgba(255,255,255,0.92); --sidebar-border: rgba(0,0,0,0.08);
+    --card-bg: linear-gradient(135deg, #ffffff, #f8fafc); --card-border: rgba(0,0,0,0.08); --card-hover-border: rgba(59,130,246,0.35); --card-hover-shadow: rgba(59,130,246,0.08);
+    --stat-blue: linear-gradient(135deg, #dbeafe, #eff6ff); --stat-green: linear-gradient(135deg, #d1fae5, #ecfdf5); --stat-amber: linear-gradient(135deg, #fef3c7, #fffbeb); --stat-red: linear-gradient(135deg, #fee2e2, #fef2f2);
+    --input-bg: #ffffff; --input-border: #cbd5e1; --input-text: #334155;
+    --table-header-bg: #f8fafc; --table-border: #e2e8f0; --table-hover: rgba(59,130,246,0.04);
+    --scrollbar-track: #e2e8f0; --scrollbar-thumb: #3b82f6;
+    --modal-bg: rgba(255,255,255,0.97); --modal-overlay: rgba(0,0,0,0.3);
+    --option-bg: #ffffff; --progress-track: #e2e8f0;
+    --sidebar-active-bg: rgba(59,130,246,0.08); --row-subtle: #f8fafc;
+  }
+
+  body { background: var(--bg-body); color: var(--text-main); transition: background 0.3s, color 0.3s; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  .glass { background: var(--sidebar-bg); backdrop-filter: blur(12px); border: 1px solid var(--sidebar-border); transition: background 0.3s, border-color 0.3s; }
+  .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; transition: all 0.3s ease; }
+  .card:hover { border-color: var(--card-hover-border); box-shadow: 0 8px 32px var(--card-hover-shadow); transform: translateY(-2px); }
+  .stat-card { border-radius: 16px; padding: 1.5rem; position: relative; overflow: hidden; transition: background 0.3s; }
+  .stat-card::before { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; filter: blur(40px); opacity: 0.3; }
+  .stat-card.blue { background: var(--stat-blue); }
+  .stat-card.blue::before { background: #3b82f6; }
+  .stat-card.green { background: var(--stat-green); }
+  .stat-card.green::before { background: #10b981; }
+  .stat-card.amber { background: var(--stat-amber); }
+  .stat-card.amber::before { background: #f59e0b; }
+  .stat-card.red { background: var(--stat-red); }
+  .stat-card.red::before { background: #ef4444; }
+  .progress-bar { height: 8px; border-radius: 4px; background: var(--progress-track); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .sidebar-item { transition: all 0.2s ease; border-left: 3px solid transparent; }
+  .sidebar-item:hover, .sidebar-item.active { background: var(--sidebar-active-bg); border-left-color: #3b82f6; }
+  .sidebar-item.active { color: #60a5fa; }
+  .page { display: none; animation: fadeIn 0.3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-overlay { background: var(--modal-overlay); backdrop-filter: blur(4px); }
+  .badge { padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+  .badge-green { background: rgba(16,185,129,0.15); color: #10b981; }
+  .badge-amber { background: rgba(245,158,11,0.15); color: #d97706; }
+  .badge-red { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .badge-blue { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .badge-gray { background: rgba(148,163,184,0.15); color: #64748b; }
+  [data-theme="dark"] .badge-green { color: #34d399; }
+  [data-theme="dark"] .badge-amber { color: #fbbf24; }
+  [data-theme="dark"] .badge-red { color: #f87171; }
+  [data-theme="dark"] .badge-blue { color: #60a5fa; }
+  [data-theme="dark"] .badge-gray { color: #94a3b8; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  th { background: var(--table-header-bg); padding: 12px 16px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-sub); font-weight: 600; }
+  td { padding: 12px 16px; border-top: 1px solid var(--table-border); }
+  tr:hover td { background: var(--table-hover); }
+  .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 24px; border-radius: 12px; z-index: 9999; animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  input, select, textarea { background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 8px 12px; color: var(--input-text); font-size: 0.875rem; transition: border-color 0.2s, background 0.3s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+  select option { background: var(--option-bg); color: var(--input-text); }
+
+  /* Theme toggle */
+  .theme-toggle { width: 48px; height: 26px; border-radius: 13px; position: relative; cursor: pointer; transition: background 0.3s; border: none; }
+  [data-theme="dark"] .theme-toggle { background: #334155; }
+  [data-theme="light"] .theme-toggle { background: #bfdbfe; }
+  .theme-toggle .toggle-knob { width: 20px; height: 20px; border-radius: 50%; position: absolute; top: 3px; transition: left 0.3s, background 0.3s; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  [data-theme="dark"] .theme-toggle .toggle-knob { left: 3px; background: #1e293b; }
+  [data-theme="light"] .theme-toggle .toggle-knob { left: 25px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+
+  /* Light mode text overrides */
+  [data-theme="light"] .text-white { color: var(--text-heading) !important; }
+  [data-theme="light"] .text-slate-400 { color: var(--text-sub) !important; }
+  [data-theme="light"] .text-slate-500 { color: var(--text-muted) !important; }
+  [data-theme="light"] .text-slate-300 { color: #475569 !important; }
+  [data-theme="light"] .text-emerald-400 { color: #059669 !important; }
+  [data-theme="light"] .text-amber-400 { color: #d97706 !important; }
+  [data-theme="light"] .text-red-400 { color: #dc2626 !important; }
+  [data-theme="light"] .text-blue-400 { color: #2563eb !important; }
+  [data-theme="light"] .bg-white\/\[0\.02\] { background: rgba(0,0,0,0.03) !important; }
+</style>
+</head>
+<body class="min-h-screen flex">
+
+<!-- Login/Register Overlay -->
+<div id="auth-screen" class="fixed inset-0 z-[100] flex items-center justify-center" style="background: linear-gradient(135deg, #0f1225 0%, #1a1f3a 50%, #0f1225 100%);">
+  <div class="w-full max-w-md mx-4">
+    <div class="text-center mb-8">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">W</div>
+      <h1 class="text-2xl font-bold text-white">WTE Tracker</h1>
+      <p class="text-sm text-slate-400 mt-1" id="auth-subtitle">Construction Management System</p>
+    </div>
+    <div class="glass rounded-2xl p-6">
+      <!-- Auth Tabs -->
+      <div class="flex mb-6 bg-white/5 rounded-xl p-1">
+        <button id="tab-login" onclick="switchAuthTab('login')" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white">Login</button>
+        <button id="tab-register" onclick="switchAuthTab('register')" class="flex-1 py-2 rounded-lg text-sm font-medium transition-all text-slate-400">Register</button>
+      </div>
+      <!-- Login Form -->
+      <div id="form-login">
+        <div class="space-y-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-login-user">Username</label><input type="text" id="login-username" class="w-full" placeholder="Enter username"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-login-pass">Password</label><input type="password" id="login-password" class="w-full" placeholder="Enter password"></div>
+        </div>
+        <button onclick="doLogin()" class="w-full mt-6 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="btn-login">Login</button>
+        <p id="login-error" class="text-xs text-red-400 mt-3 text-center hidden"></p>
+      </div>
+      <!-- Register Form -->
+      <div id="form-register" class="hidden">
+        <div class="space-y-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-user">Username</label><input type="text" id="reg-username" class="w-full" placeholder="Choose username"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-pass">Password</label><input type="password" id="reg-password" class="w-full" placeholder="Choose password"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-confirm">Confirm Password</label><input type="password" id="reg-confirm" class="w-full" placeholder="Confirm password"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-role">Role</label>
+            <select id="reg-role" class="w-full">
+              <option value="Project Manager">Project Manager</option>
+              <option value="Engineer">Engineer</option>
+              <option value="Safety Officer">Safety Officer</option>
+              <option value="Inspector">Inspector</option>
+            </select>
+          </div>
+        </div>
+        <button onclick="doRegister()" class="w-full mt-6 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="btn-register">Create Account</button>
+        <p id="reg-error" class="text-xs text-red-400 mt-3 text-center hidden"></p>
+        <p id="reg-success" class="text-xs text-emerald-400 mt-3 text-center hidden"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Sidebar -->
+<aside id="sidebar" class="w-64 min-h-screen glass fixed left-0 top-0 z-40 flex flex-col">
+  <div class="p-6 border-b border-white/5">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg">W</div>
+      <div>
+        <h1 class="text-sm font-bold text-white" id="sidebar-app-name">WTE Tracker</h1>
+        <p class="text-[10px] text-slate-400" id="sidebar-app-sub">Construction Management</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 p-3 space-y-1">
+    <div class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm" data-page="dashboard">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+      Dashboard
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="phases">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      Phases
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="tasks">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+      Tasks
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="issues">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+      Issues
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="reports">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      Reports
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="alerts">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-9.33-5.002M9 17v1a3 3 0 006 0v-1m-6 0H3m0 0l1.405-1.405A2.032 2.032 0 005 14.158V11a6 6 0 013-5.175"/></svg>
+      Alerts
+      <span id="alert-badge" class="ml-auto bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="activity">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Activity Log
+    </div>
+  </nav>
+  <div class="p-4 border-t border-white/5">
+    <div class="flex items-center justify-center gap-1 px-3 mb-3">
+      <button id="lang-en" onclick="setLang('en')" class="px-2.5 py-1 rounded-md text-[11px] font-medium hover:bg-blue-500/20 transition" title="English">EN</button>
+      <button id="lang-th" onclick="setLang('th')" class="px-2.5 py-1 rounded-md text-[11px] font-medium hover:bg-blue-500/20 transition" title="ภาษาไทย">TH</button>
+      <div class="flex-1"></div>
+      <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <div class="toggle-knob" id="toggle-knob">
+          <span id="theme-icon">🌙</span>
+        </div>
+      </button>
+    </div>
+    <div class="flex items-center gap-3 px-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold" id="sidebar-avatar">PM</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-xs font-medium text-white truncate" id="sidebar-username">Project Manager</p>
+        <p class="text-[10px] text-slate-500 truncate" id="sidebar-role">GP4 6.6 MW</p>
+      </div>
+      <button onclick="doLogout()" class="text-slate-400 hover:text-red-400 transition" title="Logout" id="btn-logout">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 ml-64 p-8">
+
+<!-- Dashboard Page -->
+<div id="page-dashboard" class="page active">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="dash-title">Dashboard</h2>
+      <p class="text-sm text-slate-400 mt-1" id="dash-subtitle">GP4 6.6 MW Power Plant — Construction Overview</p>
+    </div>
+    <div class="text-sm text-slate-400" id="current-date"></div>
+  </div>
+
+  <!-- COD Countdown -->
+  <div class="card p-5 mb-8 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10"></div>
+    <div class="relative flex items-center justify-between">
+      <div>
+        <p class="text-xs text-slate-400" id="countdown-label">Countdown to COD</p>
+        <p class="text-sm text-slate-500 mt-0.5" id="countdown-date-label">30 November 2026</p>
+      </div>
+      <div class="flex gap-3 text-center" id="countdown-display">
+        <div>
+          <p class="text-3xl font-bold text-white tabular-nums" id="cd-days">000</p>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="cd-days-label">Days</p>
+        </div>
+        <p class="text-3xl font-bold text-slate-600 self-start">:</p>
+        <div>
+          <p class="text-3xl font-bold text-blue-400 tabular-nums" id="cd-hours">00</p>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="cd-hours-label">Hours</p>
+        </div>
+        <p class="text-3xl font-bold text-slate-600 self-start">:</p>
+        <div>
+          <p class="text-3xl font-bold text-purple-400 tabular-nums" id="cd-mins">00</p>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="cd-mins-label">Minutes</p>
+        </div>
+        <p class="text-3xl font-bold text-slate-600 self-start">:</p>
+        <div>
+          <p class="text-3xl font-bold text-pink-400 tabular-nums" id="cd-secs">00</p>
+          <p class="text-[10px] text-slate-400 uppercase tracking-wider" id="cd-secs-label">Seconds</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Info + Budget -->
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-blue-500/10 to-cyan-500/10 -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shrink-0">GP4</div>
+          <div>
+            <h3 class="text-sm font-bold text-white">Green Power 4 Co., Ltd.</h3>
+            <p class="text-[10px] text-slate-400">Waste-to-Energy Power Plant</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">📍</span>
+            <div><p class="text-[10px] text-slate-500">Location</p><p class="text-xs text-white font-medium">Phun Phin, Surat Thani</p></div>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">⚡</span>
+            <div><p class="text-[10px] text-slate-500">Capacity</p><p class="text-xs text-white font-medium">6.6 MW <span class="text-slate-400">(PPA 5.0)</span></p></div>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">🏗️</span>
+            <div><p class="text-[10px] text-slate-500">EPC Contractor</p><p class="text-xs text-white font-medium">KK Green Co., Ltd.</p></div>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">♻️</span>
+            <div><p class="text-[10px] text-slate-500">Fuel (MSW)</p><p class="text-xs text-white font-medium">~470 ton/day</p></div>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">📄</span>
+            <div><p class="text-[10px] text-slate-500">PPA Term</p><p class="text-xs text-white font-medium">20 years, FiT (PEA)</p></div>
+          </div>
+          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
+            <span class="text-lg">🔍</span>
+            <div><p class="text-[10px] text-slate-500">LTA</p><p class="text-xs text-white font-medium">AFRY (Thailand)</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card p-5">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="dash-budget-title">Budget</h3>
+      <div class="flex items-end gap-4 mb-3">
+        <div>
+          <p class="text-2xl font-bold text-white" id="budget-spent">531</p>
+          <p class="text-[10px] text-slate-500" id="budget-spent-label">Million THB spent</p>
+        </div>
+        <p class="text-sm text-slate-400 mb-1">/ <span class="text-white font-semibold">1,315</span> <span id="budget-total-label">Million THB total</span></p>
+      </div>
+      <div class="progress-bar mb-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" style="width:40.38%"></div></div>
+      <div class="flex justify-between text-xs text-slate-500">
+        <span id="budget-pct">40.38% disbursed</span>
+        <span id="budget-date">As of Dec 2025</span>
+      </div>
+      <div class="mt-3 pt-3 border-t border-white/5 grid grid-cols-3 gap-2 text-center">
+        <div><p class="text-xs text-slate-500" id="lbl-q3-spend">Q3/2025</p><p class="text-sm font-semibold text-white">314M</p><p class="text-[10px] text-slate-500">23.86%</p></div>
+        <div><p class="text-xs text-slate-500" id="lbl-q4-spend">Q4/2025</p><p class="text-sm font-semibold text-white">531M</p><p class="text-[10px] text-slate-500">40.38%</p></div>
+        <div><p class="text-xs text-slate-500" id="lbl-remaining">Remaining</p><p class="text-sm font-semibold text-amber-400">784M</p><p class="text-[10px] text-slate-500">59.62%</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Milestones -->
+  <div class="card p-5 mb-8">
+    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="dash-milestones-title">Key Milestones</h3>
+    <div class="grid grid-cols-4 gap-3" id="milestones-grid"></div>
+  </div>
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-4 gap-5 mb-8">
+    <div class="stat-card blue">
+      <p class="text-xs text-slate-400 mb-1" id="label-overall">Overall Progress</p>
+      <p class="text-3xl font-bold text-white" id="stat-overall">0%</p>
+      <div class="progress-bar mt-3"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" id="progress-overall" style="width:0%"></div></div>
+    </div>
+    <div class="stat-card green">
+      <p class="text-xs text-slate-400 mb-1" id="label-completed">Completed Tasks</p>
+      <p class="text-3xl font-bold text-white" id="stat-completed">0</p>
+      <p class="text-xs text-emerald-400 mt-2" id="stat-completed-pct">0% of total</p>
+    </div>
+    <div class="stat-card amber">
+      <p class="text-xs text-slate-400 mb-1" id="label-delayed">Delayed Tasks</p>
+      <p class="text-3xl font-bold text-white" id="stat-delayed">0</p>
+      <p class="text-xs text-amber-400 mt-2" id="label-delayed-sub">Needs attention</p>
+    </div>
+    <div class="stat-card red">
+      <p class="text-xs text-slate-400 mb-1" id="label-issues">Open Issues</p>
+      <p class="text-3xl font-bold text-white" id="stat-issues">0</p>
+      <p class="text-xs text-red-400 mt-2" id="stat-issues-high">0 high severity</p>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
+      <canvas id="chart-scurve" height="240"></canvas>
+    </div>
+    <div class="card p-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="dash-phase-chart-title">Progress by Phase</h3>
+      <canvas id="chart-phases" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Individual S-Curves by Group -->
+  <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-group-title">S-Curve by Phase Group</h3>
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-indigo-500 to-blue-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-eng-title">Engineering</h4></div>
+      <canvas id="chart-sc-engineering" height="160"></canvas>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-amber-500 to-orange-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-proc-title">Procurement</h4></div>
+      <canvas id="chart-sc-procurement" height="160"></canvas>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-emerald-500 to-green-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-const-title">Construction</h4></div>
+      <canvas id="chart-sc-construction" height="160"></canvas>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-purple-500 to-pink-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-comm-title">Commissioning</h4></div>
+      <canvas id="chart-sc-commissioning" height="160"></canvas>
+    </div>
+  </div>
+
+  <!-- Phase Progress Cards -->
+  <h3 class="text-sm font-semibold text-white mb-4" id="dash-phase-progress-title">Phase Progress</h3>
+  <div class="grid grid-cols-4 gap-4 mb-8" id="phase-cards"></div>
+
+  <!-- Recent Alerts -->
+  <div class="card p-6">
+    <h3 class="text-sm font-semibold text-white mb-4" id="dash-alerts-title">Recent Alerts</h3>
+    <div id="dashboard-alerts" class="space-y-2"></div>
+  </div>
+</div>
+
+<!-- Phases Page -->
+<div id="page-phases" class="page">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="phases-title">Construction Phases</h2>
+      <p class="text-sm text-slate-400 mt-1" id="phases-desc">Track progress for each construction phase</p>
+    </div>
+  </div>
+  <div class="space-y-4" id="phases-list"></div>
+</div>
+
+<!-- Tasks Page -->
+<div id="page-tasks" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="tasks-title">Task Management</h2>
+      <p class="text-sm text-slate-400 mt-1" id="tasks-desc">Manage all construction tasks</p>
+    </div>
+    <button onclick="openTaskModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="tasks-add-btn">Add Task</span>
+    </button>
+  </div>
+  <!-- Filters -->
+  <div class="flex gap-3 mb-6">
+    <select id="filter-phase" onchange="renderTasks()" class="text-sm">
+      <option value="">All Phases</option>
+    </select>
+    <select id="filter-status" onchange="renderTasks()" class="text-sm">
+      <option value="">All Status</option>
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+      <option value="Delayed">Delayed</option>
+    </select>
+    <select id="filter-assignee" onchange="renderTasks()" class="text-sm">
+      <option value="">All Assignees</option>
+    </select>
+    <input type="text" id="filter-search" onkeyup="renderTasks()" placeholder="Search tasks..." class="text-sm flex-1">
+  </div>
+  <div class="card overflow-hidden">
+    <table>
+      <thead id="tasks-thead"><tr><th>Task</th><th>Phase</th><th>Assignee</th><th>Start</th><th>End</th><th>Status</th><th>Priority</th><th class="text-right">Actions</th></tr></thead>
+      <tbody id="tasks-body"></tbody>
+    </table>
+    <div id="tasks-empty" class="hidden p-12 text-center text-slate-500 text-sm">No tasks found. Click "Add Task" to get started.</div>
+  </div>
+</div>
+
+<!-- Issues Page -->
+<div id="page-issues" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="issues-title">Issues Tracker</h2>
+      <p class="text-sm text-slate-400 mt-1" id="issues-desc">Track and resolve construction issues</p>
+    </div>
+    <button onclick="openIssueModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="issues-add-btn">Report Issue</span>
+    </button>
+  </div>
+  <div class="flex gap-3 mb-6">
+    <select id="filter-issue-severity" onchange="renderIssues()" class="text-sm">
+      <option value="">All Severity</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <select id="filter-issue-status" onchange="renderIssues()" class="text-sm">
+      <option value="">All Status</option>
+      <option value="Open">Open</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Resolved">Resolved</option>
+    </select>
+  </div>
+  <div class="card overflow-hidden">
+    <table>
+      <thead id="issues-thead"><tr><th>Issue</th><th>Phase</th><th>Severity</th><th>Status</th><th>Assigned To</th><th>Reported</th><th class="text-right">Actions</th></tr></thead>
+      <tbody id="issues-body"></tbody>
+    </table>
+    <div id="issues-empty" class="hidden p-12 text-center text-slate-500 text-sm">No issues found.</div>
+  </div>
+</div>
+
+<!-- Reports Page -->
+<div id="page-reports" class="page">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-white" id="reports-title">Reports</h2>
+    <p class="text-sm text-slate-400 mt-1" id="reports-desc">Construction progress reports & analytics</p>
+  </div>
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="report-task-status-title">Task Status Distribution</h3>
+      <canvas id="chart-task-status" height="220"></canvas>
+    </div>
+    <div class="card p-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="report-issue-sev-title">Issues by Severity</h3>
+      <canvas id="chart-issue-severity" height="220"></canvas>
+    </div>
+  </div>
+  <div class="card p-6 mb-8">
+    <h3 class="text-sm font-semibold text-white mb-4" id="report-tasks-phase-title">Tasks per Phase</h3>
+    <canvas id="chart-tasks-phase" height="160"></canvas>
+  </div>
+  <div class="card p-6">
+    <h3 class="text-sm font-semibold text-white mb-6" id="report-weekly-title">Weekly Summary</h3>
+    <div id="weekly-summary" class="grid grid-cols-3 gap-6"></div>
+  </div>
+</div>
+
+<!-- Alerts Page -->
+<div id="page-alerts" class="page">
+  <div class="mb-8">
+    <h2 class="text-2xl font-bold text-white" id="alerts-title">Alerts & Notifications</h2>
+    <p class="text-sm text-slate-400 mt-1" id="alerts-desc">Tasks at risk and unresolved issues</p>
+  </div>
+  <div id="alerts-list" class="space-y-3"></div>
+  <div id="alerts-empty" class="hidden card p-12 text-center text-slate-500 text-sm">
+    <svg class="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span id="alerts-clear-text">All clear! No alerts at this time.</span>
+  </div>
+</div>
+
+<!-- Activity Log Page -->
+<div id="page-activity" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="activity-title">Activity Log</h2>
+      <p class="text-sm text-slate-400 mt-1" id="activity-desc">User activity history</p>
+    </div>
+    <button onclick="clearActivityLog()" class="text-slate-400 hover:text-red-400 text-xs transition" id="btn-clear-log">Clear Log</button>
+  </div>
+  <div class="flex gap-3 mb-6">
+    <select id="filter-activity-user" onchange="renderActivityLog()" class="text-sm">
+      <option value="">All Users</option>
+    </select>
+    <select id="filter-activity-action" onchange="renderActivityLog()" class="text-sm">
+      <option value="">All Actions</option>
+    </select>
+  </div>
+  <div id="activity-list" class="space-y-2"></div>
+  <div id="activity-empty" class="hidden card p-12 text-center text-slate-500 text-sm">
+    <svg class="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    <span id="activity-empty-text">No activity recorded yet.</span>
+  </div>
+</div>
+
+</main>
+
+<!-- Task Modal -->
+<div id="task-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeTaskModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+    <h3 class="text-lg font-bold text-white mb-5" id="task-modal-title">Add Task</h3>
+    <input type="hidden" id="task-edit-id">
+    <div class="space-y-4">
+      <div><label class="text-xs text-slate-400 block mb-1">Task Name *</label><input type="text" id="task-name" class="w-full"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Phase *</label><select id="task-phase" class="w-full"></select></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Assignee</label><input type="text" id="task-assignee" class="w-full" placeholder="Name"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Start Date</label><input type="date" id="task-start" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">End Date</label><input type="date" id="task-end" class="w-full"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+          <select id="task-status" class="w-full"><option>Pending</option><option>In Progress</option><option>Completed</option><option>Delayed</option></select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Priority</label>
+          <select id="task-priority" class="w-full"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Notes</label><textarea id="task-notes" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeTaskModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveTask()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Issue Modal -->
+<div id="issue-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeIssueModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+    <h3 class="text-lg font-bold text-white mb-5" id="issue-modal-title">Report Issue</h3>
+    <input type="hidden" id="issue-edit-id">
+    <div class="space-y-4">
+      <div><label class="text-xs text-slate-400 block mb-1">Issue Title *</label><input type="text" id="issue-title" class="w-full"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Description</label><textarea id="issue-desc" class="w-full" rows="3"></textarea></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Phase</label><select id="issue-phase" class="w-full"></select></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Assigned To</label><input type="text" id="issue-assignee" class="w-full" placeholder="Name"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Severity</label>
+          <select id="issue-severity" class="w-full"><option>Low</option><option>Medium</option><option>High</option></select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+          <select id="issue-status" class="w-full"><option>Open</option><option>In Progress</option><option>Resolved</option></select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Resolution Notes</label><textarea id="issue-resolution" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeIssueModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveIssue()" class="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Phase Edit Modal -->
+<div id="phase-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closePhaseModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md glass rounded-2xl p-6 z-10">
+    <h3 class="text-lg font-bold text-white mb-5">Edit Phase</h3>
+    <input type="hidden" id="phase-edit-idx">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Start Date</label><input type="date" id="phase-start" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">End Date</label><input type="date" id="phase-end" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Progress (%)</label><input type="number" id="phase-progress" class="w-full" min="0" max="100"></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+        <select id="phase-status" class="w-full"><option>Not Started</option><option>In Progress</option><option>Completed</option><option>Delayed</option></select>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Notes</label><textarea id="phase-notes" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closePhaseModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="savePhase()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<script>
+// ---- THEME ----
+function getTheme() { return localStorage.getItem('wte_theme') || 'dark'; }
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  document.getElementById('theme-icon').textContent = theme === 'dark' ? '🌙' : '☀️';
+  localStorage.setItem('wte_theme', theme);
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  // Re-render charts with correct colors
+  renderDashboard();
+  const reportsPage = document.getElementById('page-reports');
+  if (reportsPage.classList.contains('active')) renderReports();
+}
+function chartTextColor() { return getTheme() === 'dark' ? '#94a3b8' : '#64748b'; }
+function chartGridColor() { return getTheme() === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.06)'; }
+
+// Apply saved theme on load
+applyTheme(getTheme());
+
+// ---- AUTH & USERS ----
+function simpleHash(str) { let h = 0; for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; } return 'h' + Math.abs(h).toString(36); }
+
+function getUsers() { return JSON.parse(localStorage.getItem('wte_users') || '[]'); }
+function saveUsers(users) { localStorage.setItem('wte_users', JSON.stringify(users)); }
+function getSession() { return JSON.parse(localStorage.getItem('wte_session') || 'null'); }
+function saveSession(s) { localStorage.setItem('wte_session', JSON.stringify(s)); }
+
+function getActivityLog() { return JSON.parse(localStorage.getItem('wte_activity_log') || '[]'); }
+function saveActivityLog(log) { localStorage.setItem('wte_activity_log', JSON.stringify(log)); }
+function logActivity(action, detail) {
+  const s = getSession(); if (!s) return;
+  const log = getActivityLog();
+  log.unshift({ id: Date.now(), userId: s.userId, username: s.username, action, detail, timestamp: new Date().toISOString() });
+  if (log.length > 500) log.length = 500;
+  saveActivityLog(log);
+}
+
+function switchAuthTab(tab) {
+  document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('form-register').classList.toggle('hidden', tab !== 'register');
+  document.getElementById('tab-login').classList.toggle('bg-blue-600', tab === 'login');
+  document.getElementById('tab-login').classList.toggle('text-white', tab === 'login');
+  document.getElementById('tab-login').classList.toggle('text-slate-400', tab !== 'login');
+  document.getElementById('tab-register').classList.toggle('bg-blue-600', tab === 'register');
+  document.getElementById('tab-register').classList.toggle('text-white', tab === 'register');
+  document.getElementById('tab-register').classList.toggle('text-slate-400', tab !== 'register');
+  document.getElementById('login-error').classList.add('hidden');
+  document.getElementById('reg-error').classList.add('hidden');
+  document.getElementById('reg-success').classList.add('hidden');
+}
+
+function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!username || !password) { showAuthError('login', t('authFieldsRequired')); return; }
+  const users = getUsers();
+  const user = users.find(u => u.username === username && u.password === simpleHash(password));
+  if (!user) { showAuthError('login', t('authInvalidLogin')); return; }
+  saveSession({ userId: user.id, username: user.username, role: user.role, loginAt: new Date().toISOString() });
+  logActivity('login', t('loggedIn'));
+  document.getElementById('login-username').value = '';
+  document.getElementById('login-password').value = '';
+  checkAuth();
+}
+
+function doRegister() {
+  const username = document.getElementById('reg-username').value.trim();
+  const password = document.getElementById('reg-password').value;
+  const confirm = document.getElementById('reg-confirm').value;
+  const role = document.getElementById('reg-role').value;
+  if (!username || !password) { showAuthError('reg', t('authFieldsRequired')); return; }
+  if (password.length < 4) { showAuthError('reg', t('authPassTooShort')); return; }
+  if (password !== confirm) { showAuthError('reg', t('authPassMismatch')); return; }
+  const users = getUsers();
+  if (users.find(u => u.username === username)) { showAuthError('reg', t('authUserExists')); return; }
+  const newUser = { id: Date.now(), username, password: simpleHash(password), role, createdAt: new Date().toISOString() };
+  users.push(newUser);
+  saveUsers(users);
+  document.getElementById('reg-error').classList.add('hidden');
+  document.getElementById('reg-success').textContent = t('authRegSuccess');
+  document.getElementById('reg-success').classList.remove('hidden');
+  document.getElementById('reg-username').value = '';
+  document.getElementById('reg-password').value = '';
+  document.getElementById('reg-confirm').value = '';
+  setTimeout(() => switchAuthTab('login'), 1500);
+}
+
+function doLogout() {
+  logActivity('logout', t('loggedOut'));
+  localStorage.removeItem('wte_session');
+  checkAuth();
+}
+
+function showAuthError(form, msg) {
+  const el = document.getElementById(form + '-error');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+
+function checkAuth() {
+  const session = getSession();
+  const authScreen = document.getElementById('auth-screen');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('main');
+  if (!session) {
+    authScreen.classList.remove('hidden');
+    sidebar.style.display = 'none';
+    main.style.display = 'none';
+    updateAuthLabels();
+  } else {
+    authScreen.classList.add('hidden');
+    sidebar.style.display = '';
+    main.style.display = '';
+    updateSidebarUser();
+    renderAll();
+  }
+}
+
+function updateSidebarUser() {
+  const s = getSession();
+  if (!s) return;
+  document.getElementById('sidebar-avatar').textContent = s.username.substring(0, 2).toUpperCase();
+  document.getElementById('sidebar-username').textContent = s.username;
+  document.getElementById('sidebar-role').textContent = s.role;
+}
+
+function updateAuthLabels() {
+  document.getElementById('auth-subtitle').textContent = t('authSubtitle');
+  document.getElementById('tab-login').textContent = t('authLogin');
+  document.getElementById('tab-register').textContent = t('authRegister');
+  document.getElementById('lbl-login-user').textContent = t('authUsername');
+  document.getElementById('lbl-login-pass').textContent = t('authPassword');
+  document.getElementById('btn-login').textContent = t('authLogin');
+  document.getElementById('lbl-reg-user').textContent = t('authUsername');
+  document.getElementById('lbl-reg-pass').textContent = t('authPassword');
+  document.getElementById('lbl-reg-confirm').textContent = t('authConfirmPass');
+  document.getElementById('lbl-reg-role').textContent = t('authRole');
+  document.getElementById('btn-register').textContent = t('authCreateAccount');
+  document.getElementById('login-username').placeholder = t('authEnterUser');
+  document.getElementById('login-password').placeholder = t('authEnterPass');
+  document.getElementById('reg-username').placeholder = t('authChooseUser');
+  document.getElementById('reg-password').placeholder = t('authChoosePass');
+  document.getElementById('reg-confirm').placeholder = t('authConfirmPass');
+}
+
+// ---- ACTIVITY LOG ----
+function renderActivityLog() {
+  document.getElementById('activity-title').textContent = t('activityLog');
+  document.getElementById('activity-desc').textContent = t('activityDesc');
+  document.getElementById('btn-clear-log').textContent = t('activityClear');
+  document.getElementById('activity-empty-text').textContent = t('activityEmpty');
+
+  const log = getActivityLog();
+  const userF = document.getElementById('filter-activity-user').value;
+  const actionF = document.getElementById('filter-activity-action').value;
+
+  // Populate filters
+  const users = [...new Set(log.map(l => l.username))];
+  const actions = [...new Set(log.map(l => l.action))];
+  const userSel = document.getElementById('filter-activity-user');
+  const uVal = userSel.value;
+  userSel.innerHTML = `<option value="">${t('allUsers')}</option>` + users.map(u => `<option value="${u}">${u}</option>`).join('');
+  userSel.value = uVal;
+  const actSel = document.getElementById('filter-activity-action');
+  const aVal = actSel.value;
+  actSel.innerHTML = `<option value="">${t('allActions')}</option>` + actions.map(a => `<option value="${a}">${a}</option>`).join('');
+  actSel.value = aVal;
+
+  let filtered = log.filter(l => {
+    if (userF && l.username !== userF) return false;
+    if (actionF && l.action !== actionF) return false;
+    return true;
+  });
+
+  const list = document.getElementById('activity-list');
+  const empty = document.getElementById('activity-empty');
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  const actionColors = { login: 'text-emerald-400', logout: 'text-slate-400', add_task: 'text-blue-400', edit_task: 'text-amber-400', delete_task: 'text-red-400', add_issue: 'text-blue-400', edit_issue: 'text-amber-400', delete_issue: 'text-red-400', edit_phase: 'text-purple-400' };
+  const actionIcons = { login: '🔑', logout: '🚪', add_task: '➕', edit_task: '✏️', delete_task: '🗑️', add_issue: '🔴', edit_issue: '✏️', delete_issue: '🗑️', edit_phase: '📊' };
+
+  list.innerHTML = filtered.slice(0, 100).map(l => {
+    const dt = new Date(l.timestamp);
+    const locale = getLang() === 'th' ? 'th-TH' : 'en-US';
+    const timeStr = dt.toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const icon = actionIcons[l.action] || '📝';
+    const color = actionColors[l.action] || 'text-slate-400';
+    return `<div class="card p-3 flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">${l.username.substring(0,2).toUpperCase()}</div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-white"><span class="font-medium">${l.username}</span> <span class="${color}">${icon} ${l.action}</span></p>
+        <p class="text-xs text-slate-500 truncate">${l.detail || ''}</p>
+      </div>
+      <span class="text-[10px] text-slate-500 shrink-0">${timeStr}</span>
+    </div>`;
+  }).join('');
+}
+
+function clearActivityLog() {
+  if (!confirm(t('activityClearConfirm'))) return;
+  saveActivityLog([]);
+  renderActivityLog();
+  showToast(t('activityCleared'));
+}
+
+// ---- i18n ----
+const LANG = {
+  en: {
+    appName: 'WTE Tracker', appSub: 'Construction Management',
+    dashboard: 'Dashboard', phases: 'Phases', tasks: 'Tasks', issues: 'Issues', reports: 'Reports', alerts: 'Alerts', activity: 'Activity Log',
+    projectTitle: 'GP4 Surat Thani 6.6 MW WtE — Construction Overview',
+    overallProgress: 'Overall Progress', completedTasks: 'Completed Tasks', delayedTasks: 'Delayed Tasks', openIssues: 'Open Issues',
+    ofTotal: 'of total', needsAttention: 'Needs attention', highSeverity: 'high severity',
+    sCurve: 'S-Curve — Plan vs Actual', progressByPhase: 'Progress by Phase', phaseProgress: 'Phase Progress',
+    recentAlerts: 'Recent Alerts', noAlerts: 'No alerts',
+    planned: 'Planned', actual: 'Actual', complete: 'complete',
+    // Phases page
+    constructionPhases: 'Construction Phases', trackPhases: 'Track progress for each construction phase',
+    // Tasks page
+    taskManagement: 'Task Management', manageTasks: 'Manage all construction tasks', addTask: 'Add Task', editTask: 'Edit Task',
+    allPhases: 'All Phases', allStatus: 'All Status', allAssignees: 'All Assignees', searchTasks: 'Search tasks...',
+    task: 'Task', phase: 'Phase', assignee: 'Assignee', start: 'Start', end: 'End', status: 'Status', priority: 'Priority', actions: 'Actions',
+    noTasksFound: 'No tasks found. Click "Add Task" to get started.',
+    taskName: 'Task Name', startDate: 'Start Date', endDate: 'End Date', notes: 'Notes', save: 'Save', cancel: 'Cancel',
+    // Statuses
+    Pending: 'Pending', 'In Progress': 'In Progress', Completed: 'Completed', Delayed: 'Delayed', 'Not Started': 'Not Started',
+    Open: 'Open', Resolved: 'Resolved',
+    // Priority
+    Low: 'Low', Medium: 'Medium', High: 'High', Critical: 'Critical',
+    // Issues page
+    issuesTracker: 'Issues Tracker', trackIssues: 'Track and resolve construction issues', reportIssue: 'Report Issue', editIssue: 'Edit Issue',
+    allSeverity: 'All Severity', issueTitle: 'Issue Title', description: 'Description', assignedTo: 'Assigned To',
+    severity: 'Severity', reported: 'Reported', resolutionNotes: 'Resolution Notes', noIssues: 'No issues found.',
+    // Reports page
+    reportsTitle: 'Reports', reportsDesc: 'Construction progress reports & analytics',
+    taskStatusDist: 'Task Status Distribution', issuesBySev: 'Issues by Severity', tasksPerPhase: 'Tasks per Phase',
+    weeklySummary: 'Weekly Summary', tasksCompleted: 'Tasks Completed', tasksInProgress: 'Tasks In Progress',
+    // Alerts page
+    alertsTitle: 'Alerts & Notifications', alertsDesc: 'Tasks at risk and unresolved issues',
+    allClear: 'All clear! No alerts at this time.',
+    isDelayed: 'is marked as Delayed', assignedToSmall: 'assigned to', unassigned: 'unassigned',
+    wasDueOn: 'was due on', isDueIn: 'is due in', days: 'days',
+    highSev: 'High severity', unresolved: 'Unresolved',
+    // Phase modal
+    editPhase: 'Edit Phase', progress: 'Progress',
+    // Misc
+    countdownToCOD: 'Countdown to COD', codDate: '30 November 2026',
+    daysLabel: 'Days', hoursLabel: 'Hours', minutesLabel: 'Minutes', secondsLabel: 'Seconds',
+    codReached: 'COD Reached!',
+    // Auth
+    authSubtitle: 'Construction Management System', authLogin: 'Login', authRegister: 'Register',
+    authUsername: 'Username', authPassword: 'Password', authConfirmPass: 'Confirm Password', authRole: 'Role',
+    authCreateAccount: 'Create Account', authEnterUser: 'Enter username', authEnterPass: 'Enter password',
+    authChooseUser: 'Choose username', authChoosePass: 'Choose password',
+    authFieldsRequired: 'Please fill in all fields', authInvalidLogin: 'Invalid username or password',
+    authPassTooShort: 'Password must be at least 4 characters', authPassMismatch: 'Passwords do not match',
+    authUserExists: 'Username already exists', authRegSuccess: 'Account created! Please login.',
+    loggedIn: 'Logged in', loggedOut: 'Logged out',
+    // Activity
+    activityLog: 'Activity Log', activityDesc: 'User activity history',
+    activityClear: 'Clear Log', activityEmpty: 'No activity recorded yet.',
+    activityClearConfirm: 'Clear all activity logs?', activityCleared: 'Activity log cleared',
+    allUsers: 'All Users', allActions: 'All Actions',
+    darkMode: 'Dark Mode', lightMode: 'Light Mode', projectManager: 'Project Manager',
+    deleteTask: 'Delete this task?', deleteIssue: 'Delete this issue?',
+    taskRequired: 'Task name is required', issueRequired: 'Issue title is required',
+    taskAdded: 'Task added', taskUpdated: 'Task updated', taskDeleted: 'Task deleted',
+    issueReported: 'Issue reported', issueUpdated: 'Issue updated', issueDeleted: 'Issue deleted',
+    phaseUpdated: 'Phase updated',
+    // Phase names
+    phaseName0: 'Engineering', phaseName1: 'Procurement',
+    phaseName2: 'Fabrication', phaseName3: 'Erection', phaseName4: 'Commissioning',
+    groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
+  },
+  th: {
+    appName: 'WTE Tracker', appSub: 'ระบบติดตามงานก่อสร้าง',
+    dashboard: 'แดชบอร์ด', phases: 'เฟส', tasks: 'งาน', issues: 'ปัญหา', reports: 'รายงาน', alerts: 'แจ้งเตือน', activity: 'ประวัติการใช้งาน',
+    projectTitle: 'GP4 สุราษฎร์ธานี 6.6 MW WtE — ภาพรวมการก่อสร้าง',
+    overallProgress: 'ความคืบหน้ารวม', completedTasks: 'งานเสร็จแล้ว', delayedTasks: 'งานล่าช้า', openIssues: 'ปัญหาที่เปิดอยู่',
+    ofTotal: 'ของทั้งหมด', needsAttention: 'ต้องดำเนินการ', highSeverity: 'ความรุนแรงสูง',
+    sCurve: 'S-Curve — แผน vs จริง', progressByPhase: 'ความคืบหน้าตามเฟส', phaseProgress: 'ความคืบหน้าเฟส',
+    recentAlerts: 'การแจ้งเตือนล่าสุด', noAlerts: 'ไม่มีการแจ้งเตือน',
+    planned: 'แผน', actual: 'จริง', complete: 'เสร็จ',
+    constructionPhases: 'เฟสการก่อสร้าง', trackPhases: 'ติดตามความคืบหน้าของแต่ละเฟส',
+    taskManagement: 'จัดการงาน', manageTasks: 'จัดการงานก่อสร้างทั้งหมด', addTask: 'เพิ่มงาน', editTask: 'แก้ไขงาน',
+    allPhases: 'ทุกเฟส', allStatus: 'ทุกสถานะ', allAssignees: 'ทุกผู้รับผิดชอบ', searchTasks: 'ค้นหางาน...',
+    task: 'งาน', phase: 'เฟส', assignee: 'ผู้รับผิดชอบ', start: 'เริ่ม', end: 'สิ้นสุด', status: 'สถานะ', priority: 'ความสำคัญ', actions: 'จัดการ',
+    noTasksFound: 'ไม่พบงาน กดปุ่ม "เพิ่มงาน" เพื่อเริ่มต้น',
+    taskName: 'ชื่องาน', startDate: 'วันเริ่ม', endDate: 'วันสิ้นสุด', notes: 'หมายเหตุ', save: 'บันทึก', cancel: 'ยกเลิก',
+    Pending: 'รอดำเนินการ', 'In Progress': 'กำลังทำ', Completed: 'เสร็จแล้ว', Delayed: 'ล่าช้า', 'Not Started': 'ยังไม่เริ่ม',
+    Open: 'เปิด', Resolved: 'แก้ไขแล้ว',
+    Low: 'ต่ำ', Medium: 'ปานกลาง', High: 'สูง', Critical: 'วิกฤต',
+    issuesTracker: 'ติดตามปัญหา', trackIssues: 'ติดตามและแก้ไขปัญหาการก่อสร้าง', reportIssue: 'แจ้งปัญหา', editIssue: 'แก้ไขปัญหา',
+    allSeverity: 'ทุกระดับ', issueTitle: 'หัวข้อปัญหา', description: 'รายละเอียด', assignedTo: 'ผู้รับผิดชอบ',
+    severity: 'ความรุนแรง', reported: 'วันที่แจ้ง', resolutionNotes: 'บันทึกการแก้ไข', noIssues: 'ไม่พบปัญหา',
+    reportsTitle: 'รายงาน', reportsDesc: 'รายงานความคืบหน้าและการวิเคราะห์',
+    taskStatusDist: 'การกระจายสถานะงาน', issuesBySev: 'ปัญหาตามความรุนแรง', tasksPerPhase: 'จำนวนงานต่อเฟส',
+    weeklySummary: 'สรุปประจำสัปดาห์', tasksCompleted: 'งานเสร็จแล้ว', tasksInProgress: 'งานกำลังทำ',
+    alertsTitle: 'การแจ้งเตือน', alertsDesc: 'งานที่เสี่ยงและปัญหาที่ยังไม่แก้',
+    allClear: 'เรียบร้อย! ไม่มีการแจ้งเตือนในขณะนี้',
+    isDelayed: 'ถูกทำเครื่องหมายว่าล่าช้า', assignedToSmall: 'มอบหมายให้', unassigned: 'ยังไม่มอบหมาย',
+    wasDueOn: 'ครบกำหนดเมื่อ', isDueIn: 'ครบกำหนดใน', days: 'วัน',
+    highSev: 'ความรุนแรงสูง', unresolved: 'ยังไม่แก้ไข',
+    editPhase: 'แก้ไขเฟส', progress: 'ความคืบหน้า',
+    countdownToCOD: 'นับถอยหลังสู่ COD', codDate: '30 พฤศจิกายน 2569',
+    daysLabel: 'วัน', hoursLabel: 'ชั่วโมง', minutesLabel: 'นาที', secondsLabel: 'วินาที',
+    codReached: 'ถึง COD แล้ว!',
+    authSubtitle: 'ระบบจัดการงานก่อสร้าง', authLogin: 'เข้าสู่ระบบ', authRegister: 'ลงทะเบียน',
+    authUsername: 'ชื่อผู้ใช้', authPassword: 'รหัสผ่าน', authConfirmPass: 'ยืนยันรหัสผ่าน', authRole: 'ตำแหน่ง',
+    authCreateAccount: 'สร้างบัญชี', authEnterUser: 'กรอกชื่อผู้ใช้', authEnterPass: 'กรอกรหัสผ่าน',
+    authChooseUser: 'เลือกชื่อผู้ใช้', authChoosePass: 'เลือกรหัสผ่าน',
+    authFieldsRequired: 'กรุณากรอกข้อมูลให้ครบ', authInvalidLogin: 'ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',
+    authPassTooShort: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', authPassMismatch: 'รหัสผ่านไม่ตรงกัน',
+    authUserExists: 'ชื่อผู้ใช้นี้มีอยู่แล้ว', authRegSuccess: 'สร้างบัญชีสำเร็จ! กรุณาเข้าสู่ระบบ',
+    loggedIn: 'เข้าสู่ระบบแล้ว', loggedOut: 'ออกจากระบบแล้ว',
+    activityLog: 'ประวัติการใช้งาน', activityDesc: 'ประวัติกิจกรรมของผู้ใช้',
+    activityClear: 'ล้างประวัติ', activityEmpty: 'ยังไม่มีประวัติการใช้งาน',
+    activityClearConfirm: 'ล้างประวัติทั้งหมด?', activityCleared: 'ล้างประวัติแล้ว',
+    allUsers: 'ทุกผู้ใช้', allActions: 'ทุกกิจกรรม',
+    darkMode: 'โหมดมืด', lightMode: 'โหมดสว่าง', projectManager: 'ผู้จัดการโครงการ',
+    deleteTask: 'ต้องการลบงานนี้?', deleteIssue: 'ต้องการลบปัญหานี้?',
+    taskRequired: 'กรุณาระบุชื่องาน', issueRequired: 'กรุณาระบุหัวข้อปัญหา',
+    taskAdded: 'เพิ่มงานแล้ว', taskUpdated: 'อัปเดตงานแล้ว', taskDeleted: 'ลบงานแล้ว',
+    issueReported: 'แจ้งปัญหาแล้ว', issueUpdated: 'อัปเดตปัญหาแล้ว', issueDeleted: 'ลบปัญหาแล้ว',
+    phaseUpdated: 'อัปเดตเฟสแล้ว',
+    phaseName0: 'วิศวกรรม', phaseName1: 'จัดซื้อจัดหา',
+    phaseName2: 'การผลิตชิ้นส่วน', phaseName3: 'งานติดตั้ง', phaseName4: 'ทดสอบระบบ',
+    groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
+  }
+};
+
+function getLang() { return localStorage.getItem('wte_lang') || 'en'; }
+function t(key) { return LANG[getLang()][key] || LANG['en'][key] || key; }
+function tStatus(s) { return LANG[getLang()][s] || s; }
+function phaseName(idx) { return t('phaseName' + idx); }
+
+function setLang(lang) {
+  localStorage.setItem('wte_lang', lang);
+  applyLang();
+  renderAll();
+  const reportsPage = document.getElementById('page-reports');
+  if (reportsPage.classList.contains('active')) renderReports();
+  const alertsPage = document.getElementById('page-alerts');
+  if (alertsPage.classList.contains('active')) renderAlerts();
+}
+
+function applyLang() {
+  const lang = getLang();
+  // Sidebar text nodes
+  document.querySelectorAll('.sidebar-item').forEach(item => {
+    const pg = item.dataset.page;
+    if (!pg) return;
+    // Find the text node (last direct text child after the SVG)
+    const nodes = item.childNodes;
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      if (nodes[i].nodeType === 3 && nodes[i].textContent.trim()) {
+        nodes[i].textContent = '\n      ' + t(pg) + '\n    ';
+        break;
+      }
+    }
+  });
+  document.getElementById('sidebar-app-name').textContent = t('appName');
+  document.getElementById('sidebar-app-sub').textContent = t('appSub');
+  // sidebar user info is set by updateSidebarUser()
+  // Lang buttons
+  document.getElementById('lang-en').classList.toggle('opacity-50', lang !== 'en');
+  document.getElementById('lang-th').classList.toggle('opacity-50', lang !== 'th');
+}
+
+// ---- DATA ----
+// Progress data from AFRY CM Reports: Q3/2025 (Sep) and Q4/2025 (Dec)
+// Source: 127001617 TTB 6.6 MW WtE LTA Final TDD Report Rev 0 (Oct 2025)
+// Source: GP4 Surat WtE CM 2025 Q3 (Jul-Sep 2025)
+// Source: GP4 Surat WtE CM 2025 Q4 (Oct-Dec 2025)
+
+const DEFAULT_PHASES = [
+  // Engineering — CM Q4: 97.48% actual vs 98.75% plan
+  { name: 'Engineering', icon: '📐', group: 'engineering', start: '2024-10-01', end: '2026-03-31', progress: 97, status: 'In Progress', notes: 'CM Q4/2025: 97.48% actual vs 98.75% plan. Core engineering complete, close-out items and construction support remaining.' },
+  // Procurement — CM Q4: 87.87% actual vs 89.91% plan
+  { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 88, status: 'In Progress', notes: 'CM Q4/2025: 87.87% actual vs 89.91% plan. Long lead items ordered: turbine (Shinko), generator (TDPS), boiler (SL Biotech), combustion (Lawi).' },
+  // Fabrication — CM Q4: 32.11% actual vs 64.92% plan (DELAYED)
+  { name: 'Fabrication', icon: '⚙️', group: 'procurement', start: '2025-06-01', end: '2026-08-31', progress: 32, status: 'Delayed', notes: 'CM Q4/2025: 32.11% actual vs 64.92% plan. Delay from drawing clarifications and vendor production queue.' },
+  // Erection — CM Q4: 2.73% actual vs 3.42% plan
+  { name: 'Erection', icon: '🏗️', group: 'construction', start: '2025-07-01', end: '2026-10-31', progress: 3, status: 'In Progress', notes: 'CM Q4/2025: 2.73% actual vs 3.42% plan. Weather constraints and interface congestion on piling and foundation.' },
+  // Commissioning — CM Q4: 0% as planned
+  { name: 'Commissioning', icon: '🔬', group: 'commissioning', start: '2026-08-01', end: '2026-11-30', progress: 0, status: 'Not Started', notes: 'CM Q4/2025: 0% as planned. SCOD 30 Nov 2026.' },
+];
+
+// Tasks based on information stated in CM Reports and TDD Report only
+const DEFAULT_TASKS = [
+  // Engineering — Permits & Licenses (from CM Q4 Section 8 and TDD Section 5)
+  { id: 1, name: 'PPA signed with PEA (VSPP-MSW1-PEA-009/2567)', phase: 0, assignee: 'GP4', start: '2024-01-01', end: '2024-06-28', status: 'Completed', priority: 'Critical', notes: '5.0 MW, 20 years, FiT basis. Signed 28 Jun 2024.' },
+  { id: 2, name: 'Waste Concession Agreement (WCA 1/2567)', phase: 0, assignee: 'GP4', start: '2023-10-01', end: '2023-12-27', status: 'Completed', priority: 'Critical', notes: 'Signed 27 Dec 2023 with TRC SAO. 22-year term, 400 ton/day min, 450 THB/ton.' },
+  { id: 3, name: 'Construction Permit (Form A.1)', phase: 0, assignee: 'GP4', start: '2025-06-01', end: '2025-10-31', status: 'Completed', priority: 'Critical', notes: 'CM Q4: obtained and currently effective.' },
+  { id: 4, name: 'Code of Practice (CoP) report', phase: 0, assignee: 'GP4', start: '2025-03-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Final report under preparation.' },
+  { id: 5, name: 'Environmental Site Assessment (ESA)', phase: 0, assignee: 'GP4', start: '2025-05-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Prepared in parallel with CoP.' },
+  { id: 6, name: 'Factory Operation License (Ror.Ngor.4)', phase: 0, assignee: 'GP4', start: '2025-08-01', end: '2026-03-31', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: 50%. Pending CoP & ESA. Needed before machine installation.' },
+  { id: 7, name: 'BOI Investment Promotion', phase: 0, assignee: 'GP4', start: '2025-06-01', end: '2026-03-31', status: 'In Progress', priority: 'High', notes: 'CM Q4: 80% complete.' },
+  // Procurement — Key equipment (from TDD Table and CM Q4 Section 3.3)
+  { id: 8, name: 'Combustion system — Lawi Engineering', phase: 1, assignee: 'Lawi Eng.', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Grate incinerator. PO placed per CM Q4.' },
+  { id: 9, name: 'Boiler non-pressure part — SL Biotechnology / Shandong Shuanglong', phase: 1, assignee: 'SL Biotech', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Water tube boiler, superheater, economizer. PO placed.' },
+  { id: 10, name: 'Steam turbine — Shinko Ind.', phase: 1, assignee: 'Shinko', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: Long lead item ordered per CM Q4.' },
+  { id: 11, name: 'Generator — TD Power Systems', phase: 1, assignee: 'TDPS', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: 6.6 kV rated. Long lead item ordered.' },
+  { id: 12, name: 'Flue gas treatment system', phase: 1, assignee: 'Lawi/KK Green', start: '2025-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: SNCR, bag filter, CEMS. Long lead ordered per CM Q4.' },
+  { id: 13, name: 'Step-up transformer (8.25 MVA, 6.6/33 kV)', phase: 1, assignee: 'KK Green', start: '2025-08-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: Per single line diagram review.' },
+  // Fabrication — from CM Q4 Section 3.4
+  { id: 14, name: 'Mechanical & structural components fabrication', phase: 2, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'CM Q4: 32.11% vs 64.92% plan. Drawing clarifications & vendor queue.' },
+  // Erection — from CM Q4 Section 3.5
+  { id: 15, name: 'Civil foundation and piling works', phase: 3, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: Weather delays & interface congestion noted.' },
+  // Commissioning — from CM Q4 Section 3.6
+  { id: 16, name: 'Commissioning (not yet started)', phase: 4, assignee: 'KK Green', start: '2026-08-01', end: '2026-11-30', status: 'Pending', priority: 'Critical', notes: 'CM Q4: No commissioning work during this period as planned.' },
+];
+
+// Issues from CM Reports findings and LTA observations only
+const DEFAULT_ISSUES = [
+  { id: 1, title: 'Fabrication significantly behind schedule', desc: 'CM Q4: 32.11% actual vs 64.92% plan. Delay attributed to final drawing clarifications and vendor production queue constraints.', phase: 2, severity: 'High', status: 'In Progress', assignee: 'Vendors', date: '2025-12-31', resolution: 'Fast-tracking vendor drawing approvals, expediting near-term fabrication, aligning priorities with site execution.' },
+  { id: 2, title: 'Overall progress behind schedule', desc: 'CM Q4: Overall 40.33% actual vs 54.89% plan (~14.5% gap).', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2025-12-31', resolution: 'Converting site execution into certifiable progress, accelerating critical construction and interface releases.' },
+  { id: 3, title: 'Ror.Ngor.4 factory permit pending', desc: 'CM Q4: Factory operation license at 50%, pending CoP and ESA completion. Needed before machine installation.', phase: 0, severity: 'High', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
+  { id: 4, title: 'Progress measurement methodology not defined', desc: 'TDD/CM: LTA recommends clearly defining how actual progress is measured, particularly during Erection Phase.', phase: 0, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-10-30', resolution: '' },
+  { id: 5, title: 'Weather delays on civil works', desc: 'CM Q4: Weather-related constraints and interface congestion as civil foundation and piling overlapped across work fronts.', phase: 3, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2025-12-15', resolution: 'Prioritizing critical construction releases.' },
+  { id: 6, title: 'O&M team not yet mobilized', desc: 'CM Q4: O&M team has not been mobilized during this monitoring period.', phase: 4, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
+  { id: 7, title: 'EHS documentation gaps', desc: 'CM Q4: Workforce profile, welfare facilities, EHS training records, HSE org structure not provided for review.', phase: 3, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-12-31', resolution: 'LTA recommends submission in next monitoring period.' },
+];
+
+function loadData() {
+  const d = localStorage.getItem('wte_data');
+  if (d) return JSON.parse(d);
+  return { phases: DEFAULT_PHASES, tasks: DEFAULT_TASKS, issues: DEFAULT_ISSUES, nextTaskId: 17, nextIssueId: 8 };
+}
+function saveData() { localStorage.setItem('wte_data', JSON.stringify(data)); }
+let data = loadData();
+
+// ---- NAVIGATION ----
+document.querySelectorAll('.sidebar-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    document.querySelectorAll('.sidebar-item').forEach(i => { i.classList.remove('active'); i.classList.add('text-slate-400'); });
+    item.classList.add('active'); item.classList.remove('text-slate-400');
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    if (page === 'reports') renderReports();
+    if (page === 'alerts') renderAlerts();
+    if (page === 'activity') renderActivityLog();
+  });
+});
+
+// ---- TOAST ----
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast');
+  t.className = 'toast ' + (type === 'success' ? 'bg-emerald-600' : type === 'error' ? 'bg-red-600' : 'bg-amber-600') + ' text-white text-sm';
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 2500);
+}
+
+// ---- HELPERS ----
+function statusBadge(s) {
+  const m = { 'Completed':'badge-green','In Progress':'badge-blue','Pending':'badge-gray','Delayed':'badge-red','Not Started':'badge-gray','Open':'badge-red','Resolved':'badge-green' };
+  return `<span class="badge ${m[s]||'badge-gray'}">${tStatus(s)}</span>`;
+}
+function severityBadge(s) {
+  const m = { 'High':'badge-red','Medium':'badge-amber','Low':'badge-green' };
+  return `<span class="badge ${m[s]||'badge-gray'}">${tStatus(s)}</span>`;
+}
+function priorityBadge(p) {
+  const m = { 'Critical':'badge-red','High':'badge-amber','Medium':'badge-blue','Low':'badge-gray' };
+  return `<span class="badge ${m[p]||'badge-gray'}">${tStatus(p)}</span>`;
+}
+function fmtDate(d) { if (!d) return '—'; const dt = new Date(d); const locale = getLang() === 'th' ? 'th-TH' : 'en-US'; return dt.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' }); }
+function progressColor(p) { if (p >= 80) return 'from-emerald-500 to-emerald-400'; if (p >= 50) return 'from-blue-500 to-cyan-400'; if (p >= 20) return 'from-amber-500 to-amber-400'; return 'from-slate-500 to-slate-400'; }
+
+// ---- POPULATE PHASE SELECTS ----
+function populatePhaseSelects() {
+  ['task-phase','issue-phase','filter-phase'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    const val = sel.value;
+    const isFilter = id.startsWith('filter');
+    sel.innerHTML = isFilter ? `<option value="">${t('allPhases')}</option>` : '';
+    data.phases.forEach((p, i) => { sel.innerHTML += `<option value="${i}">${phaseName(i)}</option>`; });
+    sel.value = val;
+  });
+}
+
+function populateAssigneeFilter() {
+  const set = new Set();
+  data.tasks.forEach(t => { if (t.assignee) set.add(t.assignee); });
+  const sel = document.getElementById('filter-assignee');
+  sel.innerHTML = `<option value="">${t('allAssignees')}</option>`;
+  [...set].sort().forEach(a => { sel.innerHTML += `<option value="${a}">${a}</option>`; });
+}
+
+// ---- DASHBOARD ----
+function renderDashboard() {
+  const locale = getLang() === 'th' ? 'th-TH' : 'en-US';
+  document.getElementById('current-date').textContent = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Update static text
+  document.getElementById('dash-title').textContent = t('dashboard');
+  document.getElementById('dash-subtitle').textContent = t('projectTitle');
+  document.getElementById('label-overall').textContent = t('overallProgress');
+  document.getElementById('label-completed').textContent = t('completedTasks');
+  document.getElementById('label-delayed').textContent = t('delayedTasks');
+  document.getElementById('label-issues').textContent = t('openIssues');
+  document.getElementById('dash-scurve-title').textContent = t('sCurve');
+  document.getElementById('dash-phase-chart-title').textContent = t('progressByPhase');
+  document.getElementById('dash-phase-progress-title').textContent = t('phaseProgress');
+  document.getElementById('dash-alerts-title').textContent = t('recentAlerts');
+
+  const totalProgress = data.phases.reduce((s, p) => s + p.progress, 0) / data.phases.length;
+  document.getElementById('stat-overall').textContent = Math.round(totalProgress) + '%';
+  document.getElementById('progress-overall').style.width = totalProgress + '%';
+
+  const completed = data.tasks.filter(t => t.status === 'Completed').length;
+  const delayed = data.tasks.filter(t => t.status === 'Delayed').length;
+  const openIssues = data.issues.filter(i => i.status !== 'Resolved').length;
+  const highIssues = data.issues.filter(i => i.severity === 'High' && i.status !== 'Resolved').length;
+
+  document.getElementById('stat-completed').textContent = completed;
+  document.getElementById('stat-completed-pct').textContent = data.tasks.length ? Math.round(completed / data.tasks.length * 100) + '% ' + t('ofTotal') : '0% ' + t('ofTotal');
+  document.getElementById('stat-delayed').textContent = delayed;
+  document.getElementById('label-delayed-sub').textContent = t('needsAttention');
+  document.getElementById('stat-issues').textContent = openIssues;
+  document.getElementById('stat-issues-high').textContent = highIssues + ' ' + t('highSeverity');
+
+  // Phase cards grouped by E/P/C/Comm
+  const container = document.getElementById('phase-cards');
+  let phaseHtml = '';
+  GROUP_ORDER.forEach(group => {
+    const phases = data.phases.map((p, i) => ({ ...p, idx: i })).filter(p => p.group === group);
+    if (phases.length === 0) return;
+    const gp = Math.round(phases.reduce((s, p) => s + p.progress, 0) / phases.length);
+    phaseHtml += `<div class="col-span-4 flex items-center gap-2 mt-2 first:mt-0">
+      <div class="h-1 w-6 rounded bg-gradient-to-r ${GROUP_COLORS[group]}"></div>
+      <span class="text-xs font-bold text-white uppercase tracking-wider">${t(GROUP_LABELS[group])}</span>
+      <span class="text-[10px] text-slate-400">${gp}%</span>
+    </div>`;
+    phaseHtml += phases.map(p => `<div class="card p-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-lg">${p.icon}</span>
+        <p class="text-xs font-medium text-white flex-1 truncate">${phaseName(p.idx)}</p>
+      </div>
+      <div class="progress-bar"><div class="progress-fill bg-gradient-to-r ${progressColor(p.progress)}" style="width:${p.progress}%"></div></div>
+      <p class="text-right text-[10px] text-slate-400 mt-1">${p.progress}%</p>
+    </div>`).join('');
+  });
+  container.innerHTML = phaseHtml;
+
+  // Dashboard alerts
+  const alerts = getAlerts().slice(0, 5);
+  document.getElementById('dashboard-alerts').innerHTML = alerts.length ? alerts.map(a => `
+    <div class="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02]">
+      <span class="w-2 h-2 rounded-full ${a.type === 'danger' ? 'bg-red-500' : a.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'}"></span>
+      <span class="text-sm text-slate-300 flex-1">${a.message}</span>
+      <span class="text-xs text-slate-500">${a.category}</span>
+    </div>
+  `).join('') : `<p class="text-sm text-slate-500">${t('noAlerts')}</p>`;
+
+  renderMilestones();
+  renderSCurve();
+  renderGroupSCurves();
+  renderPhaseChart();
+
+  // Alert badge
+  const alertCount = getAlerts().length;
+  const badge = document.getElementById('alert-badge');
+  if (alertCount > 0) { badge.textContent = alertCount; badge.classList.remove('hidden'); }
+  else { badge.classList.add('hidden'); }
+}
+
+// ---- CHARTS ----
+let scurveChart, phaseChart, taskStatusChart, issueSeverityChart, tasksPhaseChart;
+let scGroupCharts = {};
+
+function scurveLabels() {
+  const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const labels = [];
+  for (let y = 2025; y <= 2026; y++) {
+    for (let m = 0; m < 12; m++) {
+      const yr = getLang() === 'th' ? (y + 543).toString().slice(-2) : y.toString().slice(-2);
+      labels.push(monthNames[m] + "'" + yr);
+    }
+  }
+  return labels;
+}
+
+// Planned S-curves per group (% within each group scope, 24 months Jan25-Dec26)
+// Plan curves Jan 2025 - Dec 2026 (24 months) based on project schedule
+// Q3/2025 (month 9): overall plan 33.13%, Q4/2025 (month 12): overall plan 54.89%
+const GROUP_PLANS = {
+  overall:       [2,4,7,10,14,18,22,27,33,38,44,55, 60,65,70,76,81,86,90,93,96,98,99,100],
+  engineering:   [15,25,38,50,62,72,80,87,93,95,97,99, 100,100,100,100,100,100,100,100,100,100,100,100],
+  procurement:   [1,3,6,10,16,24,33,42,52,62,72,80, 85,88,91,93,95,97,98,99,100,100,100,100],
+  construction:  [0,0,0,0,0,0,1,2,3,5,8,12, 18,26,36,48,60,72,82,90,95,98,99,100],
+  commissioning: [0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,5,20,50,80,100],
+};
+
+function groupActual(group) {
+  const phases = data.phases.filter(p => p.group === group);
+  if (phases.length === 0) return Array(24).fill(null);
+  const avgProgress = phases.reduce((s, p) => s + p.progress, 0) / phases.length;
+  const plan = GROUP_PLANS[group];
+  const now = new Date();
+  const ci = (now.getFullYear() - 2025) * 12 + now.getMonth();
+  const result = [];
+  for (let i = 0; i < 24; i++) {
+    if (i > ci) { result.push(null); continue; }
+    const planAtCurrent = plan[Math.min(ci, 23)];
+    result.push(planAtCurrent > 0 ? Math.round(avgProgress * plan[i] / planAtCurrent) : 0);
+  }
+  return result;
+}
+
+function renderSCurve() {
+  const ctx = document.getElementById('chart-scurve').getContext('2d');
+  if (scurveChart) scurveChart.destroy();
+  const labels = scurveLabels();
+  const totalP = data.phases.reduce((s,p) => s+p.progress,0) / data.phases.length;
+  const now = new Date();
+  const ci = (now.getFullYear() - 2025) * 12 + now.getMonth();
+  const overallActual = [];
+  for (let i = 0; i < 24; i++) {
+    if (i > ci) { overallActual.push(null); continue; }
+    const pc = GROUP_PLANS.overall[Math.min(ci, 23)];
+    overallActual.push(pc > 0 ? Math.round(totalP * GROUP_PLANS.overall[i] / pc) : 0);
+  }
+
+  scurveChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
+        { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: false },
+        { label: t('groupEngineering'), data: groupActual('engineering'), borderColor: '#6366f1', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+        { label: t('groupProcurement'), data: groupActual('procurement'), borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+        { label: t('groupConstruction'), data: groupActual('construction'), borderColor: '#10b981', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+        { label: t('groupCommissioning'), data: groupActual('commissioning'), borderColor: '#a855f7', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 }, boxWidth: 14, padding: 10 } } },
+      scales: {
+        x: { ticks: { color: chartTextColor(), font: { size: 8 }, maxRotation: 45 }, grid: { color: chartGridColor() } },
+        y: { ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 }
+      }
+    }
+  });
+}
+
+function renderGroupSCurves() {
+  const labels = scurveLabels();
+  const groupColors = { engineering: '#6366f1', procurement: '#f59e0b', construction: '#10b981', commissioning: '#a855f7' };
+  const groupIds = { engineering: 'chart-sc-engineering', procurement: 'chart-sc-procurement', construction: 'chart-sc-construction', commissioning: 'chart-sc-commissioning' };
+  const groupTitleIds = { engineering: 'sc-eng-title', procurement: 'sc-proc-title', construction: 'sc-const-title', commissioning: 'sc-comm-title' };
+
+  // Update titles
+  document.getElementById('dash-scurve-group-title').textContent = getLang() === 'th' ? 'S-Curve แยกตามกลุ่ม' : 'S-Curve by Phase Group';
+  Object.keys(groupTitleIds).forEach(g => {
+    document.getElementById(groupTitleIds[g]).textContent = t('group' + g.charAt(0).toUpperCase() + g.slice(1));
+  });
+
+  GROUP_ORDER.forEach(group => {
+    const canvasId = groupIds[group];
+    const ctx = document.getElementById(canvasId).getContext('2d');
+    if (scGroupCharts[group]) scGroupCharts[group].destroy();
+
+    const plan = GROUP_PLANS[group];
+    const actual = groupActual(group);
+    const color = groupColors[group];
+
+    scGroupCharts[group] = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: t('planned'), data: plan, borderColor: color, backgroundColor: color + '15', fill: true, tension: 0.4, pointRadius: 0, borderWidth: 2, borderDash: [5, 3] },
+          { label: t('actual'), data: actual, borderColor: color, backgroundColor: color + '25', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2.5 }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 }, boxWidth: 12 } } },
+        scales: {
+          x: { ticks: { color: chartTextColor(), font: { size: 7 }, maxRotation: 45, maxTicksLimit: 12 }, grid: { color: chartGridColor() } },
+          y: { ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 }
+        }
+      }
+    });
+  });
+}
+
+function renderPhaseChart() {
+  const ctx = document.getElementById('chart-phases').getContext('2d');
+  if (phaseChart) phaseChart.destroy();
+  phaseChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: data.phases.map((p, i) => phaseName(i).split(' ')[0]),
+      datasets: [{ label: 'Progress %', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 18 }]
+    },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { max: 100, ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } } } }
+  });
+}
+
+// ---- PHASES PAGE ----
+const GROUP_LABELS = { engineering: 'groupEngineering', procurement: 'groupProcurement', construction: 'groupConstruction', commissioning: 'groupCommissioning' };
+const GROUP_COLORS = { engineering: 'from-indigo-500 to-blue-500', procurement: 'from-amber-500 to-orange-500', construction: 'from-emerald-500 to-green-500', commissioning: 'from-purple-500 to-pink-500' };
+const GROUP_ORDER = ['engineering', 'procurement', 'construction', 'commissioning'];
+
+function renderPhaseCard(p, i) {
+  return `<div class="card p-4">
+    <div class="flex items-start justify-between mb-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">${p.icon}</span>
+        <h3 class="text-sm font-semibold text-white">${phaseName(i)}</h3>
+      </div>
+      <button onclick="openPhaseModal(${i})" class="text-slate-400 hover:text-white transition shrink-0 mt-0.5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+      </button>
+    </div>
+    <div class="flex items-center gap-2 mb-2">
+      ${statusBadge(p.status)}
+      <span class="text-[10px] text-slate-500">${fmtDate(p.start)} — ${fmtDate(p.end)}</span>
+    </div>
+    <div class="progress-bar mb-1"><div class="progress-fill bg-gradient-to-r ${progressColor(p.progress)}" style="width:${p.progress}%"></div></div>
+    <div class="flex justify-between text-[10px] text-slate-500">
+      <span>${p.progress}% ${t('complete')}</span>
+      <span>${data.tasks.filter(t => t.phase === i).length} ${t('tasks')}</span>
+    </div>
+  </div>`;
+}
+
+function renderPhases() {
+  document.getElementById('phases-title').textContent = t('constructionPhases');
+  document.getElementById('phases-desc').textContent = t('trackPhases');
+  let html = '';
+  GROUP_ORDER.forEach(group => {
+    const phases = data.phases.map((p, i) => ({ ...p, idx: i })).filter(p => p.group === group);
+    if (phases.length === 0) return;
+    const groupProgress = Math.round(phases.reduce((s, p) => s + p.progress, 0) / phases.length);
+    html += `<div class="mb-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="h-1 w-8 rounded bg-gradient-to-r ${GROUP_COLORS[group]}"></div>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider">${t(GROUP_LABELS[group])}</h3>
+        <span class="text-xs text-slate-400">${groupProgress}%</span>
+        <div class="flex-1"><div class="progress-bar"><div class="progress-fill bg-gradient-to-r ${GROUP_COLORS[group]}" style="width:${groupProgress}%"></div></div></div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        ${phases.map(p => renderPhaseCard(p, p.idx)).join('')}
+      </div>
+    </div>`;
+  });
+  document.getElementById('phases-list').innerHTML = html;
+}
+
+function openPhaseModal(idx) {
+  const p = data.phases[idx];
+  document.getElementById('phase-edit-idx').value = idx;
+  document.getElementById('phase-start').value = p.start;
+  document.getElementById('phase-end').value = p.end;
+  document.getElementById('phase-progress').value = p.progress;
+  document.getElementById('phase-status').value = p.status;
+  document.getElementById('phase-notes').value = p.notes;
+  document.getElementById('phase-modal').classList.remove('hidden');
+}
+function closePhaseModal() { document.getElementById('phase-modal').classList.add('hidden'); }
+function savePhase() {
+  const idx = parseInt(document.getElementById('phase-edit-idx').value);
+  data.phases[idx].start = document.getElementById('phase-start').value;
+  data.phases[idx].end = document.getElementById('phase-end').value;
+  data.phases[idx].progress = parseInt(document.getElementById('phase-progress').value) || 0;
+  data.phases[idx].status = document.getElementById('phase-status').value;
+  data.phases[idx].notes = document.getElementById('phase-notes').value;
+  logActivity('edit_phase', phaseName(idx));
+  saveData(); closePhaseModal(); renderAll(); showToast(t('phaseUpdated'));
+}
+
+// ---- TASKS ----
+function renderTasks() {
+  document.getElementById('tasks-title').textContent = t('taskManagement');
+  document.getElementById('tasks-desc').textContent = t('manageTasks');
+  document.getElementById('tasks-add-btn').textContent = t('addTask');
+  document.getElementById('filter-search').placeholder = t('searchTasks');
+  document.getElementById('tasks-empty').textContent = t('noTasksFound');
+  // Translate status filter options
+  const statusSel = document.getElementById('filter-status');
+  const stVal = statusSel.value;
+  statusSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Pending">${tStatus('Pending')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Completed">${tStatus('Completed')}</option><option value="Delayed">${tStatus('Delayed')}</option>`;
+  statusSel.value = stVal;
+  // Translate table headers
+  document.getElementById('tasks-thead').innerHTML = `<tr><th>${t('task')}</th><th>${t('phase')}</th><th>${t('assignee')}</th><th>${t('start')}</th><th>${t('end')}</th><th>${t('status')}</th><th>${t('priority')}</th><th class="text-right">${t('actions')}</th></tr>`;
+
+  const phaseF = document.getElementById('filter-phase').value;
+  const statusF = document.getElementById('filter-status').value;
+  const assignF = document.getElementById('filter-assignee').value;
+  const searchF = document.getElementById('filter-search').value.toLowerCase();
+
+  let filtered = data.tasks.filter(t => {
+    if (phaseF !== '' && t.phase !== parseInt(phaseF)) return false;
+    if (statusF && t.status !== statusF) return false;
+    if (assignF && t.assignee !== assignF) return false;
+    if (searchF && !t.name.toLowerCase().includes(searchF)) return false;
+    return true;
+  });
+
+  const body = document.getElementById('tasks-body');
+  const empty = document.getElementById('tasks-empty');
+  if (filtered.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  body.innerHTML = filtered.map(t => `<tr>
+    <td class="text-sm text-white font-medium">${t.name}</td>
+    <td class="text-xs text-slate-400">${phaseName(t.phase).split('&')[0] || '—'}</td>
+    <td class="text-sm">${t.assignee || '—'}</td>
+    <td class="text-xs text-slate-400">${fmtDate(t.start)}</td>
+    <td class="text-xs text-slate-400">${fmtDate(t.end)}</td>
+    <td>${statusBadge(t.status)}</td>
+    <td>${priorityBadge(t.priority)}</td>
+    <td class="text-right">
+      <button onclick="editTask(${t.id})" class="text-slate-400 hover:text-blue-400 transition mr-2"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+      <button onclick="deleteTask(${t.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+    </td>
+  </tr>`).join('');
+}
+
+function openTaskModal(task) {
+  document.getElementById('task-modal-title').textContent = task ? t('editTask') : t('addTask');
+  document.getElementById('task-edit-id').value = task ? task.id : '';
+  document.getElementById('task-name').value = task ? task.name : '';
+  document.getElementById('task-phase').value = task ? task.phase : 0;
+  document.getElementById('task-assignee').value = task ? task.assignee : '';
+  document.getElementById('task-start').value = task ? task.start : '';
+  document.getElementById('task-end').value = task ? task.end : '';
+  document.getElementById('task-status').value = task ? task.status : 'Pending';
+  document.getElementById('task-priority').value = task ? task.priority : 'Medium';
+  document.getElementById('task-notes').value = task ? task.notes : '';
+  document.getElementById('task-modal').classList.remove('hidden');
+}
+function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
+function editTask(id) { openTaskModal(data.tasks.find(t => t.id === id)); }
+function deleteTask(id) {
+  if (!confirm(t('deleteTask'))) return;
+  const taskName = data.tasks.find(t2 => t2.id === id)?.name || '';
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  logActivity('delete_task', taskName);
+  saveData(); renderAll(); showToast(t('taskDeleted'));
+}
+function saveTask() {
+  const name = document.getElementById('task-name').value.trim();
+  if (!name) { showToast(t('taskRequired'), 'error'); return; }
+  const editId = document.getElementById('task-edit-id').value;
+  const taskData = {
+    name,
+    phase: parseInt(document.getElementById('task-phase').value),
+    assignee: document.getElementById('task-assignee').value.trim(),
+    start: document.getElementById('task-start').value,
+    end: document.getElementById('task-end').value,
+    status: document.getElementById('task-status').value,
+    priority: document.getElementById('task-priority').value,
+    notes: document.getElementById('task-notes').value.trim()
+  };
+  if (editId) {
+    const t = data.tasks.find(t => t.id === parseInt(editId));
+    Object.assign(t, taskData);
+  } else {
+    taskData.id = data.nextTaskId++;
+    data.tasks.push(taskData);
+  }
+  logActivity(editId ? 'edit_task' : 'add_task', name);
+  saveData(); closeTaskModal(); renderAll(); showToast(editId ? t('taskUpdated') : t('taskAdded'));
+}
+
+// ---- ISSUES ----
+function renderIssues() {
+  document.getElementById('issues-title').textContent = t('issuesTracker');
+  document.getElementById('issues-desc').textContent = t('trackIssues');
+  document.getElementById('issues-add-btn').textContent = t('reportIssue');
+  document.getElementById('issues-empty').textContent = t('noIssues');
+  // Translate severity filter
+  const sevSel = document.getElementById('filter-issue-severity');
+  const svVal = sevSel.value;
+  sevSel.innerHTML = `<option value="">${t('allSeverity')}</option><option value="High">${tStatus('High')}</option><option value="Medium">${tStatus('Medium')}</option><option value="Low">${tStatus('Low')}</option>`;
+  sevSel.value = svVal;
+  // Translate status filter
+  const issSel = document.getElementById('filter-issue-status');
+  const isVal = issSel.value;
+  issSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Open">${tStatus('Open')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Resolved">${tStatus('Resolved')}</option>`;
+  issSel.value = isVal;
+  // Translate table headers
+  document.getElementById('issues-thead').innerHTML = `<tr><th>${t('issues')}</th><th>${t('phase')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('assignedTo')}</th><th>${t('reported')}</th><th class="text-right">${t('actions')}</th></tr>`;
+
+  const sevF = document.getElementById('filter-issue-severity').value;
+  const staF = document.getElementById('filter-issue-status').value;
+  let filtered = data.issues.filter(i => {
+    if (sevF && i.severity !== sevF) return false;
+    if (staF && i.status !== staF) return false;
+    return true;
+  });
+  const body = document.getElementById('issues-body');
+  const empty = document.getElementById('issues-empty');
+  if (filtered.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  body.innerHTML = filtered.map(i => `<tr>
+    <td><p class="text-sm text-white font-medium">${i.title}</p><p class="text-xs text-slate-500 mt-0.5">${i.desc ? i.desc.substring(0,60) + (i.desc.length > 60 ? '...' : '') : ''}</p></td>
+    <td class="text-xs text-slate-400">${phaseName(i.phase).split('&')[0] || '—'}</td>
+    <td>${severityBadge(i.severity)}</td>
+    <td>${statusBadge(i.status)}</td>
+    <td class="text-sm">${i.assignee || '—'}</td>
+    <td class="text-xs text-slate-400">${fmtDate(i.date)}</td>
+    <td class="text-right">
+      <button onclick="editIssue(${i.id})" class="text-slate-400 hover:text-blue-400 transition mr-2"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+      <button onclick="deleteIssue(${i.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+    </td>
+  </tr>`).join('');
+}
+
+function openIssueModal(issue) {
+  document.getElementById('issue-modal-title').textContent = issue ? t('editIssue') : t('reportIssue');
+  document.getElementById('issue-edit-id').value = issue ? issue.id : '';
+  document.getElementById('issue-title').value = issue ? issue.title : '';
+  document.getElementById('issue-desc').value = issue ? issue.desc : '';
+  document.getElementById('issue-phase').value = issue ? issue.phase : 0;
+  document.getElementById('issue-assignee').value = issue ? issue.assignee : '';
+  document.getElementById('issue-severity').value = issue ? issue.severity : 'Medium';
+  document.getElementById('issue-status').value = issue ? issue.status : 'Open';
+  document.getElementById('issue-resolution').value = issue ? issue.resolution : '';
+  document.getElementById('issue-modal').classList.remove('hidden');
+}
+function closeIssueModal() { document.getElementById('issue-modal').classList.add('hidden'); }
+function editIssue(id) { openIssueModal(data.issues.find(i => i.id === id)); }
+function deleteIssue(id) {
+  if (!confirm(t('deleteIssue'))) return;
+  const issName = data.issues.find(i2 => i2.id === id)?.title || '';
+  data.issues = data.issues.filter(i => i.id !== id);
+  logActivity('delete_issue', issName);
+  saveData(); renderAll(); showToast(t('issueDeleted'));
+}
+function saveIssue() {
+  const title = document.getElementById('issue-title').value.trim();
+  if (!title) { showToast(t('issueRequired'), 'error'); return; }
+  const editId = document.getElementById('issue-edit-id').value;
+  const issueData = {
+    title,
+    desc: document.getElementById('issue-desc').value.trim(),
+    phase: parseInt(document.getElementById('issue-phase').value),
+    assignee: document.getElementById('issue-assignee').value.trim(),
+    severity: document.getElementById('issue-severity').value,
+    status: document.getElementById('issue-status').value,
+    resolution: document.getElementById('issue-resolution').value.trim(),
+    date: editId ? data.issues.find(i => i.id === parseInt(editId))?.date : new Date().toISOString().slice(0, 10)
+  };
+  if (editId) {
+    const i = data.issues.find(i => i.id === parseInt(editId));
+    Object.assign(i, issueData);
+  } else {
+    issueData.id = data.nextIssueId++;
+    data.issues.push(issueData);
+  }
+  logActivity(editId ? 'edit_issue' : 'add_issue', title);
+  saveData(); closeIssueModal(); renderAll(); showToast(editId ? t('issueUpdated') : t('issueReported'));
+}
+
+// ---- REPORTS ----
+function renderReports() {
+  document.getElementById('reports-title').textContent = t('reportsTitle');
+  document.getElementById('reports-desc').textContent = t('reportsDesc');
+  document.getElementById('report-task-status-title').textContent = t('taskStatusDist');
+  document.getElementById('report-issue-sev-title').textContent = t('issuesBySev');
+  document.getElementById('report-tasks-phase-title').textContent = t('tasksPerPhase');
+  document.getElementById('report-weekly-title').textContent = t('weeklySummary');
+
+  // Task status donut
+  const ctx1 = document.getElementById('chart-task-status').getContext('2d');
+  if (taskStatusChart) taskStatusChart.destroy();
+  const statusCounts = { Pending: 0, 'In Progress': 0, Completed: 0, Delayed: 0 };
+  data.tasks.forEach(t => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+  taskStatusChart = new Chart(ctx1, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusCounts).map(s => tStatus(s)),
+      datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#64748b','#3b82f6','#10b981','#ef4444'], borderWidth: 0, spacing: 2 }]
+    },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 11 }, padding: 16 } } } }
+  });
+
+  // Issue severity donut
+  const ctx2 = document.getElementById('chart-issue-severity').getContext('2d');
+  if (issueSeverityChart) issueSeverityChart.destroy();
+  const sevCounts = { High: 0, Medium: 0, Low: 0 };
+  data.issues.filter(i => i.status !== 'Resolved').forEach(i => { sevCounts[i.severity] = (sevCounts[i.severity] || 0) + 1; });
+  issueSeverityChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(sevCounts).map(s => tStatus(s)),
+      datasets: [{ data: Object.values(sevCounts), backgroundColor: ['#ef4444','#f59e0b','#10b981'], borderWidth: 0, spacing: 2 }]
+    },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 11 }, padding: 16 } } } }
+  });
+
+  // Tasks per phase bar
+  const ctx3 = document.getElementById('chart-tasks-phase').getContext('2d');
+  if (tasksPhaseChart) tasksPhaseChart.destroy();
+  tasksPhaseChart = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels: data.phases.map((p, i) => phaseName(i).split(' ')[0]),
+      datasets: [
+        { label: tStatus('Completed'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Completed').length), backgroundColor: '#10b981', borderRadius: 4 },
+        { label: tStatus('In Progress'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'In Progress').length), backgroundColor: '#3b82f6', borderRadius: 4 },
+        { label: tStatus('Pending'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Pending').length), backgroundColor: '#64748b', borderRadius: 4 },
+        { label: tStatus('Delayed'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Delayed').length), backgroundColor: '#ef4444', borderRadius: 4 }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 11 } } } }, scales: { x: { stacked: true, ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } }, y: { stacked: true, ticks: { color: chartTextColor(), font: { size: 10 }, stepSize: 1 }, grid: { color: chartGridColor() } } } }
+  });
+
+  // Weekly summary
+  const ws = document.getElementById('weekly-summary');
+  const completedThisWeek = data.tasks.filter(t => t.status === 'Completed').length;
+  const inProgress = data.tasks.filter(t => t.status === 'In Progress').length;
+  const openIss = data.issues.filter(i => i.status !== 'Resolved').length;
+  ws.innerHTML = `
+    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-emerald-400">${completedThisWeek}</p><p class="text-xs text-slate-400 mt-1">${t('tasksCompleted')}</p></div>
+    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-blue-400">${inProgress}</p><p class="text-xs text-slate-400 mt-1">${t('tasksInProgress')}</p></div>
+    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-red-400">${openIss}</p><p class="text-xs text-slate-400 mt-1">${t('openIssues')}</p></div>
+  `;
+}
+
+// ---- ALERTS ----
+function getAlerts() {
+  const alerts = [];
+  const today = new Date();
+  const week = 7 * 24 * 60 * 60 * 1000;
+
+  data.tasks.forEach(tk => {
+    if (tk.status === 'Delayed') alerts.push({ type: 'danger', category: t('task'), message: `"${tk.name}" ${t('isDelayed')} (${t('assignedToSmall')} ${tk.assignee || t('unassigned')})` });
+    if (tk.end && tk.status !== 'Completed') {
+      const end = new Date(tk.end);
+      if (end < today) alerts.push({ type: 'danger', category: 'Overdue', message: `"${tk.name}" ${t('wasDueOn')} ${fmtDate(tk.end)}` });
+      else if (end - today < week) alerts.push({ type: 'warning', category: 'Deadline', message: `"${tk.name}" ${t('isDueIn')} ${Math.ceil((end - today) / (24*60*60*1000))} ${t('days')}` });
+    }
+  });
+
+  data.issues.forEach(i => {
+    if (i.status !== 'Resolved' && i.severity === 'High') alerts.push({ type: 'danger', category: t('issues'), message: `${t('highSev')}: "${i.title}" — ${tStatus(i.status)}` });
+    if (i.status === 'Open') alerts.push({ type: 'warning', category: t('issues'), message: `${t('unresolved')}: "${i.title}" (${tStatus(i.severity)})` });
+  });
+
+  return alerts;
+}
+
+function renderAlerts() {
+  document.getElementById('alerts-title').textContent = t('alertsTitle');
+  document.getElementById('alerts-desc').textContent = t('alertsDesc');
+  const alerts = getAlerts();
+  const list = document.getElementById('alerts-list');
+  const empty = document.getElementById('alerts-empty');
+  if (alerts.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  list.innerHTML = alerts.map(a => `
+    <div class="card p-4 flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl ${a.type === 'danger' ? 'bg-red-500/10' : 'bg-amber-500/10'} flex items-center justify-center">
+        <svg class="w-5 h-5 ${a.type === 'danger' ? 'text-red-400' : 'text-amber-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+      </div>
+      <div class="flex-1">
+        <p class="text-sm text-white">${a.message}</p>
+      </div>
+      <span class="badge ${a.type === 'danger' ? 'badge-red' : 'badge-amber'}">${a.category}</span>
+    </div>
+  `).join('');
+}
+
+// ---- RENDER ALL ----
+// ---- MILESTONES ----
+const MILESTONES = [
+  { name: 'WCA Signed', date: '2023-12-27', status: 'done' },
+  { name: 'PPA Signed', date: '2024-06-28', status: 'done' },
+  { name: 'Construction Permit', date: '2025-10-31', status: 'done' },
+  { name: 'Ror.Ngor.4 Permit', date: '2026-03-31', status: 'progress', note: '50%' },
+  { name: 'CoP & ESA', date: '2026-02-28', status: 'progress', note: '88%' },
+  { name: 'Equipment Delivery', date: '2026-09-30', status: 'upcoming' },
+  { name: 'Commissioning', date: '2026-10-31', status: 'upcoming' },
+  { name: 'SCOD / COD', date: '2026-11-30', status: 'upcoming' },
+];
+
+function renderMilestones() {
+  const now = new Date();
+  const grid = document.getElementById('milestones-grid');
+  const dotColors = { done: 'bg-emerald-500', progress: 'bg-amber-500', upcoming: 'bg-blue-500' };
+
+  grid.innerHTML = MILESTONES.map(m => {
+    const mDate = new Date(m.date);
+    const diff = mDate - now;
+    const dot = dotColors[m.status] || 'bg-slate-500';
+    let countdownText = '';
+
+    if (m.status === 'done') {
+      const ago = Math.abs(Math.floor(diff / (1000 * 60 * 60 * 24)));
+      const locale = getLang() === 'th';
+      if (ago > 365) {
+        const yrs = Math.floor(ago / 365);
+        const mos = Math.floor((ago % 365) / 30);
+        countdownText = locale ? `${yrs} ปี ${mos} เดือนที่แล้ว` : `${yrs}y ${mos}m ago`;
+      } else if (ago > 30) {
+        countdownText = locale ? `${Math.floor(ago / 30)} เดือนที่แล้ว` : `${Math.floor(ago / 30)} months ago`;
+      } else {
+        countdownText = locale ? `${ago} วันที่แล้ว` : `${ago} days ago`;
+      }
+    } else if (diff > 0) {
+      const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+      const locale = getLang() === 'th';
+      if (days > 30) {
+        const mos = Math.floor(days / 30);
+        const d = days % 30;
+        countdownText = locale ? `อีก ${mos} เดือน ${d} วัน` : `${mos}m ${d}d left`;
+      } else {
+        countdownText = locale ? `อีก ${days} วัน` : `${days} days left`;
+      }
+    } else {
+      const overdue = Math.abs(Math.floor(diff / (1000 * 60 * 60 * 24)));
+      const locale = getLang() === 'th';
+      countdownText = locale ? `เกินกำหนด ${overdue} วัน` : `${overdue}d overdue`;
+    }
+
+    const isLast = m.name === 'SCOD / COD';
+    const noteText = m.note ? ` (${m.note})` : '';
+
+    return `<div class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04]">
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="w-2 h-2 rounded-full ${dot} shrink-0"></span>
+        <p class="text-xs text-white ${isLast ? 'font-bold' : 'font-medium'} truncate">${m.name}${noteText}</p>
+      </div>
+      <p class="text-[10px] text-slate-500 ml-4">${fmtDate(m.date)}</p>
+      <p class="text-[10px] ml-4 mt-0.5 ${m.status === 'done' ? 'text-emerald-400' : diff < 0 ? 'text-red-400' : 'text-blue-400'} font-medium">${countdownText}</p>
+    </div>`;
+  }).join('');
+}
+
+setInterval(renderMilestones, 60000); // update every minute
+
+// ---- COUNTDOWN ----
+const COD_DATE = new Date('2026-11-30T00:00:00');
+
+function updateCountdown() {
+  const now = new Date();
+  const diff = COD_DATE - now;
+  document.getElementById('countdown-label').textContent = t('countdownToCOD');
+  document.getElementById('countdown-date-label').textContent = t('codDate');
+  document.getElementById('cd-days-label').textContent = t('daysLabel');
+  document.getElementById('cd-hours-label').textContent = t('hoursLabel');
+  document.getElementById('cd-mins-label').textContent = t('minutesLabel');
+  document.getElementById('cd-secs-label').textContent = t('secondsLabel');
+
+  if (diff <= 0) {
+    document.getElementById('cd-days').textContent = '000';
+    document.getElementById('cd-hours').textContent = '00';
+    document.getElementById('cd-mins').textContent = '00';
+    document.getElementById('cd-secs').textContent = '00';
+    document.getElementById('countdown-label').textContent = t('codReached');
+    return;
+  }
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((diff % (1000 * 60)) / 1000);
+  document.getElementById('cd-days').textContent = String(days).padStart(3, '0');
+  document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+  document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+function renderAll() {
+  applyLang();
+  populatePhaseSelects();
+  populateAssigneeFilter();
+  renderDashboard();
+  renderPhases();
+  renderTasks();
+  renderIssues();
+  document.getElementById('alerts-clear-text').textContent = t('allClear');
+}
+
+checkAuth();
+</script>
+</body>
+</html>
