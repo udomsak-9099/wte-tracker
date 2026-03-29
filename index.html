@@ -75,6 +75,10 @@ tailwind.config = {
   .page { display: none; animation: fadeIn 0.3s ease; }
   .page.active { display: block; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes blink-red { 0%,100% { box-shadow: 0 0 4px rgba(239,68,68,0.3); } 50% { box-shadow: 0 0 16px rgba(239,68,68,0.7); } }
+  @keyframes blink-amber { 0%,100% { box-shadow: 0 0 4px rgba(245,158,11,0.3); } 50% { box-shadow: 0 0 16px rgba(245,158,11,0.7); } }
+  .blink-red { animation: blink-red 1.5s ease-in-out infinite; }
+  .blink-amber { animation: blink-amber 1.5s ease-in-out infinite; }
   .modal-overlay { background: var(--modal-overlay); backdrop-filter: blur(4px); }
   .badge { padding: 2px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
   .badge-green { background: rgba(16,185,129,0.15); color: #10b981; }
@@ -202,6 +206,10 @@ tailwind.config = {
       Alerts
       <span id="alert-badge" class="ml-auto bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
     </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="weather">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+      Weather
+    </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="workprogress">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
       Work Progress
@@ -286,6 +294,30 @@ tailwind.config = {
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Site Weather (compact for dashboard) -->
+  <div class="card p-4 mb-8 cursor-pointer" onclick="document.querySelector('[data-page=weather]').click()">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <p class="text-3xl" id="weather-icon-dash">🌤️</p>
+        <div>
+          <p class="text-xs text-slate-400" id="weather-title-dash">Site Weather — Phun Phin</p>
+          <p class="text-xl font-bold text-white"><span id="weather-temp-dash">--</span>°C <span class="text-xs font-normal text-slate-400" id="weather-feels-dash"></span></p>
+        </div>
+      </div>
+      <div class="flex gap-5 text-center">
+        <div><p class="text-sm font-bold text-blue-400" id="weather-humidity-dash">--</p><p class="text-[10px] text-slate-500">Humidity</p></div>
+        <div><p class="text-sm font-bold text-emerald-400" id="weather-wind-dash">--</p><p class="text-[10px] text-slate-500">Wind</p></div>
+        <div><p class="text-sm font-bold text-amber-400" id="weather-uv-dash">--</p><p class="text-[10px] text-slate-500">UV</p></div>
+      </div>
+      <div class="flex items-center gap-1" id="weather-mini-forecast"></div>
+      <div class="text-right">
+        <p class="text-[10px] text-slate-500" id="rain-impact-dash">--</p>
+        <p class="text-[10px] text-blue-400 mt-0.5">View details →</p>
+      </div>
+    </div>
+    <div id="dash-rain-alerts" class="hidden mt-3 pt-3 border-t border-white/5 space-y-1"></div>
   </div>
 
   <!-- Project Info + Budget -->
@@ -551,6 +583,53 @@ tailwind.config = {
   </div>
 </div>
 
+<!-- Weather Page -->
+<div id="page-weather" class="page">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-white" id="wx-page-title">Weather Forecast</h2>
+    <p class="text-sm text-slate-400 mt-1" id="wx-page-desc">Site weather at Phun Phin, Surat Thani — 16-day forecast & construction impact</p>
+  </div>
+  <!-- Current Conditions -->
+  <div class="card p-5 mb-6 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-24 h-24 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 -translate-y-1/2 translate-x-1/2"></div>
+    <div class="relative flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <p class="text-5xl" id="weather-icon">🌤️</p>
+        <div>
+          <p class="text-xs text-slate-400" id="weather-title">Site Weather — Phun Phin, Surat Thani</p>
+          <p class="text-3xl font-bold text-white mt-0.5"><span id="weather-temp">--</span>°C <span class="text-sm font-normal text-slate-400" id="weather-feels">(feels --°C)</span></p>
+          <p class="text-sm text-slate-500" id="weather-desc">Loading...</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-5 text-center">
+        <div><p class="text-xl font-bold text-blue-400" id="weather-humidity">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-humidity">Humidity</p></div>
+        <div><p class="text-xl font-bold text-emerald-400" id="weather-wind">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-wind">Wind</p></div>
+        <div><p class="text-xl font-bold text-purple-400" id="weather-pressure">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-pressure">Pressure</p></div>
+        <div><p class="text-xl font-bold text-amber-400" id="weather-uv">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-uv">UV Index</p></div>
+        <div><p class="text-xl font-bold text-cyan-400" id="weather-cloud">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-cloud">Cloud</p></div>
+        <div><p class="text-xl font-bold text-sky-400" id="weather-rain">--</p><p class="text-[10px] text-slate-500" id="lbl-weather-rain">Rain</p></div>
+      </div>
+    </div>
+    <div class="flex items-center justify-between mt-3 pt-3 border-t border-white/5">
+      <p class="text-xs text-slate-500" id="weather-sunrise">☀️ --:-- / 🌙 --:--</p>
+      <p class="text-xs text-slate-500" id="weather-updated">Updated: --</p>
+    </div>
+  </div>
+  <!-- 16-Day Forecast -->
+  <div class="card p-5 mb-6">
+    <p class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="lbl-forecast-title">16-Day Forecast</p>
+    <div class="grid grid-cols-8 gap-2 text-center" id="forecast-grid"></div>
+  </div>
+  <!-- Rain Impact -->
+  <div class="card p-5">
+    <div class="flex items-center justify-between mb-3">
+      <p class="text-xs font-bold text-white uppercase tracking-wider" id="lbl-rain-impact-title">⚠️ Rain Impact on Construction</p>
+      <p class="text-xs text-slate-500" id="rain-impact-summary">--</p>
+    </div>
+    <div id="rain-impact-list" class="space-y-2"></div>
+  </div>
+</div>
+
 <!-- Work Progress Page -->
 <div id="page-workprogress" class="page">
   <div class="flex items-center justify-between mb-6">
@@ -569,6 +648,15 @@ tailwind.config = {
     <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-manpower">Avg. Manpower</p><p class="text-3xl font-bold text-white" id="wp-avg-manpower">0</p></div>
     <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-weather">Weather Days Lost</p><p class="text-3xl font-bold text-white" id="wp-weather-lost">0</p></div>
     <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-equipment">Equipment Issues</p><p class="text-3xl font-bold text-white" id="wp-equip-issues">0</p></div>
+  </div>
+  <!-- System Progress Overview -->
+  <div class="card p-5 mb-6">
+    <p class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="wp-systems-title">Systems Overview</p>
+    <div class="grid grid-cols-4 gap-2" id="wp-systems-grid"></div>
+  </div>
+  <!-- Filter -->
+  <div class="flex gap-3 mb-4">
+    <select id="filter-wp-system" onchange="renderWorkProgress()" class="text-sm"></select>
   </div>
   <!-- Daily Reports List -->
   <div id="wp-list" class="space-y-3"></div>
@@ -594,7 +682,7 @@ tailwind.config = {
       <div class="grid grid-cols-3 gap-4">
         <div><label class="text-xs text-slate-400 block mb-1">Manpower (persons)</label><input type="number" id="wp-manpower" class="w-full" min="0" placeholder="0"></div>
         <div><label class="text-xs text-slate-400 block mb-1">Equipment on site</label><input type="number" id="wp-equipment" class="w-full" min="0" placeholder="0"></div>
-        <div><label class="text-xs text-slate-400 block mb-1">Phase</label><select id="wp-phase" class="w-full"></select></div>
+        <div><label class="text-xs text-slate-400 block mb-1">System</label><select id="wp-system" class="w-full"></select></div>
       </div>
       <div><label class="text-xs text-slate-400 block mb-1">Activities Performed *</label><textarea id="wp-activities" class="w-full" rows="3" placeholder="Describe today's construction activities..."></textarea></div>
       <div><label class="text-xs text-slate-400 block mb-1">Issues / Delays</label><textarea id="wp-issues" class="w-full" rows="2" placeholder="Any problems encountered..."></textarea></div>
@@ -1129,7 +1217,7 @@ const LANG = {
     loggedIn: 'Logged in', loggedOut: 'Logged out',
     // Activity
     // Work Progress
-    workprogress: 'Work Progress', wpTitle: 'Work Progress', wpDesc: 'Daily construction progress reports',
+    weather: 'Weather', workprogress: 'Work Progress', wpTitle: 'Work Progress', wpDesc: 'Daily construction progress reports',
     wpAddReport: 'Add Daily Report', wpEditReport: 'Edit Report', wpEmpty: 'No daily reports yet. Start recording progress!',
     wpTotalReports: 'Total Reports', wpAvgManpower: 'Avg. Manpower', wpWeatherLost: 'Weather Days Lost', wpEquipIssues: 'Issues Reported',
     wpManpower: 'Manpower', wpEquipment: 'Equipment',
@@ -1205,7 +1293,7 @@ const LANG = {
     authPassTooShort: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', authPassMismatch: 'รหัสผ่านไม่ตรงกัน',
     authUserExists: 'ชื่อผู้ใช้นี้มีอยู่แล้ว', authRegSuccess: 'สร้างบัญชีสำเร็จ! กรุณาเข้าสู่ระบบ',
     loggedIn: 'เข้าสู่ระบบแล้ว', loggedOut: 'ออกจากระบบแล้ว',
-    workprogress: 'ความคืบหน้างาน', wpTitle: 'ความคืบหน้างาน', wpDesc: 'รายงานความคืบหน้างานก่อสร้างรายวัน',
+    weather: 'สภาพอากาศ', workprogress: 'ความคืบหน้างาน', wpTitle: 'ความคืบหน้างาน', wpDesc: 'รายงานความคืบหน้างานก่อสร้างรายวัน',
     wpAddReport: 'เพิ่มรายงานวัน', wpEditReport: 'แก้ไขรายงาน', wpEmpty: 'ยังไม่มีรายงาน เริ่มบันทึกความคืบหน้า!',
     wpTotalReports: 'รายงานทั้งหมด', wpAvgManpower: 'แรงงานเฉลี่ย', wpWeatherLost: 'วันสูญเสียจากอากาศ', wpEquipIssues: 'ปัญหาที่รายงาน',
     wpManpower: 'แรงงาน', wpEquipment: 'อุปกรณ์',
@@ -1287,7 +1375,7 @@ const DEFAULT_PHASES = [
   // Engineering — CM Q4: 97.48% actual vs 98.75% plan
   { name: 'Engineering', icon: '📐', group: 'engineering', start: '2024-10-01', end: '2026-03-31', progress: 97, status: 'In Progress', notes: 'CM Q4/2025: 97.48% actual vs 98.75% plan. Core engineering complete, close-out items and construction support remaining.' },
   // Permits & Licensing — from CM Q4 Section 8
-  { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-03-31', progress: 75, status: 'In Progress', notes: 'CM Q4: CP obtained, CoP 88%, ESA 88%, Ror.Ngor.4 50%, BOI 80%. PPA & WCA signed.' },
+  { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-03-31', progress: 75, status: 'Delayed', notes: 'CM Q4: CP obtained, CoP 88%, ESA 88%, Ror.Ngor.4 50%, BOI 80%. PPA & WCA signed. Ror.Ngor.4 pending — critical for machine installation.' },
   // Procurement — CM Q4: 87.87% actual vs 89.91% plan
   { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 88, status: 'In Progress', notes: 'CM Q4/2025: 87.87% actual vs 89.91% plan. Long lead items ordered: turbine (Shinko), generator (TDPS), boiler (SL Biotech), combustion (Lawi).' },
   // Fabrication — CM Q4: 32.11% actual vs 64.92% plan (DELAYED)
@@ -1352,6 +1440,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     document.getElementById('page-' + page).classList.add('active');
     if (page === 'reports') renderReports();
     if (page === 'alerts') renderAlerts();
+    if (page === 'weather') { fetchSiteWeather(); }
     if (page === 'workprogress') renderWorkProgress();
     if (page === 'safety') renderSafety();
     if (page === 'environment') renderEnvironment();
@@ -1627,7 +1716,8 @@ const GROUP_COLORS = { permits: 'from-cyan-500 to-teal-500', engineering: 'from-
 const GROUP_ORDER = ['permits', 'engineering', 'procurement', 'construction', 'commissioning'];
 
 function renderPhaseCard(p, i) {
-  return `<div class="card p-4">
+  const blinkClass = p.status === 'Delayed' ? ' blink-red border-red-500/30' : '';
+  return `<div class="card p-4${blinkClass}">
     <div class="flex items-start justify-between mb-2">
       <div class="flex items-center gap-2">
         <span class="text-xl">${p.icon}</span>
@@ -1991,6 +2081,32 @@ function renderAlerts() {
 
 // ---- RENDER ALL ----
 // ---- WORK PROGRESS ----
+const WP_SYSTEMS = [
+  { key: 'permits', en: 'Permits & Licensing', th: 'ใบอนุญาต', icon: '📋' },
+  { key: 'civil', en: 'Civil Works', th: 'ระบบงานโยธา', icon: '🏗️' },
+  { key: 'fuel', en: 'Fuel System', th: 'ระบบเชื้อเพลิง', icon: '♻️' },
+  { key: 'ash', en: 'Ash Handling', th: 'ระบบขี้เถ้า', icon: '🪨' },
+  { key: 'combustion', en: 'Combustion System', th: 'ระบบเผาไหม้', icon: '🔥' },
+  { key: 'boiler', en: 'Boiler System', th: 'ระบบหม้อไอน้ำ', icon: '♨️' },
+  { key: 'fgt', en: 'Flue Gas Treatment', th: 'ระบบบำบัดอากาศ', icon: '💨' },
+  { key: 'turbine_gen', en: 'Turbine & Generator', th: 'ระบบกังหันไอน้ำ & เครื่องกำเนิดไฟฟ้า', icon: '⚙️' },
+  { key: 'cooling', en: 'Cooling System', th: 'ระบบหล่อเย็น', icon: '❄️' },
+  { key: 'water_prod', en: 'Water Production', th: 'ระบบผลิตน้ำ', icon: '💧' },
+  { key: 'wastewater', en: 'Wastewater Treatment', th: 'ระบบบำบัดน้ำเสีย', icon: '🌊' },
+  { key: 'biogas', en: 'Biogas System', th: 'ระบบไบโอแก๊ส', icon: '🟢' },
+  { key: 'dcs', en: 'DCS Control System', th: 'ระบบควบคุม DCS', icon: '🖥️' },
+  { key: 'power_dist', en: 'Power Distribution', th: 'ระบบจำหน่ายไฟฟ้า', icon: '⚡' },
+  { key: 'lv_elec', en: 'LV Electrical', th: 'ระบบไฟฟ้าแรงต่ำ', icon: '🔌' },
+  { key: 'fire', en: 'Fire Protection', th: 'ระบบดับเพลิง', icon: '🧯' },
+];
+
+function wpSystemName(key) {
+  const sys = WP_SYSTEMS.find(s => s.key === key);
+  if (!sys) return key;
+  return getLang() === 'th' ? sys.th : sys.en;
+}
+function wpSystemIcon(key) { return WP_SYSTEMS.find(s => s.key === key)?.icon || '📝'; }
+
 function getWPReports() { return JSON.parse(localStorage.getItem('wte_wp') || '[]'); }
 function saveWPReports(list) { localStorage.setItem('wte_wp', JSON.stringify(list)); }
 
@@ -2003,6 +2119,7 @@ function renderWorkProgress() {
   document.getElementById('lbl-wp-manpower').textContent = t('wpAvgManpower');
   document.getElementById('lbl-wp-weather').textContent = t('wpWeatherLost');
   document.getElementById('lbl-wp-equipment').textContent = t('wpEquipIssues');
+  document.getElementById('wp-systems-title').textContent = getLang() === 'th' ? 'ภาพรวมระบบ' : 'Systems Overview';
 
   const reports = getWPReports();
   document.getElementById('wp-total').textContent = reports.length;
@@ -2011,15 +2128,38 @@ function renderWorkProgress() {
   document.getElementById('wp-weather-lost').textContent = reports.filter(r => r.weather === 'Heavy Rain' || r.weather === 'Stormy' || r.workStatus === 'Suspended').length;
   document.getElementById('wp-equip-issues').textContent = reports.filter(r => r.issues && r.issues.trim()).length;
 
+  // System filter
+  const filterSel = document.getElementById('filter-wp-system');
+  const fVal = filterSel.value;
+  const allLabel = getLang() === 'th' ? 'ทุกระบบ' : 'All Systems';
+  filterSel.innerHTML = `<option value="">${allLabel}</option>` + WP_SYSTEMS.map(s => `<option value="${s.key}">${s.icon} ${getLang() === 'th' ? s.th : s.en}</option>`).join('');
+  filterSel.value = fVal;
+
+  // Systems overview grid
+  document.getElementById('wp-systems-grid').innerHTML = WP_SYSTEMS.map(sys => {
+    const count = reports.filter(r => r.system === sys.key).length;
+    return `<div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03] cursor-pointer hover:bg-white/[0.06] transition" onclick="document.getElementById('filter-wp-system').value='${sys.key}'; renderWorkProgress();">
+      <span class="text-lg">${sys.icon}</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-[10px] text-white font-medium truncate">${getLang() === 'th' ? sys.th : sys.en}</p>
+        <p class="text-[9px] text-slate-500">${count} ${getLang() === 'th' ? 'รายงาน' : 'reports'}</p>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Filter by system
+  const sysFilter = document.getElementById('filter-wp-system').value;
+  const filtered = sysFilter ? reports.filter(r => r.system === sysFilter) : reports;
+
   const list = document.getElementById('wp-list');
   const empty = document.getElementById('wp-empty');
-  if (reports.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
   const weatherIcons = { Sunny: '☀️', Cloudy: '⛅', Rainy: '🌧️', 'Heavy Rain': '⛈️', Stormy: '🌪️' };
   const statusColors = { Normal: 'badge-green', Delayed: 'badge-amber', Suspended: 'badge-red', Holiday: 'badge-gray' };
 
-  list.innerHTML = reports.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+  list.innerHTML = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
     const photos = (r.photos || '').split('\n').filter(u => u.trim());
     return `<div class="card p-5">
       <div class="flex items-start justify-between mb-3">
@@ -2032,7 +2172,7 @@ function renderWorkProgress() {
             <p class="text-sm font-semibold text-white">${fmtDate(r.date)}</p>
             <div class="flex items-center gap-2 mt-1">
               <span class="badge ${statusColors[r.workStatus] || 'badge-gray'}">${r.workStatus}</span>
-              <span class="text-xs text-slate-400">${phaseName(r.phase)}</span>
+              <span class="text-xs text-slate-400">${wpSystemIcon(r.system)} ${wpSystemName(r.system)}</span>
             </div>
           </div>
         </div>
@@ -2061,16 +2201,14 @@ function openWPModal(rpt) {
   document.getElementById('wp-work-status').value = rpt ? rpt.workStatus : 'Normal';
   document.getElementById('wp-manpower').value = rpt ? rpt.manpower : '';
   document.getElementById('wp-equipment').value = rpt ? rpt.equipment : '';
-  document.getElementById('wp-phase').value = rpt ? rpt.phase : 0;
   document.getElementById('wp-activities').value = rpt ? rpt.activities : '';
   document.getElementById('wp-issues').value = rpt ? rpt.issues : '';
   document.getElementById('wp-photos').value = rpt ? rpt.photos : '';
   document.getElementById('wp-remarks').value = rpt ? rpt.remarks : '';
-  // Populate phase select
-  const sel = document.getElementById('wp-phase');
-  sel.innerHTML = '';
-  data.phases.forEach((p, i) => { sel.innerHTML += `<option value="${i}">${phaseName(i)}</option>`; });
-  if (rpt) sel.value = rpt.phase;
+  // Populate system select
+  const sel = document.getElementById('wp-system');
+  sel.innerHTML = WP_SYSTEMS.map(s => `<option value="${s.key}">${s.icon} ${getLang() === 'th' ? s.th : s.en}</option>`).join('');
+  sel.value = rpt ? rpt.system : (document.getElementById('filter-wp-system').value || 'civil');
   document.getElementById('wp-modal').classList.remove('hidden');
 }
 function closeWPModal() { document.getElementById('wp-modal').classList.add('hidden'); }
@@ -2091,7 +2229,7 @@ function saveWPReport() {
     workStatus: document.getElementById('wp-work-status').value,
     manpower: document.getElementById('wp-manpower').value,
     equipment: document.getElementById('wp-equipment').value,
-    phase: parseInt(document.getElementById('wp-phase').value),
+    system: document.getElementById('wp-system').value,
     activities,
     issues: document.getElementById('wp-issues').value.trim(),
     photos: document.getElementById('wp-photos').value.trim(),
@@ -2303,6 +2441,209 @@ function saveIncident() {
   closeIncidentModal(); renderSafety();
   showToast(editId ? t('incidentUpdated') : t('incidentReported'));
 }
+
+// ---- SITE WEATHER ----
+const WMO_CODES = {
+  0: ['Clear sky', 'ท้องฟ้าแจ่มใส', '☀️'],
+  1: ['Mainly clear', 'ท้องฟ้าโปร่ง', '🌤️'],
+  2: ['Partly cloudy', 'มีเมฆบางส่วน', '⛅'],
+  3: ['Overcast', 'มีเมฆมาก', '☁️'],
+  45: ['Fog', 'หมอก', '🌫️'],
+  48: ['Rime fog', 'หมอกน้ำค้าง', '🌫️'],
+  51: ['Light drizzle', 'ฝนปรอยเบา', '🌦️'],
+  53: ['Moderate drizzle', 'ฝนปรอย', '🌦️'],
+  55: ['Dense drizzle', 'ฝนปรอยหนัก', '🌧️'],
+  61: ['Slight rain', 'ฝนเล็กน้อย', '🌧️'],
+  63: ['Moderate rain', 'ฝนปานกลาง', '🌧️'],
+  65: ['Heavy rain', 'ฝนหนัก', '⛈️'],
+  80: ['Slight showers', 'ฝนตกเป็นพักๆ', '🌦️'],
+  81: ['Moderate showers', 'ฝนตกปานกลาง', '🌧️'],
+  82: ['Violent showers', 'ฝนตกหนักมาก', '⛈️'],
+  95: ['Thunderstorm', 'พายุฝนฟ้าคะนอง', '⛈️'],
+  96: ['Thunderstorm + hail', 'พายุฟ้าคะนอง+ลูกเห็บ', '🌪️'],
+  99: ['Thunderstorm + heavy hail', 'พายุรุนแรง', '🌪️'],
+};
+
+function fetchSiteWeather() {
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=9.1357&longitude=99.1712&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl,cloud_cover,precipitation,uv_index&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset&forecast_days=16&timezone=Asia/Bangkok';
+  fetch(url).then(r => r.json()).then(d => {
+    const c = d.current;
+    const wmo = WMO_CODES[c.weather_code] || ['Unknown', 'ไม่ทราบ', '🌤️'];
+    const lang = getLang();
+    const th = lang === 'th';
+    const locale = th ? 'th-TH' : 'en-US';
+
+    // Current conditions
+    document.getElementById('weather-icon').textContent = wmo[2];
+    document.getElementById('weather-temp').textContent = Math.round(c.temperature_2m);
+    document.getElementById('weather-feels').textContent = (th ? '(รู้สึก ' : '(feels ') + Math.round(c.apparent_temperature) + '°C)';
+    document.getElementById('weather-desc').textContent = th ? wmo[1] : wmo[0];
+    document.getElementById('weather-humidity').textContent = c.relative_humidity_2m + '%';
+    document.getElementById('weather-wind').textContent = c.wind_speed_10m + ' km/h';
+    document.getElementById('weather-pressure').textContent = Math.round(c.pressure_msl) + ' hPa';
+    document.getElementById('weather-uv').textContent = c.uv_index.toFixed(1);
+    document.getElementById('weather-cloud').textContent = c.cloud_cover + '%';
+    document.getElementById('weather-rain').textContent = c.precipitation + ' mm';
+
+    // Labels
+    document.getElementById('weather-title').textContent = th ? 'สภาพอากาศหน้างาน — ท่าโรงช้าง พุนพิน สุราษฎร์ธานี' : 'Site Weather — Phun Phin, Surat Thani';
+    document.getElementById('lbl-weather-humidity').textContent = th ? 'ความชื้น' : 'Humidity';
+    document.getElementById('lbl-weather-wind').textContent = th ? 'ลม' : 'Wind';
+    document.getElementById('lbl-weather-pressure').textContent = th ? 'ความดัน' : 'Pressure';
+    document.getElementById('lbl-weather-uv').textContent = th ? 'UV' : 'UV Index';
+    document.getElementById('lbl-weather-cloud').textContent = th ? 'เมฆ' : 'Cloud';
+    document.getElementById('lbl-weather-rain').textContent = th ? 'ฝน' : 'Rain';
+    document.getElementById('lbl-forecast-title').textContent = th ? 'พยากรณ์ 7 วัน' : '7-Day Forecast';
+
+    // Sunrise/Sunset (today)
+    if (d.daily && d.daily.sunrise) {
+      const sr = new Date(d.daily.sunrise[0]).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+      const ss = new Date(d.daily.sunset[0]).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('weather-sunrise').textContent = '☀️ ' + sr + '  🌙 ' + ss;
+    }
+
+    // 16-Day Forecast + Rain Impact
+    if (d.daily) {
+      const days = d.daily.time;
+      const dayNames = th ? ['อา','จ','อ','พ','พฤ','ศ','ส'] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      document.getElementById('lbl-forecast-title').textContent = th ? 'พยากรณ์ 16 วัน' : '16-Day Forecast';
+
+      document.getElementById('forecast-grid').innerHTML = days.map((day, i) => {
+        const dt = new Date(day);
+        const dayName = i === 0 ? (th ? 'วันนี้' : 'Today') : dayNames[dt.getDay()];
+        const dateStr = dt.getDate() + '/' + (dt.getMonth() + 1);
+        const fwmo = WMO_CODES[d.daily.weather_code[i]] || ['', '', '🌤️'];
+        const maxT = Math.round(d.daily.temperature_2m_max[i]);
+        const minT = Math.round(d.daily.temperature_2m_min[i]);
+        const rainProb = d.daily.precipitation_probability_max[i] || 0;
+        const rainSum = d.daily.precipitation_sum[i] || 0;
+        const isRainy = rainProb >= 40 || rainSum >= 5;
+        const bgClass = isRainy ? 'bg-red-500/10 border border-red-500/20 blink-red' : rainProb >= 20 ? 'bg-amber-500/5 border border-amber-500/10 blink-amber' : 'bg-white/[0.03]';
+        return `<div class="p-1 rounded-lg ${bgClass}">
+          <p class="text-[9px] text-slate-400 font-medium">${dayName}</p>
+          <p class="text-[8px] text-slate-500">${dateStr}</p>
+          <p class="text-sm my-0.5">${fwmo[2]}</p>
+          <p class="text-[10px] text-white font-bold">${maxT}°/${minT}°</p>
+          ${rainProb > 0 ? `<p class="text-[9px] ${rainProb >= 40 ? 'text-red-400 font-bold' : 'text-blue-400'}">💧${rainProb}%</p>` : ''}
+          ${rainSum > 0 ? `<p class="text-[9px] text-blue-300">${rainSum}mm</p>` : ''}
+        </div>`;
+      }).join('');
+
+      // Rain Impact Analysis
+      const rainDays = [];
+      days.forEach((day, i) => {
+        const rainProb = d.daily.precipitation_probability_max[i] || 0;
+        const rainSum = d.daily.precipitation_sum[i] || 0;
+        const windMax = d.daily.wind_speed_10m_max ? d.daily.wind_speed_10m_max[i] : 0;
+        const wcode = d.daily.weather_code[i];
+        let impact = 'none';
+        let impactTh = '';
+        let impactEn = '';
+
+        if (rainSum >= 20 || wcode >= 95) {
+          impact = 'critical'; impactEn = 'Stop all outdoor work'; impactTh = 'หยุดงานกลางแจ้งทั้งหมด';
+        } else if (rainSum >= 5 || rainProb >= 60) {
+          impact = 'high'; impactEn = 'Suspend concrete pouring, welding, crane ops'; impactTh = 'หยุดเทคอนกรีต งานเชื่อม งานเครน';
+        } else if (rainSum >= 1 || rainProb >= 40) {
+          impact = 'medium'; impactEn = 'Delay earth/foundation work, protect materials'; impactTh = 'ชะลองานดิน/ฐานราก ป้องกันวัสดุ';
+        } else if (rainProb >= 20) {
+          impact = 'low'; impactEn = 'Monitor conditions, prepare covers'; impactTh = 'เฝ้าระวัง เตรียมผ้าคลุม';
+        }
+
+        if (impact !== 'none') {
+          const dt = new Date(day);
+          rainDays.push({ date: day, dt, rainProb, rainSum, windMax, impact, impactTh, impactEn, wcode });
+        }
+      });
+
+      const impactColors = { critical: 'bg-red-500/15 text-red-400 border-red-500/20 blink-red', high: 'bg-amber-500/15 text-amber-400 border-amber-500/20 blink-amber', medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', low: 'bg-blue-500/10 text-blue-400 border-blue-500/20' };
+      const impactLabels = { critical: th ? '🔴 วิกฤต' : '🔴 Critical', high: th ? '🟠 สูง' : '🟠 High', medium: th ? '🟡 ปานกลาง' : '🟡 Medium', low: th ? '🔵 ต่ำ' : '🔵 Low' };
+
+      document.getElementById('lbl-rain-impact-title').textContent = th ? '⚠️ ผลกระทบฝนต่องานก่อสร้าง' : '⚠️ Rain Impact on Construction';
+      document.getElementById('rain-impact-summary').textContent = rainDays.length > 0
+        ? (th ? `${rainDays.length} วันที่ต้องเฝ้าระวังใน 16 วันข้างหน้า` : `${rainDays.length} days to watch in next 16 days`)
+        : (th ? 'ไม่มีผลกระทบจากฝน' : 'No rain impact expected');
+
+      const impactList = document.getElementById('rain-impact-list');
+      if (rainDays.length === 0) {
+        impactList.innerHTML = `<p class="text-xs text-emerald-400">✅ ${th ? 'สภาพอากาศเอื้อต่องานก่อสร้างทั้ง 16 วัน' : 'Weather favorable for construction all 16 days'}</p>`;
+      } else {
+        impactList.innerHTML = rainDays.map(r => {
+          const fwmo = WMO_CODES[r.wcode] || ['', '', ''];
+          return `<div class="flex items-center gap-3 p-2 rounded-lg border ${impactColors[r.impact]}">
+            <span class="text-sm shrink-0">${fwmo[2]}</span>
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-medium">${fmtDate(r.date)} — ${impactLabels[r.impact]}</p>
+              <p class="text-[10px] opacity-80">${th ? r.impactTh : r.impactEn}</p>
+            </div>
+            <div class="text-right shrink-0">
+              <p class="text-xs font-bold">💧${r.rainProb}%</p>
+              ${r.rainSum > 0 ? `<p class="text-[10px]">${r.rainSum}mm</p>` : ''}
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    document.getElementById('weather-updated').textContent = (th ? 'อัปเดต: ' : 'Updated: ') + new Date(c.time).toLocaleString(locale, { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' });
+
+    // Dashboard compact widget
+    document.getElementById('weather-icon-dash').textContent = wmo[2];
+    document.getElementById('weather-temp-dash').textContent = Math.round(c.temperature_2m);
+    document.getElementById('weather-feels-dash').textContent = (th ? '(รู้สึก ' : '(feels ') + Math.round(c.apparent_temperature) + '°C)';
+    document.getElementById('weather-title-dash').textContent = th ? 'สภาพอากาศ — ท่าโรงช้าง พุนพิน' : 'Site Weather — Phun Phin';
+    document.getElementById('weather-humidity-dash').textContent = c.relative_humidity_2m + '%';
+    document.getElementById('weather-wind-dash').textContent = c.wind_speed_10m + ' km/h';
+    document.getElementById('weather-uv-dash').textContent = 'UV ' + c.uv_index.toFixed(1);
+    // Mini 3-day forecast on dashboard
+    if (d.daily) {
+      document.getElementById('weather-mini-forecast').innerHTML = d.daily.time.slice(1, 4).map((day, i) => {
+        const dt = new Date(day);
+        const dn = th ? ['อา','จ','อ','พ','พฤ','ศ','ส'][dt.getDay()] : ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dt.getDay()];
+        const fw = WMO_CODES[d.daily.weather_code[i+1]] || ['','','🌤️'];
+        return `<div class="text-center px-1"><p class="text-[9px] text-slate-500">${dn}</p><p class="text-sm">${fw[2]}</p><p class="text-[9px] text-white">${Math.round(d.daily.temperature_2m_max[i+1])}°</p></div>`;
+      }).join('');
+      // Rain warning count
+      const rainWarnCount = d.daily.time.filter((_,i) => (d.daily.precipitation_probability_max[i] || 0) >= 20).length;
+      document.getElementById('rain-impact-dash').textContent = rainWarnCount > 0
+        ? (th ? `⚠️ ${rainWarnCount} วันเสี่ยงฝน` : `⚠️ ${rainWarnCount} rain risk days`)
+        : (th ? '✅ อากาศดี' : '✅ Clear forecast');
+
+      // Dashboard critical rain alerts (red only: >=5mm or >=60% or thunderstorm)
+      const criticalDays = [];
+      d.daily.time.forEach((day, i) => {
+        const prob = d.daily.precipitation_probability_max[i] || 0;
+        const sum = d.daily.precipitation_sum[i] || 0;
+        const wc = d.daily.weather_code[i];
+        if (sum >= 5 || prob >= 60 || wc >= 95) {
+          const fw = WMO_CODES[wc] || ['','','⛈️'];
+          const impact = (sum >= 20 || wc >= 95)
+            ? (th ? 'หยุดงานกลางแจ้งทั้งหมด' : 'Stop all outdoor work')
+            : (th ? 'หยุดเทคอนกรีต งานเชื่อม งานเครน' : 'Suspend concrete, welding, crane ops');
+          criticalDays.push({ day, prob, sum, icon: fw[2], impact });
+        }
+      });
+      const dashAlerts = document.getElementById('dash-rain-alerts');
+      if (criticalDays.length > 0) {
+        dashAlerts.classList.remove('hidden');
+        dashAlerts.innerHTML = criticalDays.map(r => `<div class="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20 blink-red">
+          <span class="text-sm">${r.icon}</span>
+          <p class="text-xs text-red-400 flex-1"><span class="font-bold">${fmtDate(r.day)}</span> — ${r.impact}</p>
+          <span class="text-xs font-bold text-red-400">💧${r.prob}% ${r.sum > 0 ? r.sum + 'mm' : ''}</span>
+        </div>`).join('');
+      } else {
+        dashAlerts.classList.add('hidden');
+        dashAlerts.innerHTML = '';
+      }
+    }
+  }).catch(() => {
+    document.getElementById('weather-desc').textContent = 'Unable to load';
+  });
+}
+
+// Fetch weather on load and every 15 minutes
+fetchSiteWeather();
+setInterval(fetchSiteWeather, 15 * 60 * 1000);
 
 // ---- MILESTONES ----
 const MILESTONES = [
