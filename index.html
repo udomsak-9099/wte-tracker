@@ -202,6 +202,18 @@ tailwind.config = {
       Alerts
       <span id="alert-badge" class="ml-auto bg-red-500 text-white text-[10px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
     </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="workprogress">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      Work Progress
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="safety">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      Safety
+    </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="environment">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      Environment
+    </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="activity">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Activity Log
@@ -384,6 +396,10 @@ tailwind.config = {
   <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-group-title">S-Curve by Phase Group</h3>
   <div class="grid grid-cols-2 gap-5 mb-8">
     <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-cyan-500 to-teal-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-perm-title">Permits & Licensing</h4></div>
+      <canvas id="chart-sc-permits" height="160"></canvas>
+    </div>
+    <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-indigo-500 to-blue-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-eng-title">Engineering</h4></div>
       <canvas id="chart-sc-engineering" height="160"></canvas>
     </div>
@@ -532,6 +548,203 @@ tailwind.config = {
   <div id="alerts-empty" class="hidden card p-12 text-center text-slate-500 text-sm">
     <svg class="w-12 h-12 mx-auto mb-3 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
     <span id="alerts-clear-text">All clear! No alerts at this time.</span>
+  </div>
+</div>
+
+<!-- Work Progress Page -->
+<div id="page-workprogress" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="wp-title">Work Progress</h2>
+      <p class="text-sm text-slate-400 mt-1" id="wp-desc">Daily construction progress reports</p>
+    </div>
+    <button onclick="openWPModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="wp-add-btn">Add Daily Report</span>
+    </button>
+  </div>
+  <!-- Summary Stats -->
+  <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-reports">Total Reports</p><p class="text-3xl font-bold text-white" id="wp-total">0</p></div>
+    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-manpower">Avg. Manpower</p><p class="text-3xl font-bold text-white" id="wp-avg-manpower">0</p></div>
+    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-weather">Weather Days Lost</p><p class="text-3xl font-bold text-white" id="wp-weather-lost">0</p></div>
+    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-equipment">Equipment Issues</p><p class="text-3xl font-bold text-white" id="wp-equip-issues">0</p></div>
+  </div>
+  <!-- Daily Reports List -->
+  <div id="wp-list" class="space-y-3"></div>
+  <div id="wp-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No daily reports yet. Start recording progress!</div>
+</div>
+
+<!-- Work Progress Modal -->
+<div id="wp-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeWPModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-lg font-bold text-white mb-5" id="wp-modal-title">Daily Progress Report</h3>
+    <input type="hidden" id="wp-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-3 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Date *</label><input type="date" id="wp-date" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Weather</label>
+          <select id="wp-weather" class="w-full"><option>Sunny</option><option>Cloudy</option><option>Rainy</option><option>Heavy Rain</option><option>Stormy</option></select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Work Status</label>
+          <select id="wp-work-status" class="w-full"><option>Normal</option><option>Delayed</option><option>Suspended</option><option>Holiday</option></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Manpower (persons)</label><input type="number" id="wp-manpower" class="w-full" min="0" placeholder="0"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Equipment on site</label><input type="number" id="wp-equipment" class="w-full" min="0" placeholder="0"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Phase</label><select id="wp-phase" class="w-full"></select></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Activities Performed *</label><textarea id="wp-activities" class="w-full" rows="3" placeholder="Describe today's construction activities..."></textarea></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Issues / Delays</label><textarea id="wp-issues" class="w-full" rows="2" placeholder="Any problems encountered..."></textarea></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Photo URLs (one per line)</label><textarea id="wp-photos" class="w-full" rows="2" placeholder="https://example.com/photo1.jpg"></textarea></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Remarks</label><textarea id="wp-remarks" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeWPModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveWPReport()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Safety Page -->
+<div id="page-safety" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="safety-title">Safety & HSE</h2>
+      <p class="text-sm text-slate-400 mt-1" id="safety-desc">Health, Safety & Environment records</p>
+    </div>
+    <button onclick="openIncidentModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="safety-add-btn">Report Incident</span>
+    </button>
+  </div>
+  <!-- HSE Stats -->
+  <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-safe-days">Safe Days</p><p class="text-3xl font-bold text-white" id="safe-days-count">0</p></div>
+    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-total-incidents">Total Incidents</p><p class="text-3xl font-bold text-white" id="total-incidents">0</p></div>
+    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-near-miss">Near Miss</p><p class="text-3xl font-bold text-white" id="near-miss-count">0</p></div>
+    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-fatalities">Fatalities</p><p class="text-3xl font-bold text-white" id="fatalities-count">0</p></div>
+  </div>
+  <!-- Incident Log -->
+  <div class="card overflow-hidden">
+    <table>
+      <thead id="safety-thead"><tr><th>Date</th><th>Type</th><th>Description</th><th>Severity</th><th>Status</th><th>Location</th><th class="text-right">Actions</th></tr></thead>
+      <tbody id="safety-body"></tbody>
+    </table>
+    <div id="safety-empty" class="hidden p-12 text-center text-slate-500 text-sm">No incidents recorded. Maintain safe operations!</div>
+  </div>
+</div>
+
+<!-- Incident Modal -->
+<div id="incident-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeIncidentModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+    <h3 class="text-lg font-bold text-white mb-5" id="incident-modal-title">Report Incident</h3>
+    <input type="hidden" id="incident-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Date</label><input type="date" id="incident-date" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Type</label>
+          <select id="incident-type" class="w-full"><option>Near Miss</option><option>First Aid</option><option>Medical Treatment</option><option>Lost Time Injury</option><option>Fatality</option><option>Property Damage</option><option>Environmental</option></select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Description *</label><textarea id="incident-desc" class="w-full" rows="3"></textarea></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Location</label><input type="text" id="incident-location" class="w-full" placeholder="Area / Zone"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Severity</label>
+          <select id="incident-severity" class="w-full"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Reported By</label><input type="text" id="incident-reporter" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+          <select id="incident-status" class="w-full"><option>Open</option><option>Investigating</option><option>Corrective Action</option><option>Closed</option></select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Corrective Action</label><textarea id="incident-action" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeIncidentModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveIncident()" class="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Environment Page -->
+<div id="page-environment" class="page">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="env-title">Environmental Management</h2>
+      <p class="text-sm text-slate-400 mt-1" id="env-desc">Environmental monitoring & compliance tracking</p>
+    </div>
+    <button onclick="openEnvModal()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="env-add-btn">Add Record</span>
+    </button>
+  </div>
+  <!-- Env Stats -->
+  <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-air-status">Air Quality</p><p class="text-lg font-bold text-white" id="env-air">Compliant</p></div>
+    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-water-status">Water Quality</p><p class="text-lg font-bold text-white" id="env-water">Compliant</p></div>
+    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-noise-status">Noise Level</p><p class="text-lg font-bold text-white" id="env-noise">Compliant</p></div>
+    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-waste-status">Waste Mgmt</p><p class="text-lg font-bold text-white" id="env-waste">Compliant</p></div>
+  </div>
+  <!-- CoP Compliance from TDD -->
+  <div class="card p-5 mb-6">
+    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="env-cop-title">CoP Compliance Areas</h3>
+    <div class="grid grid-cols-3 gap-2" id="env-cop-grid">
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ambient Air Quality</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Gaseous Emissions</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Noise Monitoring</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Drainage & Flood</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Water & Wastewater</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Solid Waste</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ash Handling</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Transportation</span></div>
+      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-xs text-white">Green Area</span></div>
+    </div>
+  </div>
+  <!-- Env Records Table -->
+  <div class="card overflow-hidden">
+    <table>
+      <thead id="env-thead"><tr><th>Date</th><th>Category</th><th>Parameter</th><th>Value</th><th>Limit</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+      <tbody id="env-body"></tbody>
+    </table>
+    <div id="env-empty" class="hidden p-12 text-center text-slate-500 text-sm">No environmental records yet.</div>
+  </div>
+</div>
+
+<!-- Env Record Modal -->
+<div id="env-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeEnvModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+    <h3 class="text-lg font-bold text-white mb-5" id="env-modal-title">Add Environmental Record</h3>
+    <input type="hidden" id="env-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Date</label><input type="date" id="env-date" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Category</label>
+          <select id="env-category" class="w-full"><option>Air Quality</option><option>Water Quality</option><option>Noise</option><option>Waste Management</option><option>Emissions</option><option>Dust</option><option>Wastewater</option></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Parameter</label><input type="text" id="env-param" class="w-full" placeholder="e.g. PM2.5, BOD, dB(A)"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Measured Value</label><input type="text" id="env-value" class="w-full" placeholder="e.g. 45 ug/m3"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Standard Limit</label><input type="text" id="env-limit" class="w-full" placeholder="e.g. 50 ug/m3"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+          <select id="env-status" class="w-full"><option>Compliant</option><option>Warning</option><option>Exceeded</option></select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Notes</label><textarea id="env-notes" class="w-full" rows="2"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeEnvModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveEnvRecord()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
   </div>
 </div>
 
@@ -915,6 +1128,27 @@ const LANG = {
     authUserExists: 'Username already exists', authRegSuccess: 'Account created! Please login.',
     loggedIn: 'Logged in', loggedOut: 'Logged out',
     // Activity
+    // Work Progress
+    workprogress: 'Work Progress', wpTitle: 'Work Progress', wpDesc: 'Daily construction progress reports',
+    wpAddReport: 'Add Daily Report', wpEditReport: 'Edit Report', wpEmpty: 'No daily reports yet. Start recording progress!',
+    wpTotalReports: 'Total Reports', wpAvgManpower: 'Avg. Manpower', wpWeatherLost: 'Weather Days Lost', wpEquipIssues: 'Issues Reported',
+    wpManpower: 'Manpower', wpEquipment: 'Equipment',
+    wpDeleteReport: 'Delete this report?', wpActivitiesRequired: 'Activities description is required',
+    wpReportAdded: 'Report added', wpReportUpdated: 'Report updated', wpReportDeleted: 'Report deleted',
+    // Environment
+    environment: 'Environment', envTitle: 'Environmental Management', envDesc: 'Environmental monitoring & compliance tracking',
+    envAddRecord: 'Add Record', envEditRecord: 'Edit Record', envEmpty: 'No environmental records yet.',
+    envAir: 'Air Quality', envWater: 'Water Quality', envNoise: 'Noise Level', envWasteMgmt: 'Waste Mgmt',
+    envCopTitle: 'CoP Compliance Areas', envCategory: 'Category', envParameter: 'Parameter', envValue: 'Value', envLimit: 'Limit',
+    envCompliant: 'Compliant', envWarning: 'Warning', envExceeded: 'Exceeded',
+    envDeleteRecord: 'Delete this record?', envRecordAdded: 'Record added', envRecordUpdated: 'Record updated', envRecordDeleted: 'Record deleted',
+    // Safety
+    safetyTitle: 'Safety & HSE', safetyDesc: 'Health, Safety & Environment records', safety: 'Safety',
+    reportIncident: 'Report Incident', editIncident: 'Edit Incident',
+    safeDays: 'Safe Days', totalIncidents: 'Total Incidents', nearMiss: 'Near Miss', fatalities: 'Fatalities',
+    safetyDate: 'Date', safetyType: 'Type', safetyLocation: 'Location', safetyEmpty: 'No incidents recorded. Maintain safe operations!',
+    deleteIncident: 'Delete this incident?', incidentRequired: 'Description is required',
+    incidentReported: 'Incident reported', incidentUpdated: 'Incident updated', incidentDeleted: 'Incident deleted',
     activityLog: 'Activity Log', activityDesc: 'User activity history',
     activityClear: 'Clear Log', activityEmpty: 'No activity recorded yet.',
     activityClearConfirm: 'Clear all activity logs?', activityCleared: 'Activity log cleared',
@@ -926,9 +1160,9 @@ const LANG = {
     issueReported: 'Issue reported', issueUpdated: 'Issue updated', issueDeleted: 'Issue deleted',
     phaseUpdated: 'Phase updated',
     // Phase names
-    phaseName0: 'Engineering', phaseName1: 'Procurement',
-    phaseName2: 'Fabrication', phaseName3: 'Erection', phaseName4: 'Commissioning',
-    groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
+    phaseName0: 'Engineering', phaseName1: 'Permits & Licensing', phaseName2: 'Procurement',
+    phaseName3: 'Fabrication', phaseName4: 'Erection', phaseName5: 'Commissioning',
+    groupPermits: 'Permits & Licensing', groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
   },
   th: {
     appName: 'WTE Tracker', appSub: 'ระบบติดตามงานก่อสร้าง',
@@ -971,6 +1205,24 @@ const LANG = {
     authPassTooShort: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', authPassMismatch: 'รหัสผ่านไม่ตรงกัน',
     authUserExists: 'ชื่อผู้ใช้นี้มีอยู่แล้ว', authRegSuccess: 'สร้างบัญชีสำเร็จ! กรุณาเข้าสู่ระบบ',
     loggedIn: 'เข้าสู่ระบบแล้ว', loggedOut: 'ออกจากระบบแล้ว',
+    workprogress: 'ความคืบหน้างาน', wpTitle: 'ความคืบหน้างาน', wpDesc: 'รายงานความคืบหน้างานก่อสร้างรายวัน',
+    wpAddReport: 'เพิ่มรายงานวัน', wpEditReport: 'แก้ไขรายงาน', wpEmpty: 'ยังไม่มีรายงาน เริ่มบันทึกความคืบหน้า!',
+    wpTotalReports: 'รายงานทั้งหมด', wpAvgManpower: 'แรงงานเฉลี่ย', wpWeatherLost: 'วันสูญเสียจากอากาศ', wpEquipIssues: 'ปัญหาที่รายงาน',
+    wpManpower: 'แรงงาน', wpEquipment: 'อุปกรณ์',
+    wpDeleteReport: 'ต้องการลบรายงานนี้?', wpActivitiesRequired: 'กรุณาระบุกิจกรรมที่ทำ',
+    wpReportAdded: 'เพิ่มรายงานแล้ว', wpReportUpdated: 'อัปเดตรายงานแล้ว', wpReportDeleted: 'ลบรายงานแล้ว',
+    environment: 'สิ่งแวดล้อม', envTitle: 'การจัดการสิ่งแวดล้อม', envDesc: 'ติดตามตรวจวัดและปฏิบัติตามข้อกำหนดสิ่งแวดล้อม',
+    envAddRecord: 'เพิ่มบันทึก', envEditRecord: 'แก้ไขบันทึก', envEmpty: 'ยังไม่มีบันทึกสิ่งแวดล้อม',
+    envAir: 'คุณภาพอากาศ', envWater: 'คุณภาพน้ำ', envNoise: 'ระดับเสียง', envWasteMgmt: 'จัดการของเสีย',
+    envCopTitle: 'การปฏิบัติตาม CoP', envCategory: 'หมวด', envParameter: 'พารามิเตอร์', envValue: 'ค่าวัดได้', envLimit: 'ค่ามาตรฐาน',
+    envCompliant: 'ผ่าน', envWarning: 'เตือน', envExceeded: 'เกินมาตรฐาน',
+    envDeleteRecord: 'ต้องการลบบันทึกนี้?', envRecordAdded: 'เพิ่มบันทึกแล้ว', envRecordUpdated: 'อัปเดตบันทึกแล้ว', envRecordDeleted: 'ลบบันทึกแล้ว',
+    safetyTitle: 'ความปลอดภัย & HSE', safetyDesc: 'บันทึกความปลอดภัย อาชีวอนามัย สิ่งแวดล้อม', safety: 'ความปลอดภัย',
+    reportIncident: 'แจ้งอุบัติเหตุ', editIncident: 'แก้ไขอุบัติเหตุ',
+    safeDays: 'วันที่ปลอดภัย', totalIncidents: 'อุบัติเหตุทั้งหมด', nearMiss: 'เกือบเกิดเหตุ', fatalities: 'เสียชีวิต',
+    safetyDate: 'วันที่', safetyType: 'ประเภท', safetyLocation: 'สถานที่', safetyEmpty: 'ไม่มีบันทึกอุบัติเหตุ รักษาความปลอดภัยต่อไป!',
+    deleteIncident: 'ต้องการลบอุบัติเหตุนี้?', incidentRequired: 'กรุณาระบุรายละเอียด',
+    incidentReported: 'แจ้งอุบัติเหตุแล้ว', incidentUpdated: 'อัปเดตอุบัติเหตุแล้ว', incidentDeleted: 'ลบอุบัติเหตุแล้ว',
     activityLog: 'ประวัติการใช้งาน', activityDesc: 'ประวัติกิจกรรมของผู้ใช้',
     activityClear: 'ล้างประวัติ', activityEmpty: 'ยังไม่มีประวัติการใช้งาน',
     activityClearConfirm: 'ล้างประวัติทั้งหมด?', activityCleared: 'ล้างประวัติแล้ว',
@@ -981,9 +1233,9 @@ const LANG = {
     taskAdded: 'เพิ่มงานแล้ว', taskUpdated: 'อัปเดตงานแล้ว', taskDeleted: 'ลบงานแล้ว',
     issueReported: 'แจ้งปัญหาแล้ว', issueUpdated: 'อัปเดตปัญหาแล้ว', issueDeleted: 'ลบปัญหาแล้ว',
     phaseUpdated: 'อัปเดตเฟสแล้ว',
-    phaseName0: 'วิศวกรรม', phaseName1: 'จัดซื้อจัดหา',
-    phaseName2: 'การผลิตชิ้นส่วน', phaseName3: 'งานติดตั้ง', phaseName4: 'ทดสอบระบบ',
-    groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
+    phaseName0: 'วิศวกรรม', phaseName1: 'ใบอนุญาต', phaseName2: 'จัดซื้อจัดหา',
+    phaseName3: 'การผลิตชิ้นส่วน', phaseName4: 'งานติดตั้ง', phaseName5: 'ทดสอบระบบ',
+    groupPermits: 'ใบอนุญาต', groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
   }
 };
 
@@ -1034,6 +1286,8 @@ function applyLang() {
 const DEFAULT_PHASES = [
   // Engineering — CM Q4: 97.48% actual vs 98.75% plan
   { name: 'Engineering', icon: '📐', group: 'engineering', start: '2024-10-01', end: '2026-03-31', progress: 97, status: 'In Progress', notes: 'CM Q4/2025: 97.48% actual vs 98.75% plan. Core engineering complete, close-out items and construction support remaining.' },
+  // Permits & Licensing — from CM Q4 Section 8
+  { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-03-31', progress: 75, status: 'In Progress', notes: 'CM Q4: CP obtained, CoP 88%, ESA 88%, Ror.Ngor.4 50%, BOI 80%. PPA & WCA signed.' },
   // Procurement — CM Q4: 87.87% actual vs 89.91% plan
   { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 88, status: 'In Progress', notes: 'CM Q4/2025: 87.87% actual vs 89.91% plan. Long lead items ordered: turbine (Shinko), generator (TDPS), boiler (SL Biotech), combustion (Lawi).' },
   // Fabrication — CM Q4: 32.11% actual vs 64.92% plan (DELAYED)
@@ -1046,38 +1300,38 @@ const DEFAULT_PHASES = [
 
 // Tasks based on information stated in CM Reports and TDD Report only
 const DEFAULT_TASKS = [
-  // Engineering — Permits & Licenses (from CM Q4 Section 8 and TDD Section 5)
-  { id: 1, name: 'PPA signed with PEA (VSPP-MSW1-PEA-009/2567)', phase: 0, assignee: 'GP4', start: '2024-01-01', end: '2024-06-28', status: 'Completed', priority: 'Critical', notes: '5.0 MW, 20 years, FiT basis. Signed 28 Jun 2024.' },
-  { id: 2, name: 'Waste Concession Agreement (WCA 1/2567)', phase: 0, assignee: 'GP4', start: '2023-10-01', end: '2023-12-27', status: 'Completed', priority: 'Critical', notes: 'Signed 27 Dec 2023 with TRC SAO. 22-year term, 400 ton/day min, 450 THB/ton.' },
-  { id: 3, name: 'Construction Permit (Form A.1)', phase: 0, assignee: 'GP4', start: '2025-06-01', end: '2025-10-31', status: 'Completed', priority: 'Critical', notes: 'CM Q4: obtained and currently effective.' },
-  { id: 4, name: 'Code of Practice (CoP) report', phase: 0, assignee: 'GP4', start: '2025-03-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Final report under preparation.' },
-  { id: 5, name: 'Environmental Site Assessment (ESA)', phase: 0, assignee: 'GP4', start: '2025-05-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Prepared in parallel with CoP.' },
-  { id: 6, name: 'Factory Operation License (Ror.Ngor.4)', phase: 0, assignee: 'GP4', start: '2025-08-01', end: '2026-03-31', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: 50%. Pending CoP & ESA. Needed before machine installation.' },
-  { id: 7, name: 'BOI Investment Promotion', phase: 0, assignee: 'GP4', start: '2025-06-01', end: '2026-03-31', status: 'In Progress', priority: 'High', notes: 'CM Q4: 80% complete.' },
-  // Procurement — Key equipment (from TDD Table and CM Q4 Section 3.3)
-  { id: 8, name: 'Combustion system — Lawi Engineering', phase: 1, assignee: 'Lawi Eng.', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Grate incinerator. PO placed per CM Q4.' },
-  { id: 9, name: 'Boiler non-pressure part — SL Biotechnology / Shandong Shuanglong', phase: 1, assignee: 'SL Biotech', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Water tube boiler, superheater, economizer. PO placed.' },
-  { id: 10, name: 'Steam turbine — Shinko Ind.', phase: 1, assignee: 'Shinko', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: Long lead item ordered per CM Q4.' },
-  { id: 11, name: 'Generator — TD Power Systems', phase: 1, assignee: 'TDPS', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: 6.6 kV rated. Long lead item ordered.' },
-  { id: 12, name: 'Flue gas treatment system', phase: 1, assignee: 'Lawi/KK Green', start: '2025-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: SNCR, bag filter, CEMS. Long lead ordered per CM Q4.' },
-  { id: 13, name: 'Step-up transformer (8.25 MVA, 6.6/33 kV)', phase: 1, assignee: 'KK Green', start: '2025-08-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: Per single line diagram review.' },
-  // Fabrication — from CM Q4 Section 3.4
-  { id: 14, name: 'Mechanical & structural components fabrication', phase: 2, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'CM Q4: 32.11% vs 64.92% plan. Drawing clarifications & vendor queue.' },
-  // Erection — from CM Q4 Section 3.5
-  { id: 15, name: 'Civil foundation and piling works', phase: 3, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: Weather delays & interface congestion noted.' },
-  // Commissioning — from CM Q4 Section 3.6
-  { id: 16, name: 'Commissioning (not yet started)', phase: 4, assignee: 'KK Green', start: '2026-08-01', end: '2026-11-30', status: 'Pending', priority: 'Critical', notes: 'CM Q4: No commissioning work during this period as planned.' },
+  // 1 - Permits & Licensing (phase 1)
+  { id: 1, name: 'PPA signed with PEA (VSPP-MSW1-PEA-009/2567)', phase: 1, assignee: 'GP4', start: '2024-01-01', end: '2024-06-28', status: 'Completed', priority: 'Critical', notes: '5.0 MW, 20 years, FiT basis. Signed 28 Jun 2024.' },
+  { id: 2, name: 'Waste Concession Agreement (WCA 1/2567)', phase: 1, assignee: 'GP4', start: '2023-10-01', end: '2023-12-27', status: 'Completed', priority: 'Critical', notes: 'Signed 27 Dec 2023 with TRC SAO. 22-year term, 400 ton/day min, 450 THB/ton.' },
+  { id: 3, name: 'Construction Permit (Form A.1)', phase: 1, assignee: 'GP4', start: '2025-06-01', end: '2025-10-31', status: 'Completed', priority: 'Critical', notes: 'CM Q4: obtained and currently effective.' },
+  { id: 4, name: 'Code of Practice (CoP) report', phase: 1, assignee: 'GP4', start: '2025-03-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Final report under preparation.' },
+  { id: 5, name: 'Environmental Site Assessment (ESA)', phase: 1, assignee: 'GP4', start: '2025-05-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Prepared in parallel with CoP.' },
+  { id: 6, name: 'Factory Operation License (Ror.Ngor.4)', phase: 1, assignee: 'GP4', start: '2025-08-01', end: '2026-03-31', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: 50%. Pending CoP & ESA. Needed before machine installation.' },
+  { id: 7, name: 'BOI Investment Promotion', phase: 1, assignee: 'GP4', start: '2025-06-01', end: '2026-03-31', status: 'In Progress', priority: 'High', notes: 'CM Q4: 80% complete.' },
+  // 2 - Procurement (phase 2)
+  { id: 8, name: 'Combustion system — Lawi Engineering', phase: 2, assignee: 'Lawi Eng.', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Grate incinerator. PO placed per CM Q4.' },
+  { id: 9, name: 'Boiler non-pressure part — SL Biotechnology / Shandong Shuanglong', phase: 2, assignee: 'SL Biotech', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Water tube boiler, superheater, economizer. PO placed.' },
+  { id: 10, name: 'Steam turbine — Shinko Ind.', phase: 2, assignee: 'Shinko', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: Long lead item ordered per CM Q4.' },
+  { id: 11, name: 'Generator — TD Power Systems', phase: 2, assignee: 'TDPS', start: '2025-03-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'TDD: 6.6 kV rated. Long lead item ordered.' },
+  { id: 12, name: 'Flue gas treatment system', phase: 2, assignee: 'Lawi/KK Green', start: '2025-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: SNCR, bag filter, CEMS. Long lead ordered per CM Q4.' },
+  { id: 13, name: 'Step-up transformer (8.25 MVA, 6.6/33 kV)', phase: 2, assignee: 'KK Green', start: '2025-08-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: Per single line diagram review.' },
+  // 3 - Fabrication (phase 3)
+  { id: 14, name: 'Mechanical & structural components fabrication', phase: 3, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'CM Q4: 32.11% vs 64.92% plan. Drawing clarifications & vendor queue.' },
+  // 4 - Erection (phase 4)
+  { id: 15, name: 'Civil foundation and piling works', phase: 4, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: Weather delays & interface congestion noted.' },
+  // 5 - Commissioning (phase 5)
+  { id: 16, name: 'Commissioning (not yet started)', phase: 5, assignee: 'KK Green', start: '2026-08-01', end: '2026-11-30', status: 'Pending', priority: 'Critical', notes: 'CM Q4: No commissioning work during this period as planned.' },
 ];
 
 // Issues from CM Reports findings and LTA observations only
 const DEFAULT_ISSUES = [
-  { id: 1, title: 'Fabrication significantly behind schedule', desc: 'CM Q4: 32.11% actual vs 64.92% plan. Delay attributed to final drawing clarifications and vendor production queue constraints.', phase: 2, severity: 'High', status: 'In Progress', assignee: 'Vendors', date: '2025-12-31', resolution: 'Fast-tracking vendor drawing approvals, expediting near-term fabrication, aligning priorities with site execution.' },
+  { id: 1, title: 'Fabrication significantly behind schedule', desc: 'CM Q4: 32.11% actual vs 64.92% plan. Delay attributed to final drawing clarifications and vendor production queue constraints.', phase: 3, severity: 'High', status: 'In Progress', assignee: 'Vendors', date: '2025-12-31', resolution: 'Fast-tracking vendor drawing approvals, expediting near-term fabrication, aligning priorities with site execution.' },
   { id: 2, title: 'Overall progress behind schedule', desc: 'CM Q4: Overall 40.33% actual vs 54.89% plan (~14.5% gap).', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2025-12-31', resolution: 'Converting site execution into certifiable progress, accelerating critical construction and interface releases.' },
-  { id: 3, title: 'Ror.Ngor.4 factory permit pending', desc: 'CM Q4: Factory operation license at 50%, pending CoP and ESA completion. Needed before machine installation.', phase: 0, severity: 'High', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
+  { id: 3, title: 'Ror.Ngor.4 factory permit pending', desc: 'CM Q4: Factory operation license at 50%, pending CoP and ESA completion. Needed before machine installation.', phase: 1, severity: 'High', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
   { id: 4, title: 'Progress measurement methodology not defined', desc: 'TDD/CM: LTA recommends clearly defining how actual progress is measured, particularly during Erection Phase.', phase: 0, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-10-30', resolution: '' },
-  { id: 5, title: 'Weather delays on civil works', desc: 'CM Q4: Weather-related constraints and interface congestion as civil foundation and piling overlapped across work fronts.', phase: 3, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2025-12-15', resolution: 'Prioritizing critical construction releases.' },
-  { id: 6, title: 'O&M team not yet mobilized', desc: 'CM Q4: O&M team has not been mobilized during this monitoring period.', phase: 4, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
-  { id: 7, title: 'EHS documentation gaps', desc: 'CM Q4: Workforce profile, welfare facilities, EHS training records, HSE org structure not provided for review.', phase: 3, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-12-31', resolution: 'LTA recommends submission in next monitoring period.' },
+  { id: 5, title: 'Weather delays on civil works', desc: 'CM Q4: Weather-related constraints and interface congestion as civil foundation and piling overlapped across work fronts.', phase: 4, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2025-12-15', resolution: 'Prioritizing critical construction releases.' },
+  { id: 6, title: 'O&M team not yet mobilized', desc: 'CM Q4: O&M team has not been mobilized during this monitoring period.', phase: 5, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
+  { id: 7, title: 'EHS documentation gaps', desc: 'CM Q4: Workforce profile, welfare facilities, EHS training records, HSE org structure not provided for review.', phase: 4, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-12-31', resolution: 'LTA recommends submission in next monitoring period.' },
 ];
 
 function loadData() {
@@ -1098,6 +1352,9 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     document.getElementById('page-' + page).classList.add('active');
     if (page === 'reports') renderReports();
     if (page === 'alerts') renderAlerts();
+    if (page === 'workprogress') renderWorkProgress();
+    if (page === 'safety') renderSafety();
+    if (page === 'environment') renderEnvironment();
     if (page === 'activity') renderActivityLog();
   });
 });
@@ -1247,6 +1504,7 @@ function scurveLabels() {
 // Q3/2025 (month 9): overall plan 33.13%, Q4/2025 (month 12): overall plan 54.89%
 const GROUP_PLANS = {
   overall:       [2,4,7,10,14,18,22,27,33,38,44,55, 60,65,70,76,81,86,90,93,96,98,99,100],
+  permits:       [5,10,15,22,30,38,45,52,58,65,72,78, 82,86,90,94,97,99,100,100,100,100,100,100],
   engineering:   [15,25,38,50,62,72,80,87,93,95,97,99, 100,100,100,100,100,100,100,100,100,100,100,100],
   procurement:   [1,3,6,10,16,24,33,42,52,62,72,80, 85,88,91,93,95,97,98,99,100,100,100,100],
   construction:  [0,0,0,0,0,0,1,2,3,5,8,12, 18,26,36,48,60,72,82,90,95,98,99,100],
@@ -1290,6 +1548,7 @@ function renderSCurve() {
       datasets: [
         { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
         { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: false },
+        { label: t('groupPermits'), data: groupActual('permits'), borderColor: '#06b6d4', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupEngineering'), data: groupActual('engineering'), borderColor: '#6366f1', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupProcurement'), data: groupActual('procurement'), borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupConstruction'), data: groupActual('construction'), borderColor: '#10b981', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
@@ -1309,9 +1568,9 @@ function renderSCurve() {
 
 function renderGroupSCurves() {
   const labels = scurveLabels();
-  const groupColors = { engineering: '#6366f1', procurement: '#f59e0b', construction: '#10b981', commissioning: '#a855f7' };
-  const groupIds = { engineering: 'chart-sc-engineering', procurement: 'chart-sc-procurement', construction: 'chart-sc-construction', commissioning: 'chart-sc-commissioning' };
-  const groupTitleIds = { engineering: 'sc-eng-title', procurement: 'sc-proc-title', construction: 'sc-const-title', commissioning: 'sc-comm-title' };
+  const groupColors = { permits: '#06b6d4', engineering: '#6366f1', procurement: '#f59e0b', construction: '#10b981', commissioning: '#a855f7' };
+  const groupIds = { permits: 'chart-sc-permits', engineering: 'chart-sc-engineering', procurement: 'chart-sc-procurement', construction: 'chart-sc-construction', commissioning: 'chart-sc-commissioning' };
+  const groupTitleIds = { permits: 'sc-perm-title', engineering: 'sc-eng-title', procurement: 'sc-proc-title', construction: 'sc-const-title', commissioning: 'sc-comm-title' };
 
   // Update titles
   document.getElementById('dash-scurve-group-title').textContent = getLang() === 'th' ? 'S-Curve แยกตามกลุ่ม' : 'S-Curve by Phase Group';
@@ -1356,16 +1615,16 @@ function renderPhaseChart() {
     type: 'bar',
     data: {
       labels: data.phases.map((p, i) => phaseName(i).split(' ')[0]),
-      datasets: [{ label: 'Progress %', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 18 }]
+      datasets: [{ label: 'Progress %', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 18 }]
     },
     options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { max: 100, ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } } } }
   });
 }
 
 // ---- PHASES PAGE ----
-const GROUP_LABELS = { engineering: 'groupEngineering', procurement: 'groupProcurement', construction: 'groupConstruction', commissioning: 'groupCommissioning' };
-const GROUP_COLORS = { engineering: 'from-indigo-500 to-blue-500', procurement: 'from-amber-500 to-orange-500', construction: 'from-emerald-500 to-green-500', commissioning: 'from-purple-500 to-pink-500' };
-const GROUP_ORDER = ['engineering', 'procurement', 'construction', 'commissioning'];
+const GROUP_LABELS = { permits: 'groupPermits', engineering: 'groupEngineering', procurement: 'groupProcurement', construction: 'groupConstruction', commissioning: 'groupCommissioning' };
+const GROUP_COLORS = { permits: 'from-cyan-500 to-teal-500', engineering: 'from-indigo-500 to-blue-500', procurement: 'from-amber-500 to-orange-500', construction: 'from-emerald-500 to-green-500', commissioning: 'from-purple-500 to-pink-500' };
+const GROUP_ORDER = ['permits', 'engineering', 'procurement', 'construction', 'commissioning'];
 
 function renderPhaseCard(p, i) {
   return `<div class="card p-4">
@@ -1731,6 +1990,320 @@ function renderAlerts() {
 }
 
 // ---- RENDER ALL ----
+// ---- WORK PROGRESS ----
+function getWPReports() { return JSON.parse(localStorage.getItem('wte_wp') || '[]'); }
+function saveWPReports(list) { localStorage.setItem('wte_wp', JSON.stringify(list)); }
+
+function renderWorkProgress() {
+  document.getElementById('wp-title').textContent = t('wpTitle');
+  document.getElementById('wp-desc').textContent = t('wpDesc');
+  document.getElementById('wp-add-btn').textContent = t('wpAddReport');
+  document.getElementById('wp-empty').textContent = t('wpEmpty');
+  document.getElementById('lbl-wp-reports').textContent = t('wpTotalReports');
+  document.getElementById('lbl-wp-manpower').textContent = t('wpAvgManpower');
+  document.getElementById('lbl-wp-weather').textContent = t('wpWeatherLost');
+  document.getElementById('lbl-wp-equipment').textContent = t('wpEquipIssues');
+
+  const reports = getWPReports();
+  document.getElementById('wp-total').textContent = reports.length;
+  const avgMP = reports.length ? Math.round(reports.reduce((s, r) => s + (parseInt(r.manpower) || 0), 0) / reports.length) : 0;
+  document.getElementById('wp-avg-manpower').textContent = avgMP;
+  document.getElementById('wp-weather-lost').textContent = reports.filter(r => r.weather === 'Heavy Rain' || r.weather === 'Stormy' || r.workStatus === 'Suspended').length;
+  document.getElementById('wp-equip-issues').textContent = reports.filter(r => r.issues && r.issues.trim()).length;
+
+  const list = document.getElementById('wp-list');
+  const empty = document.getElementById('wp-empty');
+  if (reports.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  const weatherIcons = { Sunny: '☀️', Cloudy: '⛅', Rainy: '🌧️', 'Heavy Rain': '⛈️', Stormy: '🌪️' };
+  const statusColors = { Normal: 'badge-green', Delayed: 'badge-amber', Suspended: 'badge-red', Holiday: 'badge-gray' };
+
+  list.innerHTML = reports.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+    const photos = (r.photos || '').split('\n').filter(u => u.trim());
+    return `<div class="card p-5">
+      <div class="flex items-start justify-between mb-3">
+        <div class="flex items-center gap-3">
+          <div class="text-center">
+            <p class="text-2xl">${weatherIcons[r.weather] || '🌤️'}</p>
+            <p class="text-[10px] text-slate-500">${r.weather}</p>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-white">${fmtDate(r.date)}</p>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="badge ${statusColors[r.workStatus] || 'badge-gray'}">${r.workStatus}</span>
+              <span class="text-xs text-slate-400">${phaseName(r.phase)}</span>
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 text-center">
+          <div><p class="text-lg font-bold text-blue-400">${r.manpower || 0}</p><p class="text-[10px] text-slate-500">${t('wpManpower')}</p></div>
+          <div><p class="text-lg font-bold text-amber-400">${r.equipment || 0}</p><p class="text-[10px] text-slate-500">${t('wpEquipment')}</p></div>
+          <div class="flex gap-1">
+            <button onclick="editWPReport(${r.id})" class="text-slate-400 hover:text-blue-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+            <button onclick="deleteWPReport(${r.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <p class="text-sm text-white mb-1">${r.activities}</p>
+      ${r.issues ? `<p class="text-xs text-red-400 mt-1">⚠️ ${r.issues}</p>` : ''}
+      ${photos.length ? `<div class="flex gap-2 mt-2 flex-wrap">${photos.map(u => `<img src="${u}" class="w-20 h-14 object-cover rounded-lg border border-white/10" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+      ${r.remarks ? `<p class="text-xs text-slate-400 mt-2 border-t border-white/5 pt-2">📝 ${r.remarks}</p>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function openWPModal(rpt) {
+  document.getElementById('wp-modal-title').textContent = rpt ? t('wpEditReport') : t('wpAddReport');
+  document.getElementById('wp-edit-id').value = rpt ? rpt.id : '';
+  document.getElementById('wp-date').value = rpt ? rpt.date : new Date().toISOString().slice(0, 10);
+  document.getElementById('wp-weather').value = rpt ? rpt.weather : 'Sunny';
+  document.getElementById('wp-work-status').value = rpt ? rpt.workStatus : 'Normal';
+  document.getElementById('wp-manpower').value = rpt ? rpt.manpower : '';
+  document.getElementById('wp-equipment').value = rpt ? rpt.equipment : '';
+  document.getElementById('wp-phase').value = rpt ? rpt.phase : 0;
+  document.getElementById('wp-activities').value = rpt ? rpt.activities : '';
+  document.getElementById('wp-issues').value = rpt ? rpt.issues : '';
+  document.getElementById('wp-photos').value = rpt ? rpt.photos : '';
+  document.getElementById('wp-remarks').value = rpt ? rpt.remarks : '';
+  // Populate phase select
+  const sel = document.getElementById('wp-phase');
+  sel.innerHTML = '';
+  data.phases.forEach((p, i) => { sel.innerHTML += `<option value="${i}">${phaseName(i)}</option>`; });
+  if (rpt) sel.value = rpt.phase;
+  document.getElementById('wp-modal').classList.remove('hidden');
+}
+function closeWPModal() { document.getElementById('wp-modal').classList.add('hidden'); }
+function editWPReport(id) { openWPModal(getWPReports().find(r => r.id === id)); }
+function deleteWPReport(id) {
+  if (!confirm(t('wpDeleteReport'))) return;
+  saveWPReports(getWPReports().filter(r => r.id !== id));
+  logActivity('delete_wp', 'Deleted daily report');
+  renderWorkProgress(); showToast(t('wpReportDeleted'));
+}
+function saveWPReport() {
+  const activities = document.getElementById('wp-activities').value.trim();
+  if (!activities) { showToast(t('wpActivitiesRequired'), 'error'); return; }
+  const editId = document.getElementById('wp-edit-id').value;
+  const rpData = {
+    date: document.getElementById('wp-date').value,
+    weather: document.getElementById('wp-weather').value,
+    workStatus: document.getElementById('wp-work-status').value,
+    manpower: document.getElementById('wp-manpower').value,
+    equipment: document.getElementById('wp-equipment').value,
+    phase: parseInt(document.getElementById('wp-phase').value),
+    activities,
+    issues: document.getElementById('wp-issues').value.trim(),
+    photos: document.getElementById('wp-photos').value.trim(),
+    remarks: document.getElementById('wp-remarks').value.trim()
+  };
+  const list = getWPReports();
+  if (editId) {
+    Object.assign(list.find(r => r.id === parseInt(editId)), rpData);
+    logActivity('edit_wp', 'Updated report: ' + rpData.date);
+  } else {
+    rpData.id = Date.now();
+    list.push(rpData);
+    logActivity('add_wp', 'Daily report: ' + rpData.date);
+  }
+  saveWPReports(list);
+  closeWPModal(); renderWorkProgress();
+  showToast(editId ? t('wpReportUpdated') : t('wpReportAdded'));
+}
+
+// ---- ENVIRONMENT ----
+function getEnvRecords() { return JSON.parse(localStorage.getItem('wte_env') || '[]'); }
+function saveEnvRecords(list) { localStorage.setItem('wte_env', JSON.stringify(list)); }
+
+function renderEnvironment() {
+  document.getElementById('env-title').textContent = t('envTitle');
+  document.getElementById('env-desc').textContent = t('envDesc');
+  document.getElementById('env-add-btn').textContent = t('envAddRecord');
+  document.getElementById('env-empty').textContent = t('envEmpty');
+  document.getElementById('env-cop-title').textContent = t('envCopTitle');
+  document.getElementById('lbl-air-status').textContent = t('envAir');
+  document.getElementById('lbl-water-status').textContent = t('envWater');
+  document.getElementById('lbl-noise-status').textContent = t('envNoise');
+  document.getElementById('lbl-waste-status').textContent = t('envWasteMgmt');
+  document.getElementById('env-thead').innerHTML = `<tr><th>${t('safetyDate')}</th><th>${t('envCategory')}</th><th>${t('envParameter')}</th><th>${t('envValue')}</th><th>${t('envLimit')}</th><th>${t('status')}</th><th class="text-right">${t('actions')}</th></tr>`;
+
+  const records = getEnvRecords();
+  // Update stat cards based on latest records
+  const categories = ['Air Quality', 'Water Quality', 'Noise', 'Waste Management'];
+  const statIds = ['env-air', 'env-water', 'env-noise', 'env-waste'];
+  categories.forEach((cat, idx) => {
+    const latest = records.filter(r => r.category === cat).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+    const el = document.getElementById(statIds[idx]);
+    if (latest) {
+      el.textContent = latest.status === 'Compliant' ? t('envCompliant') : latest.status === 'Warning' ? t('envWarning') : t('envExceeded');
+      el.className = 'text-lg font-bold ' + (latest.status === 'Compliant' ? 'text-emerald-400' : latest.status === 'Warning' ? 'text-amber-400' : 'text-red-400');
+    } else {
+      el.textContent = t('envCompliant');
+      el.className = 'text-lg font-bold text-white';
+    }
+  });
+
+  const body = document.getElementById('env-body');
+  const empty = document.getElementById('env-empty');
+  if (records.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  body.innerHTML = records.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+    const stClass = r.status === 'Compliant' ? 'badge-green' : r.status === 'Warning' ? 'badge-amber' : 'badge-red';
+    return `<tr>
+      <td class="text-xs text-slate-400">${fmtDate(r.date)}</td>
+      <td class="text-sm text-white">${r.category}</td>
+      <td class="text-sm">${r.param || '—'}</td>
+      <td class="text-sm font-medium text-white">${r.value || '—'}</td>
+      <td class="text-xs text-slate-400">${r.limit || '—'}</td>
+      <td><span class="badge ${stClass}">${r.status}</span></td>
+      <td class="text-right">
+        <button onclick="editEnvRecord(${r.id})" class="text-slate-400 hover:text-blue-400 transition mr-2"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+        <button onclick="deleteEnvRecord(${r.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openEnvModal(rec) {
+  document.getElementById('env-modal-title').textContent = rec ? t('envEditRecord') : t('envAddRecord');
+  document.getElementById('env-edit-id').value = rec ? rec.id : '';
+  document.getElementById('env-date').value = rec ? rec.date : new Date().toISOString().slice(0, 10);
+  document.getElementById('env-category').value = rec ? rec.category : 'Air Quality';
+  document.getElementById('env-param').value = rec ? rec.param : '';
+  document.getElementById('env-value').value = rec ? rec.value : '';
+  document.getElementById('env-limit').value = rec ? rec.limit : '';
+  document.getElementById('env-status').value = rec ? rec.status : 'Compliant';
+  document.getElementById('env-notes').value = rec ? rec.notes : '';
+  document.getElementById('env-modal').classList.remove('hidden');
+}
+function closeEnvModal() { document.getElementById('env-modal').classList.add('hidden'); }
+function editEnvRecord(id) { openEnvModal(getEnvRecords().find(r => r.id === id)); }
+function deleteEnvRecord(id) {
+  if (!confirm(t('envDeleteRecord'))) return;
+  saveEnvRecords(getEnvRecords().filter(r => r.id !== id));
+  logActivity('delete_env', 'Deleted env record #' + id);
+  renderEnvironment(); showToast(t('envRecordDeleted'));
+}
+function saveEnvRecord() {
+  const editId = document.getElementById('env-edit-id').value;
+  const recData = {
+    date: document.getElementById('env-date').value,
+    category: document.getElementById('env-category').value,
+    param: document.getElementById('env-param').value.trim(),
+    value: document.getElementById('env-value').value.trim(),
+    limit: document.getElementById('env-limit').value.trim(),
+    status: document.getElementById('env-status').value,
+    notes: document.getElementById('env-notes').value.trim()
+  };
+  const list = getEnvRecords();
+  if (editId) {
+    Object.assign(list.find(r => r.id === parseInt(editId)), recData);
+    logActivity('edit_env', recData.category + ': ' + recData.param);
+  } else {
+    recData.id = Date.now();
+    list.push(recData);
+    logActivity('add_env', recData.category + ': ' + recData.param);
+  }
+  saveEnvRecords(list);
+  closeEnvModal(); renderEnvironment();
+  showToast(editId ? t('envRecordUpdated') : t('envRecordAdded'));
+}
+
+// ---- SAFETY ----
+function getIncidents() { return JSON.parse(localStorage.getItem('wte_incidents') || '[]'); }
+function saveIncidents(list) { localStorage.setItem('wte_incidents', JSON.stringify(list)); }
+
+function renderSafety() {
+  document.getElementById('safety-title').textContent = t('safetyTitle');
+  document.getElementById('safety-desc').textContent = t('safetyDesc');
+  document.getElementById('safety-add-btn').textContent = t('reportIncident');
+  document.getElementById('safety-empty').textContent = t('safetyEmpty');
+  document.getElementById('lbl-safe-days').textContent = t('safeDays');
+  document.getElementById('lbl-total-incidents').textContent = t('totalIncidents');
+  document.getElementById('lbl-near-miss').textContent = t('nearMiss');
+  document.getElementById('lbl-fatalities').textContent = t('fatalities');
+  document.getElementById('safety-thead').innerHTML = `<tr><th>${t('safetyDate')}</th><th>${t('safetyType')}</th><th>${t('description')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('safetyLocation')}</th><th class="text-right">${t('actions')}</th></tr>`;
+
+  const incidents = getIncidents();
+  // Stats
+  const lastIncident = incidents.filter(i => i.type !== 'Near Miss').sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  const safeDays = lastIncident ? Math.floor((new Date() - new Date(lastIncident.date)) / (1000*60*60*24)) : Math.floor((new Date() - new Date('2024-11-01')) / (1000*60*60*24));
+  document.getElementById('safe-days-count').textContent = safeDays;
+  document.getElementById('total-incidents').textContent = incidents.length;
+  document.getElementById('near-miss-count').textContent = incidents.filter(i => i.type === 'Near Miss').length;
+  document.getElementById('fatalities-count').textContent = incidents.filter(i => i.type === 'Fatality').length;
+
+  const body = document.getElementById('safety-body');
+  const empty = document.getElementById('safety-empty');
+  if (incidents.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  body.innerHTML = incidents.sort((a, b) => new Date(b.date) - new Date(a.date)).map(inc => `<tr>
+    <td class="text-xs text-slate-400">${fmtDate(inc.date)}</td>
+    <td><span class="badge ${inc.type === 'Near Miss' ? 'badge-amber' : inc.type === 'Fatality' || inc.type === 'Lost Time Injury' ? 'badge-red' : 'badge-blue'}">${inc.type}</span></td>
+    <td class="text-sm text-white">${inc.desc.substring(0, 60)}${inc.desc.length > 60 ? '...' : ''}</td>
+    <td>${severityBadge(inc.severity)}</td>
+    <td>${statusBadge(inc.status === 'Closed' ? 'Resolved' : inc.status === 'Investigating' ? 'In Progress' : inc.status)}</td>
+    <td class="text-xs text-slate-400">${inc.location || '—'}</td>
+    <td class="text-right">
+      <button onclick="editIncident(${inc.id})" class="text-slate-400 hover:text-blue-400 transition mr-2"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+      <button onclick="deleteIncident(${inc.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+    </td>
+  </tr>`).join('');
+}
+
+function openIncidentModal(inc) {
+  document.getElementById('incident-modal-title').textContent = inc ? t('editIncident') : t('reportIncident');
+  document.getElementById('incident-edit-id').value = inc ? inc.id : '';
+  document.getElementById('incident-date').value = inc ? inc.date : new Date().toISOString().slice(0, 10);
+  document.getElementById('incident-type').value = inc ? inc.type : 'Near Miss';
+  document.getElementById('incident-desc').value = inc ? inc.desc : '';
+  document.getElementById('incident-location').value = inc ? inc.location : '';
+  document.getElementById('incident-severity').value = inc ? inc.severity : 'Low';
+  document.getElementById('incident-reporter').value = inc ? inc.reporter : (getSession()?.username || '');
+  document.getElementById('incident-status').value = inc ? inc.status : 'Open';
+  document.getElementById('incident-action').value = inc ? inc.action : '';
+  document.getElementById('incident-modal').classList.remove('hidden');
+}
+function closeIncidentModal() { document.getElementById('incident-modal').classList.add('hidden'); }
+function editIncident(id) { openIncidentModal(getIncidents().find(i => i.id === id)); }
+function deleteIncident(id) {
+  if (!confirm(t('deleteIncident'))) return;
+  const list = getIncidents().filter(i => i.id !== id);
+  saveIncidents(list);
+  logActivity('delete_incident', 'Deleted incident #' + id);
+  renderSafety(); showToast(t('incidentDeleted'));
+}
+function saveIncident() {
+  const desc = document.getElementById('incident-desc').value.trim();
+  if (!desc) { showToast(t('incidentRequired'), 'error'); return; }
+  const editId = document.getElementById('incident-edit-id').value;
+  const incData = {
+    date: document.getElementById('incident-date').value,
+    type: document.getElementById('incident-type').value,
+    desc,
+    location: document.getElementById('incident-location').value.trim(),
+    severity: document.getElementById('incident-severity').value,
+    reporter: document.getElementById('incident-reporter').value.trim(),
+    status: document.getElementById('incident-status').value,
+    action: document.getElementById('incident-action').value.trim()
+  };
+  const list = getIncidents();
+  if (editId) {
+    const inc = list.find(i => i.id === parseInt(editId));
+    Object.assign(inc, incData);
+    logActivity('edit_incident', desc);
+  } else {
+    incData.id = Date.now();
+    list.push(incData);
+    logActivity('add_incident', desc);
+  }
+  saveIncidents(list);
+  closeIncidentModal(); renderSafety();
+  showToast(editId ? t('incidentUpdated') : t('incidentReported'));
+}
+
 // ---- MILESTONES ----
 const MILESTONES = [
   { name: 'WCA Signed', date: '2023-12-27', status: 'done' },
