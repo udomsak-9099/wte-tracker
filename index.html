@@ -844,33 +844,75 @@ tailwind.config = {
 
 <!-- Work Progress Page -->
 <div id="page-workprogress" class="page">
+  <!-- Header with gradient accent -->
   <div class="flex items-center justify-between mb-6">
-    <div>
-      <h2 class="text-2xl font-bold text-white" id="wp-title">Work Progress</h2>
-      <p class="text-sm text-slate-400 mt-1" id="wp-desc">Daily construction progress reports</p>
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white" id="wp-title">Work Progress</h2>
+        <p class="text-sm text-slate-400 mt-0.5" id="wp-desc">Daily construction progress reports</p>
+      </div>
     </div>
-    <button onclick="openWPModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+    <button onclick="openWPModal()" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       <span id="wp-add-btn">Add Daily Report</span>
     </button>
   </div>
-  <!-- Summary Stats -->
+
+  <!-- Summary Stats — glass cards -->
   <div class="grid grid-cols-4 gap-4 mb-6">
-    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-reports">Total Reports</p><p class="text-3xl font-bold text-white" id="wp-total">0</p></div>
-    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-manpower">Avg. Manpower</p><p class="text-3xl font-bold text-white" id="wp-avg-manpower">0</p></div>
-    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-weather">Weather Days Lost</p><p class="text-3xl font-bold text-white" id="wp-weather-lost">0</p></div>
-    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-wp-equipment">Equipment Issues</p><p class="text-3xl font-bold text-white" id="wp-equip-issues">0</p></div>
+    <div class="stat-card blue relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-wp-reports">Total Reports</p></div>
+        <p class="text-3xl font-bold text-white" id="wp-total">0</p>
+      </div>
+    </div>
+    <div class="stat-card green relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-wp-manpower">Avg. Manpower</p></div>
+        <p class="text-3xl font-bold text-white" id="wp-avg-manpower">0</p>
+      </div>
+    </div>
+    <div class="stat-card amber relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-wp-weather">Weather Days Lost</p></div>
+        <p class="text-3xl font-bold text-white" id="wp-weather-lost">0</p>
+      </div>
+    </div>
+    <div class="stat-card red relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-red-400/10"></div>
+      <div class="relative">
+        <div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-wp-equipment">Issues Reported</p></div>
+        <p class="text-3xl font-bold text-white" id="wp-equip-issues">0</p>
+      </div>
+    </div>
   </div>
-  <!-- System Progress Overview -->
-  <div class="card p-5 mb-6">
-    <p class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="wp-systems-title">Systems Overview</p>
-    <div class="grid grid-cols-4 gap-2" id="wp-systems-grid"></div>
+
+  <!-- Systems Overview — visual grid -->
+  <div class="card p-5 mb-6 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-40 h-40 rounded-full bg-gradient-to-br from-blue-500/5 to-cyan-500/5 -translate-y-1/2 translate-x-1/2"></div>
+    <div class="relative">
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-xs font-bold text-white uppercase tracking-wider" id="wp-systems-title">Systems Overview</p>
+        <div class="flex items-center gap-2">
+          <select id="filter-wp-system" onchange="renderWorkProgress()" class="text-xs bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-slate-300"></select>
+        </div>
+      </div>
+      <div class="grid grid-cols-4 gap-2.5" id="wp-systems-grid"></div>
+    </div>
   </div>
-  <!-- Filter -->
-  <div class="flex gap-3 mb-4">
-    <select id="filter-wp-system" onchange="renderWorkProgress()" class="text-sm"></select>
+
+  <!-- Timeline Reports List -->
+  <div class="mb-3 flex items-center gap-2">
+    <div class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+    <p class="text-xs font-bold text-white uppercase tracking-wider" id="wp-timeline-title">Activity Timeline</p>
+    <div class="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
   </div>
-  <!-- Daily Reports List -->
   <div id="wp-list" class="space-y-3"></div>
   <div id="wp-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No daily reports yet. Start recording progress!</div>
 </div>
@@ -2873,6 +2915,7 @@ function getWPReports() { return JSON.parse(localStorage.getItem('wte_wp') || '[
 function saveWPReports(list) { localStorage.setItem('wte_wp', JSON.stringify(list)); }
 
 function renderWorkProgress() {
+  const th = getLang() === 'th';
   document.getElementById('wp-title').textContent = t('wpTitle');
   document.getElementById('wp-desc').textContent = t('wpDesc');
   document.getElementById('wp-add-btn').textContent = t('wpAddReport');
@@ -2880,8 +2923,9 @@ function renderWorkProgress() {
   document.getElementById('lbl-wp-reports').textContent = t('wpTotalReports');
   document.getElementById('lbl-wp-manpower').textContent = t('wpAvgManpower');
   document.getElementById('lbl-wp-weather').textContent = t('wpWeatherLost');
-  document.getElementById('lbl-wp-equipment').textContent = t('wpEquipIssues');
-  document.getElementById('wp-systems-title').textContent = getLang() === 'th' ? 'ภาพรวมระบบ' : 'Systems Overview';
+  document.getElementById('lbl-wp-equipment').textContent = th ? 'มีปัญหา' : 'Issues Reported';
+  document.getElementById('wp-systems-title').textContent = th ? 'ภาพรวมระบบ' : 'Systems Overview';
+  document.getElementById('wp-timeline-title').textContent = th ? 'ไทม์ไลน์กิจกรรม' : 'Activity Timeline';
 
   const reports = getWPReports();
   document.getElementById('wp-total').textContent = reports.length;
@@ -2893,19 +2937,25 @@ function renderWorkProgress() {
   // System filter
   const filterSel = document.getElementById('filter-wp-system');
   const fVal = filterSel.value;
-  const allLabel = getLang() === 'th' ? 'ทุกระบบ' : 'All Systems';
-  filterSel.innerHTML = `<option value="">${allLabel}</option>` + WP_SYSTEMS.map(s => `<option value="${s.key}">${s.icon} ${getLang() === 'th' ? s.th : s.en}</option>`).join('');
+  const allLabel = th ? 'ทุกระบบ' : 'All Systems';
+  filterSel.innerHTML = `<option value="">${allLabel}</option>` + WP_SYSTEMS.map(s => `<option value="${s.key}">${s.icon} ${th ? s.th : s.en}</option>`).join('');
   filterSel.value = fVal;
 
-  // Systems overview grid
+  // Systems overview — visual cards with progress bar
+  const sysColors = { permits:'from-slate-500 to-slate-400', civil:'from-stone-500 to-stone-400', fuel:'from-green-500 to-emerald-400', ash:'from-gray-500 to-gray-400', combustion:'from-red-500 to-orange-400', boiler:'from-cyan-500 to-blue-400', fgt:'from-indigo-500 to-violet-400', turbine_gen:'from-purple-500 to-pink-400', cooling:'from-sky-500 to-cyan-400', water_prod:'from-blue-500 to-sky-400', wastewater:'from-teal-500 to-emerald-400', biogas:'from-lime-500 to-green-400', dcs:'from-violet-500 to-purple-400', power_dist:'from-yellow-500 to-amber-400', lv_elec:'from-orange-500 to-amber-400', fire:'from-red-600 to-red-400' };
   document.getElementById('wp-systems-grid').innerHTML = WP_SYSTEMS.map(sys => {
     const count = reports.filter(r => r.system === sys.key).length;
-    return `<div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03] cursor-pointer hover:bg-white/[0.06] transition" onclick="document.getElementById('filter-wp-system').value='${sys.key}'; renderWorkProgress();">
-      <span class="text-lg">${sys.icon}</span>
-      <div class="flex-1 min-w-0">
-        <p class="text-[10px] text-white font-medium truncate">${getLang() === 'th' ? sys.th : sys.en}</p>
-        <p class="text-[9px] text-slate-500">${count} ${getLang() === 'th' ? 'รายงาน' : 'reports'}</p>
+    const isActive = fVal === sys.key;
+    const pct = reports.length ? Math.round(count / reports.length * 100) : 0;
+    return `<div class="relative group cursor-pointer rounded-xl p-2.5 transition-all ${isActive ? 'bg-white/[0.1] ring-1 ring-blue-500/50' : 'bg-white/[0.03] hover:bg-white/[0.06]'}" onclick="document.getElementById('filter-wp-system').value='${isActive ? '' : sys.key}'; renderWorkProgress();">
+      <div class="flex items-center gap-2 mb-1.5">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} flex items-center justify-center text-sm shadow-sm">${sys.icon}</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[10px] text-white font-medium truncate">${th ? sys.th : sys.en}</p>
+          <p class="text-[9px] text-slate-500">${count} ${th ? 'รายงาน' : 'reports'}</p>
+        </div>
       </div>
+      <div class="w-full h-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} transition-all" style="width:${count ? Math.max(pct, 8) : 0}%"></div></div>
     </div>`;
   }).join('');
 
@@ -2919,40 +2969,99 @@ function renderWorkProgress() {
   empty.classList.add('hidden');
 
   const weatherIcons = { Sunny: '☀️', Cloudy: '⛅', Rainy: '🌧️', 'Heavy Rain': '⛈️', Stormy: '🌪️' };
-  const statusColors = { Normal: 'badge-green', Delayed: 'badge-amber', Suspended: 'badge-red', Holiday: 'badge-gray' };
+  const statusBg = { Normal: 'from-emerald-500/20 to-emerald-500/5 text-emerald-400 border-emerald-500/30', Delayed: 'from-amber-500/20 to-amber-500/5 text-amber-400 border-amber-500/30', Suspended: 'from-red-500/20 to-red-500/5 text-red-400 border-red-500/30', Holiday: 'from-slate-500/20 to-slate-500/5 text-slate-400 border-slate-500/30' };
+  const statusDot = { Normal: 'bg-emerald-400', Delayed: 'bg-amber-400', Suspended: 'bg-red-400', Holiday: 'bg-slate-400' };
 
-  list.innerHTML = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
-    const photos = (r.photos || '').split('\n').filter(u => u.trim());
-    return `<div class="card p-5">
-      <div class="flex items-start justify-between mb-3">
-        <div class="flex items-center gap-3">
-          <div class="text-center">
-            <p class="text-2xl">${weatherIcons[r.weather] || '🌤️'}</p>
-            <p class="text-[10px] text-slate-500">${r.weather}</p>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-white">${fmtDate(r.date)}</p>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="badge ${statusColors[r.workStatus] || 'badge-gray'}">${r.workStatus}</span>
-              <span class="text-xs text-slate-400">${wpSystemIcon(r.system)} ${wpSystemName(r.system)}</span>
+  const sorted = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Group by date
+  const grouped = {};
+  sorted.forEach(r => { if (!grouped[r.date]) grouped[r.date] = []; grouped[r.date].push(r); });
+
+  let html = '';
+  Object.keys(grouped).forEach(dateKey => {
+    const dayReports = grouped[dateKey];
+    const dt = new Date(dateKey);
+    const dayName = dt.toLocaleDateString(th ? 'th-TH' : 'en-US', { weekday: 'short' });
+    const dayNum = dt.getDate();
+    const monthName = dt.toLocaleDateString(th ? 'th-TH' : 'en-US', { month: 'short', year: 'numeric' });
+
+    html += `<div class="flex gap-4">
+      <!-- Date column -->
+      <div class="flex flex-col items-center flex-shrink-0 w-16">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/20 flex flex-col items-center justify-center">
+          <span class="text-lg font-bold text-white leading-none">${dayNum}</span>
+          <span class="text-[8px] text-blue-300 uppercase font-medium">${dayName}</span>
+        </div>
+        <span class="text-[9px] text-slate-500 mt-1">${monthName}</span>
+        <div class="w-px flex-1 bg-gradient-to-b from-blue-500/30 to-transparent mt-2"></div>
+      </div>
+      <!-- Reports for this date -->
+      <div class="flex-1 space-y-3 pb-4">`;
+
+    dayReports.forEach(r => {
+      const photos = (r.photos || '').split('\n').filter(u => u.trim());
+      const sysGrad = sysColors[r.system] || 'from-slate-500 to-slate-400';
+      // Format activities with bullet points as proper list
+      const actLines = r.activities.split('\n').filter(l => l.trim());
+      const actHtml = actLines.length > 1
+        ? `<div class="space-y-1.5">${actLines.map(l => {
+            const isBullet = /^[•\-\d]+[\.\)]?\s/.test(l.trim());
+            return isBullet
+              ? `<div class="flex gap-2 items-start"><span class="w-1 h-1 rounded-full bg-blue-400 mt-1.5 flex-shrink-0"></span><span class="text-xs text-slate-200">${l.trim().replace(/^[•\-]\s*/, '')}</span></div>`
+              : `<p class="text-sm text-white font-medium">${l}</p>`;
+          }).join('')}</div>`
+        : `<p class="text-sm text-slate-200">${r.activities}</p>`;
+
+      html += `<div class="card p-0 overflow-hidden group">
+          <!-- Card header with system color accent -->
+          <div class="px-5 pt-4 pb-3 relative">
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${sysGrad}"></div>
+            <div class="flex items-start justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br ${sysGrad} flex items-center justify-center text-base shadow-sm">${wpSystemIcon(r.system)}</div>
+                <div>
+                  <p class="text-sm font-semibold text-white">${wpSystemName(r.system)}</p>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r ${statusBg[r.workStatus] || statusBg.Normal} border font-medium">
+                      <span class="w-1.5 h-1.5 rounded-full ${statusDot[r.workStatus] || statusDot.Normal}"></span>${r.workStatus}
+                    </span>
+                    <span class="text-xs text-slate-500">${weatherIcons[r.weather] || '🌤️'} ${r.weather}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-3 text-center">
+                  <div class="px-2.5 py-1 rounded-lg bg-blue-500/10"><p class="text-sm font-bold text-blue-400">${r.manpower || 0}</p><p class="text-[8px] text-slate-500 uppercase">${t('wpManpower')}</p></div>
+                  <div class="px-2.5 py-1 rounded-lg bg-amber-500/10"><p class="text-sm font-bold text-amber-400">${r.equipment || 0}</p><p class="text-[8px] text-slate-500 uppercase">${t('wpEquipment')}</p></div>
+                </div>
+                <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onclick="editWPReport(${r.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+                  <button onclick="deleteWPReport(${r.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="flex items-center gap-4 text-center">
-          <div><p class="text-lg font-bold text-blue-400">${r.manpower || 0}</p><p class="text-[10px] text-slate-500">${t('wpManpower')}</p></div>
-          <div><p class="text-lg font-bold text-amber-400">${r.equipment || 0}</p><p class="text-[10px] text-slate-500">${t('wpEquipment')}</p></div>
-          <div class="flex gap-1">
-            <button onclick="editWPReport(${r.id})" class="text-slate-400 hover:text-blue-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-            <button onclick="deleteWPReport(${r.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          <!-- Card body -->
+          <div class="px-5 pb-4">
+            <div class="bg-white/[0.02] rounded-lg p-3 mb-2">${actHtml}</div>
+            ${r.issues ? `<div class="flex gap-2 items-start p-2.5 rounded-lg bg-red-500/[0.06] border border-red-500/10 mb-2">
+              <svg class="w-3.5 h-3.5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              <p class="text-xs text-red-300 leading-relaxed">${r.issues}</p>
+            </div>` : ''}
+            ${photos.length ? `<div class="flex gap-2 mt-2 flex-wrap">${photos.map(u => `<img src="${u}" class="w-20 h-14 object-cover rounded-lg border border-white/10 hover:scale-105 transition" onerror="this.style.display='none'">`).join('')}</div>` : ''}
+            ${r.remarks ? `<div class="flex gap-2 items-start mt-2 pt-2 border-t border-white/5">
+              <svg class="w-3.5 h-3.5 text-slate-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+              <p class="text-xs text-slate-400 leading-relaxed">${r.remarks}</p>
+            </div>` : ''}
           </div>
-        </div>
-      </div>
-      <p class="text-sm text-white mb-1">${r.activities}</p>
-      ${r.issues ? `<p class="text-xs text-red-400 mt-1">⚠️ ${r.issues}</p>` : ''}
-      ${photos.length ? `<div class="flex gap-2 mt-2 flex-wrap">${photos.map(u => `<img src="${u}" class="w-20 h-14 object-cover rounded-lg border border-white/10" onerror="this.style.display='none'">`).join('')}</div>` : ''}
-      ${r.remarks ? `<p class="text-xs text-slate-400 mt-2 border-t border-white/5 pt-2">📝 ${r.remarks}</p>` : ''}
-    </div>`;
-  }).join('');
+        </div>`;
+    });
+
+    html += `</div></div>`;
+  });
+
+  list.innerHTML = html;
 }
 
 function openWPModal(rpt) {
