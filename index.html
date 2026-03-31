@@ -554,27 +554,231 @@ tailwind.config = {
 
 <!-- Reports Page -->
 <div id="page-reports" class="page">
-  <div class="mb-8">
-    <h2 class="text-2xl font-bold text-white" id="reports-title">Reports</h2>
-    <p class="text-sm text-slate-400 mt-1" id="reports-desc">Construction progress reports & analytics</p>
-  </div>
-  <div class="grid grid-cols-2 gap-5 mb-8">
-    <div class="card p-6">
-      <h3 class="text-sm font-semibold text-white mb-4" id="report-task-status-title">Task Status Distribution</h3>
-      <canvas id="chart-task-status" height="220"></canvas>
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h2 class="text-2xl font-bold text-white" id="reports-title">Reports</h2>
+      <p class="text-sm text-slate-400 mt-1" id="reports-desc">Construction progress reports & analytics</p>
     </div>
-    <div class="card p-6">
-      <h3 class="text-sm font-semibold text-white mb-4" id="report-issue-sev-title">Issues by Severity</h3>
-      <canvas id="chart-issue-severity" height="220"></canvas>
+    <button onclick="printReport()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+      <span id="btn-print-report">Print / PDF</span>
+    </button>
+  </div>
+
+  <!-- Report Type Tabs -->
+  <div class="flex gap-2 mb-6">
+    <button onclick="switchReportTab('daily')" id="rtab-daily" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-blue-600 text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+      <span id="rtab-daily-text">Daily Report</span>
+    </button>
+    <button onclick="switchReportTab('threeweek')" id="rtab-threeweek" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      <span id="rtab-threeweek-text">3-Week Look-Ahead</span>
+    </button>
+    <button onclick="switchReportTab('monthly')" id="rtab-monthly" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span id="rtab-monthly-text">Monthly Report</span>
+    </button>
+  </div>
+
+  <!-- ===== DAILY REPORT ===== -->
+  <div id="report-daily" class="report-tab">
+    <!-- Report Header -->
+    <div class="card p-5 mb-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-blue-500/10 to-cyan-500/10 -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-lg">GP4</div>
+          <div>
+            <h3 class="text-lg font-bold text-white" id="rpt-daily-header">Daily Construction Report</h3>
+            <p class="text-xs text-slate-400" id="rpt-daily-project">GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-white" id="rpt-daily-date"></p>
+          <p class="text-[10px] text-slate-400" id="rpt-daily-day-number"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Date selector -->
+    <div class="flex items-center gap-3 mb-5">
+      <label class="text-xs text-slate-400" id="lbl-rpt-date">Report Date:</label>
+      <input type="date" id="rpt-date-picker" onchange="renderDailyReport()" class="text-sm">
+      <button onclick="document.getElementById('rpt-date-picker').value=new Date().toISOString().slice(0,10); renderDailyReport()" class="text-xs text-blue-400 hover:text-blue-300 transition" id="btn-rpt-today">Today</button>
+    </div>
+
+    <!-- Daily Stats Row -->
+    <div class="grid grid-cols-5 gap-3 mb-5">
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 mb-0.5" id="lbl-rpt-overall">Overall</p><p class="text-2xl font-bold text-white" id="rpt-d-overall">0%</p></div>
+      <div class="stat-card green"><p class="text-[10px] text-slate-400 mb-0.5" id="lbl-rpt-manpower">Manpower</p><p class="text-2xl font-bold text-white" id="rpt-d-manpower">0</p></div>
+      <div class="stat-card amber"><p class="text-[10px] text-slate-400 mb-0.5" id="lbl-rpt-equipment">Equipment</p><p class="text-2xl font-bold text-white" id="rpt-d-equipment">0</p></div>
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 mb-0.5" id="lbl-rpt-weather2">Weather</p><p class="text-2xl font-bold text-white" id="rpt-d-weather">--</p></div>
+      <div class="stat-card red"><p class="text-[10px] text-slate-400 mb-0.5" id="lbl-rpt-safety2">Safety</p><p class="text-2xl font-bold text-white" id="rpt-d-safety">0</p></div>
+    </div>
+
+    <!-- Phase Progress -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-d-phase-title">Phase Progress Summary</h4>
+      <div id="rpt-d-phases" class="space-y-2"></div>
+    </div>
+
+    <!-- Daily Activities -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-d-activities-title">Activities Performed</h4>
+      <div id="rpt-d-activities" class="space-y-2"></div>
+      <div id="rpt-d-no-activities" class="hidden text-xs text-slate-500 py-4 text-center">No daily report for this date</div>
+    </div>
+
+    <!-- Issues & Risks -->
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-d-issues-title">Active Issues</h4>
+        <div id="rpt-d-issues" class="space-y-2"></div>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-d-incidents-title">Safety Incidents (Today)</h4>
+        <div id="rpt-d-incidents" class="space-y-2"></div>
+      </div>
     </div>
   </div>
-  <div class="card p-6 mb-8">
-    <h3 class="text-sm font-semibold text-white mb-4" id="report-tasks-phase-title">Tasks per Phase</h3>
-    <canvas id="chart-tasks-phase" height="160"></canvas>
+
+  <!-- ===== 3-WEEK LOOK-AHEAD ===== -->
+  <div id="report-threeweek" class="report-tab hidden">
+    <div class="card p-5 mb-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-amber-500/10 to-orange-500/10 -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-400 flex items-center justify-center text-white font-bold text-lg">3W</div>
+          <div>
+            <h3 class="text-lg font-bold text-white" id="rpt-3w-header">3-Week Look-Ahead Schedule</h3>
+            <p class="text-xs text-slate-400" id="rpt-3w-project">GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-white" id="rpt-3w-period"></p>
+          <p class="text-[10px] text-slate-400" id="rpt-3w-generated"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3-Week Grid -->
+    <div class="grid grid-cols-3 gap-4 mb-5" id="rpt-3w-weeks"></div>
+
+    <!-- Tasks Timeline -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-3w-tasks-title">Planned Activities — Next 3 Weeks</h4>
+      <div id="rpt-3w-tasks" class="space-y-2"></div>
+    </div>
+
+    <!-- Milestones & Weather -->
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-3w-milestones-title">Upcoming Milestones</h4>
+        <div id="rpt-3w-milestones" class="space-y-2"></div>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-3w-risks-title">Risks & Constraints</h4>
+        <div id="rpt-3w-risks" class="space-y-2"></div>
+      </div>
+    </div>
   </div>
-  <div class="card p-6">
-    <h3 class="text-sm font-semibold text-white mb-6" id="report-weekly-title">Weekly Summary</h3>
-    <div id="weekly-summary" class="grid grid-cols-3 gap-6"></div>
+
+  <!-- ===== MONTHLY REPORT ===== -->
+  <div id="report-monthly" class="report-tab hidden">
+    <div class="card p-5 mb-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-purple-500/10 to-pink-500/10 -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-400 flex items-center justify-center text-white font-bold text-lg">M</div>
+          <div>
+            <h3 class="text-lg font-bold text-white" id="rpt-m-header">Monthly Progress Report</h3>
+            <p class="text-xs text-slate-400" id="rpt-m-project">GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-white" id="rpt-m-period"></p>
+          <p class="text-[10px] text-slate-400" id="rpt-m-generated"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Month selector -->
+    <div class="flex items-center gap-3 mb-5">
+      <label class="text-xs text-slate-400" id="lbl-rpt-month">Report Month:</label>
+      <input type="month" id="rpt-month-picker" onchange="renderMonthlyReport()" class="text-sm">
+    </div>
+
+    <!-- Monthly KPI Cards -->
+    <div class="grid grid-cols-5 gap-3 mb-5">
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 mb-0.5">Plan</p><p class="text-2xl font-bold text-white" id="rpt-m-plan">0%</p></div>
+      <div class="stat-card green"><p class="text-[10px] text-slate-400 mb-0.5">Actual</p><p class="text-2xl font-bold text-white" id="rpt-m-actual">0%</p></div>
+      <div class="stat-card amber"><p class="text-[10px] text-slate-400 mb-0.5">Variance</p><p class="text-2xl font-bold text-white" id="rpt-m-variance">0%</p></div>
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 mb-0.5">Budget</p><p class="text-2xl font-bold text-white" id="rpt-m-budget">0%</p></div>
+      <div class="stat-card red"><p class="text-[10px] text-slate-400 mb-0.5">COD</p><p class="text-2xl font-bold text-white" id="rpt-m-cod"></p></div>
+    </div>
+
+    <!-- S-Curve & Phase Charts -->
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-scurve-title">S-Curve — Plan vs Actual</h4>
+        <canvas id="chart-rpt-scurve" height="200"></canvas>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-phase-chart-title">Progress by Phase</h4>
+        <canvas id="chart-rpt-phases" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Phase Detail Table -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-detail-title">Phase Progress Detail</h4>
+      <table>
+        <thead id="rpt-m-thead"><tr><th>Phase</th><th>Plan %</th><th>Actual %</th><th>Variance</th><th>Status</th><th>Remarks</th></tr></thead>
+        <tbody id="rpt-m-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Charts Row 2: Task & Issues -->
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="report-task-status-title">Task Status Distribution</h4>
+        <canvas id="chart-task-status" height="200"></canvas>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="report-issue-sev-title">Issues by Severity</h4>
+        <canvas id="chart-issue-severity" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Monthly Work Summary -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-work-title">Monthly Work Summary</h4>
+      <div class="grid grid-cols-4 gap-3 mb-4">
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center"><p class="text-2xl font-bold text-blue-400" id="rpt-m-wp-count">0</p><p class="text-[10px] text-slate-500" id="rpt-m-wp-label">Daily Reports</p></div>
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center"><p class="text-2xl font-bold text-emerald-400" id="rpt-m-manpower">0</p><p class="text-[10px] text-slate-500" id="rpt-m-mp-label">Avg. Manpower</p></div>
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center"><p class="text-2xl font-bold text-amber-400" id="rpt-m-weather-lost">0</p><p class="text-[10px] text-slate-500" id="rpt-m-wl-label">Weather Lost Days</p></div>
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center"><p class="text-2xl font-bold text-red-400" id="rpt-m-incidents">0</p><p class="text-[10px] text-slate-500" id="rpt-m-inc-label">Safety Incidents</p></div>
+      </div>
+      <div class="card overflow-hidden">
+        <table>
+          <thead><tr><th id="rpt-m-tasks-phase-th">Tasks per Phase</th><th>Completed</th><th>In Progress</th><th>Delayed</th><th>Pending</th></tr></thead>
+          <tbody id="rpt-m-tasks-phase-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Key Issues & Next Month -->
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-issues-title">Key Issues & Risks</h4>
+        <div id="rpt-m-issues" class="space-y-2"></div>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-next-title">Next Month Priorities</h4>
+        <div id="rpt-m-next" class="space-y-2"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -2184,69 +2388,413 @@ function saveIssue() {
 }
 
 // ---- REPORTS ----
+let rptScurveChart, rptPhaseChart;
+
+function switchReportTab(tab) {
+  document.querySelectorAll('.report-tab').forEach(el => el.classList.add('hidden'));
+  document.getElementById('report-' + tab).classList.remove('hidden');
+  ['daily','threeweek','monthly'].forEach(t2 => {
+    const btn = document.getElementById('rtab-' + t2);
+    btn.classList.toggle('bg-blue-600', t2 === tab);
+    btn.classList.toggle('text-white', t2 === tab);
+    btn.classList.toggle('text-slate-400', t2 !== tab);
+  });
+  if (tab === 'daily') renderDailyReport();
+  if (tab === 'threeweek') renderThreeWeekReport();
+  if (tab === 'monthly') renderMonthlyReport();
+}
+
+function printReport() { window.print(); }
+
 function renderReports() {
+  const th = getLang() === 'th';
   document.getElementById('reports-title').textContent = t('reportsTitle');
   document.getElementById('reports-desc').textContent = t('reportsDesc');
-  document.getElementById('report-task-status-title').textContent = t('taskStatusDist');
-  document.getElementById('report-issue-sev-title').textContent = t('issuesBySev');
-  document.getElementById('report-tasks-phase-title').textContent = t('tasksPerPhase');
-  document.getElementById('report-weekly-title').textContent = t('weeklySummary');
+  document.getElementById('btn-print-report').textContent = th ? 'พิมพ์ / PDF' : 'Print / PDF';
+  document.getElementById('rtab-daily-text').textContent = th ? 'รายงานประจำวัน' : 'Daily Report';
+  document.getElementById('rtab-threeweek-text').textContent = th ? 'แผน 3 สัปดาห์' : '3-Week Look-Ahead';
+  document.getElementById('rtab-monthly-text').textContent = th ? 'รายงานเดือน' : 'Monthly Report';
 
-  // Task status donut
-  const ctx1 = document.getElementById('chart-task-status').getContext('2d');
-  if (taskStatusChart) taskStatusChart.destroy();
-  const statusCounts = { Pending: 0, 'In Progress': 0, Completed: 0, Delayed: 0 };
-  data.tasks.forEach(t => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
-  taskStatusChart = new Chart(ctx1, {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(statusCounts).map(s => tStatus(s)),
-      datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#64748b','#3b82f6','#10b981','#ef4444'], borderWidth: 0, spacing: 2 }]
-    },
-    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 11 }, padding: 16 } } } }
+  // Init date pickers
+  if (!document.getElementById('rpt-date-picker').value) document.getElementById('rpt-date-picker').value = new Date().toISOString().slice(0, 10);
+  if (!document.getElementById('rpt-month-picker').value) document.getElementById('rpt-month-picker').value = new Date().toISOString().slice(0, 7);
+
+  // Render active tab
+  const activeTab = document.querySelector('.report-tab:not(.hidden)');
+  if (activeTab) {
+    if (activeTab.id === 'report-daily') renderDailyReport();
+    else if (activeTab.id === 'report-threeweek') renderThreeWeekReport();
+    else if (activeTab.id === 'report-monthly') renderMonthlyReport();
+  } else {
+    renderDailyReport();
+  }
+}
+
+// ---- DAILY REPORT ----
+function renderDailyReport() {
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
+  const dateVal = document.getElementById('rpt-date-picker').value || new Date().toISOString().slice(0, 10);
+  const dt = new Date(dateVal);
+
+  document.getElementById('rpt-daily-header').textContent = th ? 'รายงานก่อสร้างประจำวัน' : 'Daily Construction Report';
+  document.getElementById('rpt-daily-project').textContent = 'GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani';
+  document.getElementById('rpt-daily-date').textContent = dt.toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('lbl-rpt-date').textContent = th ? 'วันที่รายงาน:' : 'Report Date:';
+  document.getElementById('btn-rpt-today').textContent = th ? 'วันนี้' : 'Today';
+
+  // Calculate project day number
+  const projectStart = new Date('2024-10-01');
+  const dayNum = Math.max(1, Math.floor((dt - projectStart) / (1000*60*60*24)) + 1);
+  document.getElementById('rpt-daily-day-number').textContent = (th ? 'วันที่ ' : 'Day #') + dayNum + (th ? ' ของโครงการ' : ' of project');
+
+  // Overall progress
+  const totalP = Math.round(data.phases.reduce((s,p) => s+p.progress,0) / data.phases.length);
+  document.getElementById('rpt-d-overall').textContent = totalP + '%';
+
+  // Find matching WP report
+  const wpReports = getWPReports().filter(r => r.date === dateVal);
+  const totalMP = wpReports.reduce((s,r) => s + (parseInt(r.manpower)||0), 0);
+  const totalEQ = wpReports.reduce((s,r) => s + (parseInt(r.equipment)||0), 0);
+  document.getElementById('rpt-d-manpower').textContent = totalMP || '—';
+  document.getElementById('rpt-d-equipment').textContent = totalEQ || '—';
+
+  // Weather for date
+  const weatherR = wpReports.length ? wpReports[0].weather : '—';
+  const wIcons = { Sunny: '☀️', Cloudy: '⛅', Rainy: '🌧️', 'Heavy Rain': '⛈️', Stormy: '🌪️' };
+  document.getElementById('rpt-d-weather').textContent = (wIcons[weatherR] || '') + ' ' + weatherR;
+
+  // Safety
+  const incidents = getIncidents().filter(i => i.date === dateVal);
+  document.getElementById('rpt-d-safety').textContent = incidents.length === 0 ? (th ? '✅ ปลอดภัย' : '✅ Safe') : incidents.length;
+
+  // Labels
+  document.getElementById('lbl-rpt-overall').textContent = th ? 'ความคืบหน้า' : 'Overall';
+  document.getElementById('lbl-rpt-manpower').textContent = th ? 'แรงงาน' : 'Manpower';
+  document.getElementById('lbl-rpt-equipment').textContent = th ? 'อุปกรณ์' : 'Equipment';
+  document.getElementById('lbl-rpt-weather2').textContent = th ? 'สภาพอากาศ' : 'Weather';
+  document.getElementById('lbl-rpt-safety2').textContent = th ? 'ความปลอดภัย' : 'Safety';
+
+  // Phase Progress
+  document.getElementById('rpt-d-phase-title').textContent = th ? 'สรุปความคืบหน้าเฟส' : 'Phase Progress Summary';
+  const groupColors2 = { permits: '#06b6d4', engineering: '#6366f1', procurement: '#f59e0b', construction: '#10b981', commissioning: '#a855f7' };
+  document.getElementById('rpt-d-phases').innerHTML = data.phases.map((p, i) => {
+    const color = groupColors2[p.group] || '#64748b';
+    const planIdx = Math.min(((dt.getFullYear()-2025)*12 + dt.getMonth()), 23);
+    const planVal = GROUP_PLANS[p.group] ? GROUP_PLANS[p.group][planIdx] : 0;
+    const variance = p.progress - planVal;
+    const vClass = variance >= 0 ? 'text-emerald-400' : 'text-red-400';
+    return `<div class="flex items-center gap-3 p-2 rounded-lg bg-white/[0.02]">
+      <span class="text-lg">${p.icon}</span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-xs text-white font-medium">${phaseName(i)}</p>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] text-slate-500">${th ? 'แผน' : 'Plan'}: ${planVal}%</span>
+            <span class="text-xs text-white font-bold">${p.progress}%</span>
+            <span class="text-[10px] ${vClass} font-medium">${variance >= 0 ? '+' : ''}${variance}%</span>
+          </div>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${p.progress}%; background:${color}"></div></div>
+      </div>
+      ${statusBadge(p.status)}
+    </div>`;
+  }).join('');
+
+  // Activities
+  document.getElementById('rpt-d-activities-title').textContent = th ? 'กิจกรรมที่ดำเนินการ' : 'Activities Performed';
+  const noAct = document.getElementById('rpt-d-no-activities');
+  const actDiv = document.getElementById('rpt-d-activities');
+  if (wpReports.length === 0) { noAct.classList.remove('hidden'); noAct.textContent = th ? 'ไม่มีรายงานสำหรับวันนี้' : 'No daily report for this date'; actDiv.innerHTML = ''; }
+  else {
+    noAct.classList.add('hidden');
+    actDiv.innerHTML = wpReports.map(r => `<div class="p-3 rounded-lg bg-white/[0.03] border-l-2" style="border-color:${groupColors2[WP_SYSTEMS.find(s=>s.key===r.system)?.key] || '#64748b'}">
+      <div class="flex items-center gap-2 mb-1">
+        <span class="text-sm">${wpSystemIcon(r.system)}</span>
+        <span class="text-xs font-medium text-white">${wpSystemName(r.system)}</span>
+        <span class="badge badge-blue text-[10px]">${r.manpower || 0} ${th ? 'คน' : 'pax'}</span>
+      </div>
+      <p class="text-xs text-slate-300">${r.activities}</p>
+      ${r.issues ? `<p class="text-[10px] text-red-400 mt-1">⚠️ ${r.issues}</p>` : ''}
+    </div>`).join('');
+  }
+
+  // Issues
+  document.getElementById('rpt-d-issues-title').textContent = th ? 'ปัญหาที่เปิดอยู่' : 'Active Issues';
+  const openIssues = data.issues.filter(i => i.status !== 'Resolved');
+  document.getElementById('rpt-d-issues').innerHTML = openIssues.length ? openIssues.map(i => `<div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]">
+    ${severityBadge(i.severity)}
+    <p class="text-xs text-white flex-1">${i.title}</p>
+    ${statusBadge(i.status)}
+  </div>`).join('') : `<p class="text-xs text-slate-500">${th ? 'ไม่มีปัญหา' : 'No active issues'}</p>`;
+
+  // Incidents
+  document.getElementById('rpt-d-incidents-title').textContent = th ? 'อุบัติเหตุวันนี้' : 'Safety Incidents (Today)';
+  document.getElementById('rpt-d-incidents').innerHTML = incidents.length ? incidents.map(i => `<div class="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20">
+    <span class="badge badge-red">${i.type}</span>
+    <p class="text-xs text-white flex-1">${i.desc.substring(0,80)}</p>
+  </div>`).join('') : `<p class="text-xs text-emerald-400">✅ ${th ? 'ไม่มีอุบัติเหตุ — ทำงานปลอดภัย' : 'Zero incidents — safe operations'}</p>`;
+}
+
+// ---- 3-WEEK LOOK-AHEAD ----
+function renderThreeWeekReport() {
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
+  const now = new Date();
+  const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay() + 1);
+  const weekEnd3 = new Date(weekStart); weekEnd3.setDate(weekStart.getDate() + 20);
+
+  document.getElementById('rpt-3w-header').textContent = th ? 'แผนงาน 3 สัปดาห์ข้างหน้า' : '3-Week Look-Ahead Schedule';
+  document.getElementById('rpt-3w-project').textContent = 'GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani';
+  document.getElementById('rpt-3w-period').textContent = fmtDate(weekStart.toISOString().slice(0,10)) + ' — ' + fmtDate(weekEnd3.toISOString().slice(0,10));
+  document.getElementById('rpt-3w-generated').textContent = (th ? 'สร้างเมื่อ ' : 'Generated ') + now.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
+
+  // 3 Week cards
+  const weeksHtml = [0,1,2].map(w => {
+    const ws = new Date(weekStart); ws.setDate(weekStart.getDate() + w*7);
+    const we = new Date(ws); we.setDate(ws.getDate() + 6);
+    const weekLabel = th ? `สัปดาห์ที่ ${w+1}` : `Week ${w+1}`;
+    const dateRange = fmtDate(ws.toISOString().slice(0,10)) + ' — ' + fmtDate(we.toISOString().slice(0,10));
+
+    // Tasks in this week range
+    const weekTasks = data.tasks.filter(tk => {
+      if (tk.status === 'Completed') return false;
+      const tkEnd = new Date(tk.end);
+      const tkStart = new Date(tk.start);
+      return tkEnd >= ws && tkStart <= we;
+    });
+
+    const gradients = ['from-blue-500/20 to-cyan-500/20', 'from-amber-500/20 to-orange-500/20', 'from-purple-500/20 to-pink-500/20'];
+    const borderColors = ['border-blue-500/30', 'border-amber-500/30', 'border-purple-500/30'];
+
+    return `<div class="card p-4 border ${borderColors[w]} relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-20 h-20 rounded-full bg-gradient-to-br ${gradients[w]} -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative">
+        <p class="text-xs font-bold text-white uppercase tracking-wider mb-1">${weekLabel}</p>
+        <p class="text-[10px] text-slate-400 mb-3">${dateRange}</p>
+        <p class="text-2xl font-bold text-white mb-1">${weekTasks.length}</p>
+        <p class="text-[10px] text-slate-500">${th ? 'กิจกรรมที่วางแผน' : 'Planned activities'}</p>
+        <div class="mt-2 space-y-1">
+          ${weekTasks.slice(0,4).map(tk => `<div class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full ${tk.status === 'Delayed' ? 'bg-red-500' : tk.status === 'In Progress' ? 'bg-blue-500' : 'bg-slate-500'}"></span><p class="text-[10px] text-slate-300 truncate">${tk.name}</p></div>`).join('')}
+          ${weekTasks.length > 4 ? `<p class="text-[10px] text-slate-500">+${weekTasks.length - 4} ${th ? 'รายการ' : 'more'}</p>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('rpt-3w-weeks').innerHTML = weeksHtml;
+
+  // Full tasks list
+  document.getElementById('rpt-3w-tasks-title').textContent = th ? 'กิจกรรมที่วางแผน — 3 สัปดาห์ข้างหน้า' : 'Planned Activities — Next 3 Weeks';
+  const allUpcoming = data.tasks.filter(tk => {
+    if (tk.status === 'Completed') return false;
+    const tkEnd = new Date(tk.end);
+    return tkEnd >= weekStart && new Date(tk.start) <= weekEnd3;
+  }).sort((a,b) => new Date(a.start) - new Date(b.start));
+
+  document.getElementById('rpt-3w-tasks').innerHTML = allUpcoming.length ? allUpcoming.map(tk => {
+    const daysLeft = Math.ceil((new Date(tk.end) - now) / (1000*60*60*24));
+    const urgClass = daysLeft < 7 ? 'border-red-500/30' : daysLeft < 14 ? 'border-amber-500/30' : 'border-white/5';
+    return `<div class="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border ${urgClass}">
+      <div class="w-8 text-center"><span class="text-lg">${data.phases[tk.phase]?.icon || '📋'}</span></div>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-white font-medium">${tk.name}</p>
+        <p class="text-[10px] text-slate-500">${phaseName(tk.phase)} • ${tk.assignee || '—'}</p>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-xs text-slate-300">${fmtDate(tk.start)} → ${fmtDate(tk.end)}</p>
+        <p class="text-[10px] ${daysLeft < 7 ? 'text-red-400 font-bold' : 'text-slate-500'}">${daysLeft > 0 ? (th ? `อีก ${daysLeft} วัน` : `${daysLeft}d left`) : (th ? 'เกินกำหนด' : 'Overdue')}</p>
+      </div>
+      ${statusBadge(tk.status)}
+    </div>`;
+  }).join('') : `<p class="text-xs text-slate-500 py-4 text-center">${th ? 'ไม่มีกิจกรรมที่วางแผน' : 'No planned activities'}</p>`;
+
+  // Milestones
+  document.getElementById('rpt-3w-milestones-title').textContent = th ? 'เหตุการณ์สำคัญที่ใกล้ถึง' : 'Upcoming Milestones';
+  const upMilestones = MILESTONES.filter(m => {
+    const md = new Date(m.date);
+    return md >= now && md <= new Date(now.getTime() + 90*24*60*60*1000);
+  });
+  document.getElementById('rpt-3w-milestones').innerHTML = upMilestones.length ? upMilestones.map(m => {
+    const dLeft = Math.ceil((new Date(m.date) - now)/(1000*60*60*24));
+    return `<div class="flex items-center gap-3 p-2 rounded-lg bg-white/[0.02]">
+      <span class="w-2 h-2 rounded-full ${m.status === 'done' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+      <div class="flex-1"><p class="text-xs text-white">${m.name}</p><p class="text-[10px] text-slate-500">${fmtDate(m.date)}</p></div>
+      <span class="text-[10px] text-blue-400 font-medium">${th ? `อีก ${dLeft} วัน` : `${dLeft}d`}</span>
+    </div>`;
+  }).join('') : `<p class="text-xs text-slate-500">${th ? 'ไม่มีเหตุการณ์สำคัญใน 90 วัน' : 'No milestones in next 90 days'}</p>`;
+
+  // Risks
+  document.getElementById('rpt-3w-risks-title').textContent = th ? 'ความเสี่ยงและข้อจำกัด' : 'Risks & Constraints';
+  const risks = [];
+  data.tasks.filter(tk => tk.status === 'Delayed').forEach(tk => risks.push({ icon: '🔴', text: `${tk.name} — ${th ? 'ล่าช้า' : 'Delayed'}`, severity: 'high' }));
+  data.issues.filter(i => i.status !== 'Resolved' && i.severity === 'High').forEach(i => risks.push({ icon: '⚠️', text: i.title, severity: 'high' }));
+  data.phases.filter(p => p.status === 'Delayed').forEach(p => risks.push({ icon: '🟡', text: `${p.name} — ${th ? 'เฟสล่าช้า' : 'Phase delayed'}`, severity: 'medium' }));
+  document.getElementById('rpt-3w-risks').innerHTML = risks.length ? risks.map(r => `<div class="flex items-center gap-2 p-2 rounded-lg ${r.severity === 'high' ? 'bg-red-500/10 border border-red-500/20' : 'bg-amber-500/10 border border-amber-500/20'}">
+    <span class="text-sm">${r.icon}</span><p class="text-xs text-white">${r.text}</p>
+  </div>`).join('') : `<p class="text-xs text-emerald-400">✅ ${th ? 'ไม่มีความเสี่ยงสำคัญ' : 'No critical risks'}</p>`;
+}
+
+// ---- MONTHLY REPORT ----
+function renderMonthlyReport() {
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
+  const monthVal = document.getElementById('rpt-month-picker').value || new Date().toISOString().slice(0, 7);
+  const [yr, mo] = monthVal.split('-').map(Number);
+  const monthDate = new Date(yr, mo - 1, 1);
+  const monthEnd = new Date(yr, mo, 0);
+
+  document.getElementById('rpt-m-header').textContent = th ? 'รายงานความคืบหน้าประจำเดือน' : 'Monthly Progress Report';
+  document.getElementById('rpt-m-project').textContent = 'GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani';
+  document.getElementById('rpt-m-period').textContent = monthDate.toLocaleDateString(locale, { month: 'long', year: 'numeric' });
+  document.getElementById('rpt-m-generated').textContent = (th ? 'สร้างเมื่อ ' : 'Generated ') + new Date().toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
+  document.getElementById('lbl-rpt-month').textContent = th ? 'เดือนรายงาน:' : 'Report Month:';
+
+  // KPIs
+  const planIdx = Math.min((yr - 2025) * 12 + (mo - 1), 23);
+  const planPct = GROUP_PLANS.overall[Math.max(0, planIdx)] || 0;
+  const actualPct = Math.round(data.phases.reduce((s,p) => s+p.progress, 0) / data.phases.length);
+  const variance = actualPct - planPct;
+  const budgetPct = '40.38';
+  const codDays = Math.ceil((new Date('2026-11-30') - new Date()) / (1000*60*60*24));
+
+  document.getElementById('rpt-m-plan').textContent = planPct + '%';
+  document.getElementById('rpt-m-actual').textContent = actualPct + '%';
+  document.getElementById('rpt-m-variance').textContent = (variance >= 0 ? '+' : '') + variance + '%';
+  document.getElementById('rpt-m-variance').className = 'text-2xl font-bold ' + (variance >= 0 ? 'text-emerald-400' : 'text-red-400');
+  document.getElementById('rpt-m-budget').textContent = budgetPct + '%';
+  document.getElementById('rpt-m-cod').textContent = codDays + (th ? ' วัน' : 'd');
+
+  // S-Curve chart
+  document.getElementById('rpt-m-scurve-title').textContent = th ? 'S-Curve — แผน vs จริง' : 'S-Curve — Plan vs Actual';
+  const ctx1 = document.getElementById('chart-rpt-scurve').getContext('2d');
+  if (rptScurveChart) rptScurveChart.destroy();
+  const labels = scurveLabels();
+  const totalP = data.phases.reduce((s,p) => s+p.progress,0) / data.phases.length;
+  const nowD = new Date();
+  const ci = (nowD.getFullYear() - 2025) * 12 + nowD.getMonth();
+  const overallActual = [];
+  for (let i = 0; i < 24; i++) {
+    if (i > ci) { overallActual.push(null); continue; }
+    const pc = GROUP_PLANS.overall[Math.min(ci, 23)];
+    overallActual.push(pc > 0 ? Math.round(totalP * GROUP_PLANS.overall[i] / pc) : 0);
+  }
+  rptScurveChart = new Chart(ctx1, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: t('planned'), data: GROUP_PLANS.overall, borderColor: '#3b82f6', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
+      { label: t('actual'), data: overallActual, borderColor: '#10b981', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: false }
+    ]},
+    options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { ticks: { color: chartTextColor(), font: { size: 7 }, maxRotation: 45, maxTicksLimit: 12 }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 } } }
   });
 
-  // Issue severity donut
-  const ctx2 = document.getElementById('chart-issue-severity').getContext('2d');
+  // Phase bar chart
+  document.getElementById('rpt-m-phase-chart-title').textContent = th ? 'ความคืบหน้าแยกตามเฟส' : 'Progress by Phase';
+  const ctx2 = document.getElementById('chart-rpt-phases').getContext('2d');
+  if (rptPhaseChart) rptPhaseChart.destroy();
+  rptPhaseChart = new Chart(ctx2, {
+    type: 'bar',
+    data: {
+      labels: data.phases.map((p,i) => phaseName(i).split(' ')[0]),
+      datasets: [
+        { label: th ? 'แผน' : 'Plan', data: data.phases.map(p => GROUP_PLANS[p.group] ? GROUP_PLANS[p.group][Math.max(0,planIdx)] : 0), backgroundColor: 'rgba(59,130,246,0.3)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, barThickness: 14 },
+        { label: th ? 'จริง' : 'Actual', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 14 }
+      ]
+    },
+    options: { responsive: true, indexAxis: 'y', plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { max: 100, ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 } }, grid: { display: false } } } }
+  });
+
+  // Phase detail table
+  document.getElementById('rpt-m-detail-title').textContent = th ? 'รายละเอียดความคืบหน้าเฟส' : 'Phase Progress Detail';
+  document.getElementById('rpt-m-thead').innerHTML = `<tr><th>${th ? 'เฟส' : 'Phase'}</th><th>${th ? 'แผน %' : 'Plan %'}</th><th>${th ? 'จริง %' : 'Actual %'}</th><th>${th ? 'ผลต่าง' : 'Variance'}</th><th>${th ? 'สถานะ' : 'Status'}</th><th>${th ? 'หมายเหตุ' : 'Remarks'}</th></tr>`;
+  document.getElementById('rpt-m-tbody').innerHTML = data.phases.map((p, i) => {
+    const pPlan = GROUP_PLANS[p.group] ? GROUP_PLANS[p.group][Math.max(0,planIdx)] : 0;
+    const pVar = p.progress - pPlan;
+    const vClass = pVar >= 0 ? 'text-emerald-400' : 'text-red-400';
+    return `<tr>
+      <td class="text-sm text-white font-medium"><span class="mr-1">${p.icon}</span> ${phaseName(i)}</td>
+      <td class="text-sm text-slate-400">${pPlan}%</td>
+      <td class="text-sm text-white font-bold">${p.progress}%</td>
+      <td class="text-sm ${vClass} font-medium">${pVar >= 0 ? '+' : ''}${pVar}%</td>
+      <td>${statusBadge(p.status)}</td>
+      <td class="text-xs text-slate-400 max-w-[200px] truncate">${p.notes ? p.notes.substring(0,50) + '...' : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  // Task/Issue charts
+  document.getElementById('report-task-status-title').textContent = t('taskStatusDist');
+  document.getElementById('report-issue-sev-title').textContent = t('issuesBySev');
+
+  const ctx3 = document.getElementById('chart-task-status').getContext('2d');
+  if (taskStatusChart) taskStatusChart.destroy();
+  const statusCounts = { Pending: 0, 'In Progress': 0, Completed: 0, Delayed: 0 };
+  data.tasks.forEach(tk => { statusCounts[tk.status] = (statusCounts[tk.status] || 0) + 1; });
+  taskStatusChart = new Chart(ctx3, {
+    type: 'doughnut',
+    data: { labels: Object.keys(statusCounts).map(s => tStatus(s)), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#64748b','#3b82f6','#10b981','#ef4444'], borderWidth: 0, spacing: 2 }] },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 10 }, padding: 12 } } } }
+  });
+
+  const ctx4 = document.getElementById('chart-issue-severity').getContext('2d');
   if (issueSeverityChart) issueSeverityChart.destroy();
   const sevCounts = { High: 0, Medium: 0, Low: 0 };
   data.issues.filter(i => i.status !== 'Resolved').forEach(i => { sevCounts[i.severity] = (sevCounts[i.severity] || 0) + 1; });
-  issueSeverityChart = new Chart(ctx2, {
+  issueSeverityChart = new Chart(ctx4, {
     type: 'doughnut',
-    data: {
-      labels: Object.keys(sevCounts).map(s => tStatus(s)),
-      datasets: [{ data: Object.values(sevCounts), backgroundColor: ['#ef4444','#f59e0b','#10b981'], borderWidth: 0, spacing: 2 }]
-    },
-    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 11 }, padding: 16 } } } }
+    data: { labels: Object.keys(sevCounts).map(s => tStatus(s)), datasets: [{ data: Object.values(sevCounts), backgroundColor: ['#ef4444','#f59e0b','#10b981'], borderWidth: 0, spacing: 2 }] },
+    options: { responsive: true, cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: chartTextColor(), font: { size: 10 }, padding: 12 } } } }
   });
 
-  // Tasks per phase bar
-  const ctx3 = document.getElementById('chart-tasks-phase').getContext('2d');
-  if (tasksPhaseChart) tasksPhaseChart.destroy();
-  tasksPhaseChart = new Chart(ctx3, {
-    type: 'bar',
-    data: {
-      labels: data.phases.map((p, i) => phaseName(i).split(' ')[0]),
-      datasets: [
-        { label: tStatus('Completed'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Completed').length), backgroundColor: '#10b981', borderRadius: 4 },
-        { label: tStatus('In Progress'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'In Progress').length), backgroundColor: '#3b82f6', borderRadius: 4 },
-        { label: tStatus('Pending'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Pending').length), backgroundColor: '#64748b', borderRadius: 4 },
-        { label: tStatus('Delayed'), data: data.phases.map((_, i) => data.tasks.filter(t => t.phase === i && t.status === 'Delayed').length), backgroundColor: '#ef4444', borderRadius: 4 }
-      ]
-    },
-    options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 11 } } } }, scales: { x: { stacked: true, ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } }, y: { stacked: true, ticks: { color: chartTextColor(), font: { size: 10 }, stepSize: 1 }, grid: { color: chartGridColor() } } } }
-  });
+  // Monthly work summary
+  document.getElementById('rpt-m-work-title').textContent = th ? 'สรุปผลงานประจำเดือน' : 'Monthly Work Summary';
+  document.getElementById('rpt-m-wp-label').textContent = th ? 'รายงานวัน' : 'Daily Reports';
+  document.getElementById('rpt-m-mp-label').textContent = th ? 'แรงงานเฉลี่ย' : 'Avg. Manpower';
+  document.getElementById('rpt-m-wl-label').textContent = th ? 'วันเสียจากอากาศ' : 'Weather Lost Days';
+  document.getElementById('rpt-m-inc-label').textContent = th ? 'อุบัติเหตุ' : 'Safety Incidents';
 
-  // Weekly summary
-  const ws = document.getElementById('weekly-summary');
-  const completedThisWeek = data.tasks.filter(t => t.status === 'Completed').length;
-  const inProgress = data.tasks.filter(t => t.status === 'In Progress').length;
-  const openIss = data.issues.filter(i => i.status !== 'Resolved').length;
-  ws.innerHTML = `
-    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-emerald-400">${completedThisWeek}</p><p class="text-xs text-slate-400 mt-1">${t('tasksCompleted')}</p></div>
-    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-blue-400">${inProgress}</p><p class="text-xs text-slate-400 mt-1">${t('tasksInProgress')}</p></div>
-    <div class="text-center p-4 rounded-xl bg-white/[0.02]"><p class="text-3xl font-bold text-red-400">${openIss}</p><p class="text-xs text-slate-400 mt-1">${t('openIssues')}</p></div>
-  `;
+  const wpMonth = getWPReports().filter(r => r.date && r.date.startsWith(monthVal));
+  document.getElementById('rpt-m-wp-count').textContent = wpMonth.length;
+  document.getElementById('rpt-m-manpower').textContent = wpMonth.length ? Math.round(wpMonth.reduce((s,r) => s + (parseInt(r.manpower)||0), 0) / wpMonth.length) : 0;
+  document.getElementById('rpt-m-weather-lost').textContent = wpMonth.filter(r => r.weather === 'Heavy Rain' || r.weather === 'Stormy' || r.workStatus === 'Suspended').length;
+  document.getElementById('rpt-m-incidents').textContent = getIncidents().filter(i => i.date && i.date.startsWith(monthVal)).length;
+
+  // Tasks per phase table
+  document.getElementById('rpt-m-tasks-phase-th').textContent = th ? 'งานแยกตามเฟส' : 'Tasks per Phase';
+  document.getElementById('rpt-m-tasks-phase-body').innerHTML = data.phases.map((p, i) => {
+    const pTasks = data.tasks.filter(tk => tk.phase === i);
+    return `<tr>
+      <td class="text-xs text-white"><span class="mr-1">${p.icon}</span> ${phaseName(i)}</td>
+      <td class="text-xs text-emerald-400 font-medium">${pTasks.filter(tk => tk.status === 'Completed').length}</td>
+      <td class="text-xs text-blue-400 font-medium">${pTasks.filter(tk => tk.status === 'In Progress').length}</td>
+      <td class="text-xs text-red-400 font-medium">${pTasks.filter(tk => tk.status === 'Delayed').length}</td>
+      <td class="text-xs text-slate-400">${pTasks.filter(tk => tk.status === 'Pending').length}</td>
+    </tr>`;
+  }).join('');
+
+  // Key Issues
+  document.getElementById('rpt-m-issues-title').textContent = th ? 'ปัญหาและความเสี่ยงสำคัญ' : 'Key Issues & Risks';
+  const keyIssues = data.issues.filter(i => i.status !== 'Resolved');
+  document.getElementById('rpt-m-issues').innerHTML = keyIssues.length ? keyIssues.map(i => `<div class="flex items-start gap-2 p-2 rounded-lg bg-white/[0.02]">
+    ${severityBadge(i.severity)}
+    <div class="flex-1 min-w-0">
+      <p class="text-xs text-white font-medium">${i.title}</p>
+      <p class="text-[10px] text-slate-500">${i.desc ? i.desc.substring(0,80) + '...' : ''}</p>
+    </div>
+  </div>`).join('') : `<p class="text-xs text-emerald-400">✅ ${th ? 'ไม่มีปัญหาสำคัญ' : 'No critical issues'}</p>`;
+
+  // Next month priorities
+  document.getElementById('rpt-m-next-title').textContent = th ? 'แผนเดือนหน้า' : 'Next Month Priorities';
+  const nextMonth = new Date(yr, mo, 1);
+  const nextMonthEnd = new Date(yr, mo + 1, 0);
+  const nextTasks = data.tasks.filter(tk => {
+    if (tk.status === 'Completed') return false;
+    const s = new Date(tk.start); const e = new Date(tk.end);
+    return e >= nextMonth && s <= nextMonthEnd;
+  }).sort((a,b) => { const p = { Critical:0, High:1, Medium:2, Low:3 }; return (p[a.priority]||3) - (p[b.priority]||3); });
+  document.getElementById('rpt-m-next').innerHTML = nextTasks.length ? nextTasks.slice(0,8).map(tk => `<div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]">
+    ${priorityBadge(tk.priority)}
+    <p class="text-xs text-white flex-1 truncate">${tk.name}</p>
+    <span class="text-[10px] text-slate-500">${phaseName(tk.phase).split(' ')[0]}</span>
+  </div>`).join('') : `<p class="text-xs text-slate-500">${th ? 'ไม่มีกิจกรรมเดือนหน้า' : 'No activities next month'}</p>`;
 }
 
 // ---- ALERTS ----
