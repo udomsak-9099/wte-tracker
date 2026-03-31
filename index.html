@@ -154,10 +154,12 @@ tailwind.config = {
           <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-confirm">Confirm Password</label><input type="password" id="reg-confirm" class="w-full" placeholder="Confirm password"></div>
           <div><label class="text-xs text-slate-400 block mb-1" id="lbl-reg-role">Role</label>
             <select id="reg-role" class="w-full">
+              <option value="Admin">Admin</option>
               <option value="Project Manager">Project Manager</option>
               <option value="Engineer">Engineer</option>
               <option value="Safety Officer">Safety Officer</option>
               <option value="Inspector">Inspector</option>
+              <option value="Viewer">Viewer</option>
             </select>
           </div>
         </div>
@@ -225,6 +227,12 @@ tailwind.config = {
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="activity">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Activity Log
+    </div>
+    <div class="mt-2 border-t border-white/5 pt-2">
+      <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="settings">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Settings
+      </div>
     </div>
   </nav>
   <div class="p-4 border-t border-white/5">
@@ -860,6 +868,155 @@ tailwind.config = {
   </div>
 </div>
 
+<!-- Settings Page -->
+<div id="page-settings" class="page">
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-white" id="settings-title">Settings & Administration</h2>
+    <p class="text-sm text-slate-400 mt-1" id="settings-desc">System settings, user management & data administration</p>
+  </div>
+
+  <!-- Settings Tabs -->
+  <div class="flex gap-2 mb-6">
+    <button onclick="switchSettingsTab('users')" id="stab-users" class="px-4 py-2 rounded-xl text-sm font-medium transition-all bg-blue-600 text-white">Users</button>
+    <button onclick="switchSettingsTab('data')" id="stab-data" class="px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white">Data</button>
+    <button onclick="switchSettingsTab('project')" id="stab-project" class="px-4 py-2 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white">Project</button>
+  </div>
+
+  <!-- User Management Tab -->
+  <div id="settings-users" class="settings-tab">
+    <div class="card p-5 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider" id="settings-users-title">User Management</h3>
+        <span class="text-xs text-slate-400" id="settings-user-count"></span>
+      </div>
+      <div class="card overflow-hidden">
+        <table>
+          <thead><tr>
+            <th id="th-user">User</th>
+            <th id="th-role">Role</th>
+            <th id="th-created">Created</th>
+            <th id="th-last-login">Last Login</th>
+            <th class="text-right" id="th-user-actions">Actions</th>
+          </tr></thead>
+          <tbody id="settings-users-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div id="settings-no-admin" class="card p-5 hidden">
+      <div class="flex items-center gap-3">
+        <svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+        <div>
+          <p class="text-sm text-white font-medium" id="settings-admin-only-title">Admin Access Required</p>
+          <p class="text-xs text-slate-400" id="settings-admin-only-desc">Only administrators can manage users. Contact an admin to change roles.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Data Management Tab -->
+  <div id="settings-data" class="settings-tab hidden">
+    <!-- Data Overview -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-data-tasks">Tasks</p><p class="text-3xl font-bold text-white" id="data-tasks-count">0</p></div>
+      <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-data-issues">Issues</p><p class="text-3xl font-bold text-white" id="data-issues-count">0</p></div>
+      <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-data-wp">Work Reports</p><p class="text-3xl font-bold text-white" id="data-wp-count">0</p></div>
+      <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-data-incidents">Incidents</p><p class="text-3xl font-bold text-white" id="data-incidents-count">0</p></div>
+    </div>
+
+    <!-- Export / Import -->
+    <div class="grid grid-cols-2 gap-5 mb-6">
+      <div class="card p-5">
+        <h3 class="text-sm font-bold text-white mb-3" id="settings-export-title">Export Data</h3>
+        <p class="text-xs text-slate-400 mb-4" id="settings-export-desc">Download a complete backup of all project data as JSON file.</p>
+        <div class="space-y-2">
+          <button onclick="exportAllJSON()" class="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="btn-export-json">Export All (JSON)</span>
+          </button>
+          <button onclick="exportTasksCSV()" class="w-full bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="btn-export-csv">Export Tasks (CSV)</span>
+          </button>
+          <button onclick="exportIssuesCSV()" class="w-full bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span id="btn-export-issues-csv">Export Issues (CSV)</span>
+          </button>
+        </div>
+      </div>
+      <div class="card p-5">
+        <h3 class="text-sm font-bold text-white mb-3" id="settings-import-title">Import Data</h3>
+        <p class="text-xs text-slate-400 mb-4" id="settings-import-desc">Restore project data from a previously exported JSON backup file.</p>
+        <div class="space-y-2">
+          <label class="w-full bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+            <span id="btn-import-json">Import from JSON</span>
+            <input type="file" accept=".json" onchange="importJSON(event)" class="hidden">
+          </label>
+          <p class="text-[10px] text-slate-500 text-center" id="import-warning">Warning: This will overwrite existing data</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backup & Danger Zone -->
+    <div class="grid grid-cols-2 gap-5">
+      <div class="card p-5">
+        <h3 class="text-sm font-bold text-white mb-3" id="settings-backup-title">Quick Backup</h3>
+        <p class="text-xs text-slate-400 mb-3" id="settings-backup-desc">Save a snapshot of current data to browser storage. Max 5 backups.</p>
+        <button onclick="createBackup()" class="w-full bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all mb-3" id="btn-create-backup">Create Backup</button>
+        <div id="backup-list" class="space-y-1"></div>
+      </div>
+      <div class="card p-5 border-red-500/20">
+        <h3 class="text-sm font-bold text-red-400 mb-3" id="settings-danger-title">Danger Zone</h3>
+        <p class="text-xs text-slate-400 mb-4" id="settings-danger-desc">These actions cannot be undone. Make sure you have a backup first.</p>
+        <div class="space-y-2">
+          <button onclick="resetProjectData()" class="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-xl text-sm font-medium transition-all" id="btn-reset-project">Reset Project Data</button>
+          <button onclick="resetAllData()" class="w-full border border-red-500/30 text-red-400 hover:bg-red-500/10 px-4 py-2 rounded-xl text-sm font-medium transition-all" id="btn-reset-all">Reset All Data (incl. Users)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Settings Tab -->
+  <div id="settings-project" class="settings-tab hidden">
+    <div class="card p-5 mb-6">
+      <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4" id="settings-project-info-title">Project Information</h3>
+      <div class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-name">Project Name</label><input type="text" id="proj-name" class="w-full" value="Green Power 4 Co., Ltd."></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-type">Project Type</label><input type="text" id="proj-type" class="w-full" value="Waste-to-Energy Power Plant"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-capacity">Capacity</label><input type="text" id="proj-capacity" class="w-full" value="6.6 MW (PPA 5.0)"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-location">Location</label><input type="text" id="proj-location" class="w-full" value="Phun Phin, Surat Thani"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-epc">EPC Contractor</label><input type="text" id="proj-epc" class="w-full" value="KK Green Co., Ltd."></div>
+        </div>
+        <div class="grid grid-cols-3 gap-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-budget">Total Budget (M THB)</label><input type="number" id="proj-budget" class="w-full" value="1315"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-spent">Spent (M THB)</label><input type="number" id="proj-spent" class="w-full" value="531"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-cod">COD Date</label><input type="date" id="proj-cod" class="w-full" value="2026-11-30"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-fuel">Fuel (MSW)</label><input type="text" id="proj-fuel" class="w-full" value="~470 ton/day"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-lta">LTA</label><input type="text" id="proj-lta" class="w-full" value="AFRY (Thailand)"></div>
+        </div>
+      </div>
+      <div class="flex justify-end mt-5">
+        <button onclick="saveProjectSettings()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-6 py-2.5 rounded-xl text-sm font-medium transition-all" id="btn-save-project">Save Changes</button>
+      </div>
+    </div>
+
+    <!-- System Info -->
+    <div class="card p-5">
+      <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-3" id="settings-sysinfo-title">System Information</h3>
+      <div class="grid grid-cols-3 gap-3">
+        <div class="p-3 rounded-lg bg-white/[0.03]"><p class="text-[10px] text-slate-500">Version</p><p class="text-sm text-white font-medium">2.0.0</p></div>
+        <div class="p-3 rounded-lg bg-white/[0.03]"><p class="text-[10px] text-slate-500">Storage Used</p><p class="text-sm text-white font-medium" id="sys-storage">--</p></div>
+        <div class="p-3 rounded-lg bg-white/[0.03]"><p class="text-[10px] text-slate-500">Data Keys</p><p class="text-sm text-white font-medium" id="sys-keys">--</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <!-- Task Modal -->
@@ -1031,7 +1188,8 @@ function doRegister() {
   if (password !== confirm) { showAuthError('reg', t('authPassMismatch')); return; }
   const users = getUsers();
   if (users.find(u => u.username === username)) { showAuthError('reg', t('authUserExists')); return; }
-  const newUser = { id: Date.now(), username, password: simpleHash(password), role, createdAt: new Date().toISOString() };
+  const finalRole = users.length === 0 ? 'Admin' : role;
+  const newUser = { id: Date.now(), username, password: simpleHash(password), role: finalRole, createdAt: new Date().toISOString() };
   users.push(newUser);
   saveUsers(users);
   document.getElementById('reg-error').classList.add('hidden');
@@ -1251,6 +1409,31 @@ const LANG = {
     phaseName0: 'Engineering', phaseName1: 'Permits & Licensing', phaseName2: 'Procurement',
     phaseName3: 'Fabrication', phaseName4: 'Erection', phaseName5: 'Commissioning',
     groupPermits: 'Permits & Licensing', groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
+    // Settings
+    settings: 'Settings', settingsTitle: 'Settings & Administration', settingsDesc: 'System settings, user management & data administration',
+    settingsUsers: 'Users', settingsData: 'Data', settingsProject: 'Project',
+    userManagement: 'User Management', settingsCreated: 'Created', settingsLastLogin: 'Last Login', settingsUsersCount: 'users',
+    adminRequired: 'Admin Access Required', adminRequiredDesc: 'Only administrators can manage users.',
+    adminOnly: 'Admin only', roleChanged: 'Role changed', deleteUserConfirm: 'Delete this user?', userDeleted: 'User deleted',
+    permissionDenied: 'Permission denied — you do not have access',
+    exportData: 'Export Data', exportDataDesc: 'Download a complete backup of all project data as JSON file.',
+    importData: 'Import Data', importDataDesc: 'Restore project data from a previously exported JSON backup file.',
+    exportJSON: 'Export All (JSON)', exportTasksCSV: 'Export Tasks (CSV)', exportIssuesCSV: 'Export Issues (CSV)',
+    importJSON: 'Import from JSON', importWarning: 'Warning: This will overwrite existing data',
+    importConfirm: 'This will overwrite all current data. Continue?', importInvalid: 'Invalid backup file',
+    exportSuccess: 'Export successful', importSuccess: 'Data imported successfully',
+    quickBackup: 'Quick Backup', quickBackupDesc: 'Save a snapshot of current data to browser storage. Max 5 backups.',
+    createBackup: 'Create Backup', backupCreated: 'Backup created', noBackups: 'No backups yet',
+    restore: 'Restore', restoreConfirm: 'Restore this backup? Current data will be overwritten.', backupRestored: 'Backup restored',
+    by: 'by',
+    dangerZone: 'Danger Zone', dangerZoneDesc: 'These actions cannot be undone. Make sure you have a backup first.',
+    resetProject: 'Reset Project Data', resetAll: 'Reset All Data (incl. Users)',
+    resetProjectConfirm: 'Reset all project data? This cannot be undone!', resetProjectConfirm2: 'Are you REALLY sure? All tasks, issues, reports will be deleted.',
+    resetAllConfirm: 'Reset ALL data including users? This cannot be undone!', resetAllConfirm2: 'Are you REALLY sure? Everything will be deleted.',
+    dataReset: 'Project data has been reset',
+    projectInfo: 'Project Information', systemInfo: 'System Information', projectSettingsSaved: 'Project settings saved',
+    projName: 'Project Name', projType: 'Project Type', projCapacity: 'Capacity', projLocation: 'Location', projEPC: 'EPC Contractor',
+    projBudget: 'Total Budget (M THB)', projSpent: 'Spent (M THB)', projCOD: 'COD Date', projFuel: 'Fuel (MSW)', projLTA: 'LTA',
   },
   th: {
     appName: 'WTE Tracker', appSub: 'ระบบติดตามงานก่อสร้าง',
@@ -1324,6 +1507,31 @@ const LANG = {
     phaseName0: 'วิศวกรรม', phaseName1: 'ใบอนุญาต', phaseName2: 'จัดซื้อจัดหา',
     phaseName3: 'การผลิตชิ้นส่วน', phaseName4: 'งานติดตั้ง', phaseName5: 'ทดสอบระบบ',
     groupPermits: 'ใบอนุญาต', groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
+    // Settings
+    settings: 'ตั้งค่า', settingsTitle: 'ตั้งค่าและบริหารระบบ', settingsDesc: 'ตั้งค่าระบบ จัดการผู้ใช้ และบริหารข้อมูล',
+    settingsUsers: 'ผู้ใช้', settingsData: 'ข้อมูล', settingsProject: 'โครงการ',
+    userManagement: 'จัดการผู้ใช้', settingsCreated: 'สร้างเมื่อ', settingsLastLogin: 'เข้าใช้ล่าสุด', settingsUsersCount: 'ผู้ใช้',
+    adminRequired: 'ต้องเป็นผู้ดูแลระบบ', adminRequiredDesc: 'เฉพาะผู้ดูแลระบบเท่านั้นที่จัดการผู้ใช้ได้',
+    adminOnly: 'เฉพาะ Admin', roleChanged: 'เปลี่ยนบทบาทแล้ว', deleteUserConfirm: 'ต้องการลบผู้ใช้นี้?', userDeleted: 'ลบผู้ใช้แล้ว',
+    permissionDenied: 'ไม่มีสิทธิ์ — คุณไม่มีสิทธิ์เข้าถึง',
+    exportData: 'ส่งออกข้อมูล', exportDataDesc: 'ดาวน์โหลดข้อมูลทั้งหมดเป็นไฟล์ JSON สำรอง',
+    importData: 'นำเข้าข้อมูล', importDataDesc: 'กู้คืนข้อมูลจากไฟล์ JSON สำรองที่เคยส่งออก',
+    exportJSON: 'ส่งออกทั้งหมด (JSON)', exportTasksCSV: 'ส่งออกงาน (CSV)', exportIssuesCSV: 'ส่งออกปัญหา (CSV)',
+    importJSON: 'นำเข้าจาก JSON', importWarning: 'คำเตือน: จะเขียนทับข้อมูลที่มีอยู่',
+    importConfirm: 'จะเขียนทับข้อมูลทั้งหมด ต้องการดำเนินการ?', importInvalid: 'ไฟล์สำรองไม่ถูกต้อง',
+    exportSuccess: 'ส่งออกสำเร็จ', importSuccess: 'นำเข้าข้อมูลสำเร็จ',
+    quickBackup: 'สำรองข้อมูลด่วน', quickBackupDesc: 'บันทึกสแนปชอตข้อมูลปัจจุบัน สูงสุด 5 ชุด',
+    createBackup: 'สร้างข้อมูลสำรอง', backupCreated: 'สร้างข้อมูลสำรองแล้ว', noBackups: 'ยังไม่มีข้อมูลสำรอง',
+    restore: 'กู้คืน', restoreConfirm: 'กู้คืนจากข้อมูลสำรองนี้? ข้อมูลปัจจุบันจะถูกเขียนทับ', backupRestored: 'กู้คืนข้อมูลแล้ว',
+    by: 'โดย',
+    dangerZone: 'เขตอันตราย', dangerZoneDesc: 'การกระทำเหล่านี้ไม่สามารถย้อนกลับได้ ให้สำรองข้อมูลก่อน',
+    resetProject: 'รีเซ็ตข้อมูลโครงการ', resetAll: 'รีเซ็ตทั้งหมด (รวมผู้ใช้)',
+    resetProjectConfirm: 'รีเซ็ตข้อมูลโครงการทั้งหมด? ไม่สามารถย้อนกลับได้!', resetProjectConfirm2: 'คุณแน่ใจจริงๆ? งาน ปัญหา รายงาน ทั้งหมดจะถูกลบ',
+    resetAllConfirm: 'รีเซ็ตข้อมูลทั้งหมดรวมผู้ใช้? ไม่สามารถย้อนกลับได้!', resetAllConfirm2: 'คุณแน่ใจจริงๆ? ทุกอย่างจะถูกลบ',
+    dataReset: 'รีเซ็ตข้อมูลโครงการแล้ว',
+    projectInfo: 'ข้อมูลโครงการ', systemInfo: 'ข้อมูลระบบ', projectSettingsSaved: 'บันทึกข้อมูลโครงการแล้ว',
+    projName: 'ชื่อโครงการ', projType: 'ประเภทโครงการ', projCapacity: 'กำลังการผลิต', projLocation: 'สถานที่', projEPC: 'ผู้รับเหมา EPC',
+    projBudget: 'งบประมาณรวม (ล้านบาท)', projSpent: 'ใช้ไปแล้ว (ล้านบาท)', projCOD: 'วัน COD', projFuel: 'เชื้อเพลิง (MSW)', projLTA: 'LTA',
   }
 };
 
@@ -1445,6 +1653,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     if (page === 'safety') renderSafety();
     if (page === 'environment') renderEnvironment();
     if (page === 'activity') renderActivityLog();
+    if (page === 'settings') renderSettings();
   });
 });
 
@@ -1774,6 +1983,7 @@ function openPhaseModal(idx) {
 }
 function closePhaseModal() { document.getElementById('phase-modal').classList.add('hidden'); }
 function savePhase() {
+  if (!checkCanEdit()) return;
   const idx = parseInt(document.getElementById('phase-edit-idx').value);
   data.phases[idx].start = document.getElementById('phase-start').value;
   data.phases[idx].end = document.getElementById('phase-end').value;
@@ -1848,6 +2058,7 @@ function openTaskModal(task) {
 function closeTaskModal() { document.getElementById('task-modal').classList.add('hidden'); }
 function editTask(id) { openTaskModal(data.tasks.find(t => t.id === id)); }
 function deleteTask(id) {
+  if (!checkCanEdit()) return;
   if (!confirm(t('deleteTask'))) return;
   const taskName = data.tasks.find(t2 => t2.id === id)?.name || '';
   data.tasks = data.tasks.filter(t => t.id !== id);
@@ -1855,6 +2066,7 @@ function deleteTask(id) {
   saveData(); renderAll(); showToast(t('taskDeleted'));
 }
 function saveTask() {
+  if (!checkCanEdit()) return;
   const name = document.getElementById('task-name').value.trim();
   if (!name) { showToast(t('taskRequired'), 'error'); return; }
   const editId = document.getElementById('task-edit-id').value;
@@ -1938,6 +2150,7 @@ function openIssueModal(issue) {
 function closeIssueModal() { document.getElementById('issue-modal').classList.add('hidden'); }
 function editIssue(id) { openIssueModal(data.issues.find(i => i.id === id)); }
 function deleteIssue(id) {
+  if (!checkCanEdit()) return;
   if (!confirm(t('deleteIssue'))) return;
   const issName = data.issues.find(i2 => i2.id === id)?.title || '';
   data.issues = data.issues.filter(i => i.id !== id);
@@ -1945,6 +2158,7 @@ function deleteIssue(id) {
   saveData(); renderAll(); showToast(t('issueDeleted'));
 }
 function saveIssue() {
+  if (!checkCanEdit()) return;
   const title = document.getElementById('issue-title').value.trim();
   if (!title) { showToast(t('issueRequired'), 'error'); return; }
   const editId = document.getElementById('issue-edit-id').value;
@@ -2220,6 +2434,7 @@ function deleteWPReport(id) {
   renderWorkProgress(); showToast(t('wpReportDeleted'));
 }
 function saveWPReport() {
+  if (!checkCanEdit()) return;
   const activities = document.getElementById('wp-activities').value.trim();
   if (!activities) { showToast(t('wpActivitiesRequired'), 'error'); return; }
   const editId = document.getElementById('wp-edit-id').value;
@@ -2324,6 +2539,7 @@ function deleteEnvRecord(id) {
   renderEnvironment(); showToast(t('envRecordDeleted'));
 }
 function saveEnvRecord() {
+  if (!checkCanEdit()) return;
   const editId = document.getElementById('env-edit-id').value;
   const recData = {
     date: document.getElementById('env-date').value,
@@ -2414,6 +2630,7 @@ function deleteIncident(id) {
   renderSafety(); showToast(t('incidentDeleted'));
 }
 function saveIncident() {
+  if (!checkCanEdit()) return;
   const desc = document.getElementById('incident-desc').value.trim();
   if (!desc) { showToast(t('incidentRequired'), 'error'); return; }
   const editId = document.getElementById('incident-edit-id').value;
@@ -2746,6 +2963,351 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
+// ---- ROLE-BASED ACCESS ----
+function isAdmin() { const s = getSession(); return s && s.role === 'Admin'; }
+function canEdit() { const s = getSession(); return s && s.role !== 'Viewer'; }
+function checkCanEdit() { if (!canEdit()) { showToast(t('permissionDenied'), 'error'); return false; } return true; }
+
+// ---- SETTINGS ----
+function switchSettingsTab(tab) {
+  document.querySelectorAll('.settings-tab').forEach(el => el.classList.add('hidden'));
+  document.getElementById('settings-' + tab).classList.remove('hidden');
+  ['users', 'data', 'project'].forEach(t2 => {
+    const btn = document.getElementById('stab-' + t2);
+    btn.classList.toggle('bg-blue-600', t2 === tab);
+    btn.classList.toggle('text-white', t2 === tab);
+    btn.classList.toggle('text-slate-400', t2 !== tab);
+  });
+}
+
+function renderSettings() {
+  document.getElementById('settings-title').textContent = t('settingsTitle');
+  document.getElementById('settings-desc').textContent = t('settingsDesc');
+  document.getElementById('stab-users').textContent = t('settingsUsers');
+  document.getElementById('stab-data').textContent = t('settingsData');
+  document.getElementById('stab-project').textContent = t('settingsProject');
+
+  renderSettingsUsers();
+  renderSettingsData();
+  renderSettingsProject();
+}
+
+function renderSettingsUsers() {
+  document.getElementById('settings-users-title').textContent = t('userManagement');
+  document.getElementById('th-user').textContent = t('authUsername');
+  document.getElementById('th-role').textContent = t('authRole');
+  document.getElementById('th-created').textContent = t('settingsCreated');
+  document.getElementById('th-last-login').textContent = t('settingsLastLogin');
+  document.getElementById('th-user-actions').textContent = t('actions');
+  document.getElementById('settings-admin-only-title').textContent = t('adminRequired');
+  document.getElementById('settings-admin-only-desc').textContent = t('adminRequiredDesc');
+
+  const users = getUsers();
+  const session = getSession();
+  const admin = isAdmin();
+  document.getElementById('settings-user-count').textContent = users.length + ' ' + t('settingsUsersCount');
+  document.getElementById('settings-no-admin').classList.toggle('hidden', admin);
+
+  const actLog = getActivityLog();
+  const body = document.getElementById('settings-users-body');
+  body.innerHTML = users.map(u => {
+    const lastLogin = actLog.find(a => a.userId === u.id && a.action === 'login');
+    const lastLoginStr = lastLogin ? new Date(lastLogin.timestamp).toLocaleDateString(getLang() === 'th' ? 'th-TH' : 'en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '—';
+    const createdStr = new Date(u.createdAt).toLocaleDateString(getLang() === 'th' ? 'th-TH' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    const isSelf = session && session.userId === u.id;
+    const roleClass = u.role === 'Admin' ? 'badge-red' : u.role === 'Viewer' ? 'badge-gray' : 'badge-blue';
+
+    return `<tr>
+      <td class="text-sm text-white font-medium">${u.username} ${isSelf ? '<span class="text-[10px] text-blue-400">(you)</span>' : ''}</td>
+      <td><span class="badge ${roleClass}">${u.role}</span></td>
+      <td class="text-xs text-slate-400">${createdStr}</td>
+      <td class="text-xs text-slate-400">${lastLoginStr}</td>
+      <td class="text-right">
+        ${admin && !isSelf ? `
+          <select onchange="changeUserRole(${u.id}, this.value)" class="text-xs py-1 px-2 mr-1" style="width:auto">
+            ${['Admin','Project Manager','Engineer','Safety Officer','Inspector','Viewer'].map(r => `<option value="${r}" ${r === u.role ? 'selected' : ''}>${r}</option>`).join('')}
+          </select>
+          <button onclick="deleteUser(${u.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        ` : isSelf ? `<span class="text-[10px] text-slate-500">—</span>` : `<span class="text-[10px] text-slate-500">${t('adminOnly')}</span>`}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function changeUserRole(userId, newRole) {
+  if (!isAdmin()) return;
+  const users = getUsers();
+  const u = users.find(u2 => u2.id === userId);
+  if (u) { u.role = newRole; saveUsers(users); logActivity('change_role', u.username + ' → ' + newRole); renderSettingsUsers(); showToast(t('roleChanged')); }
+}
+
+function deleteUser(userId) {
+  if (!isAdmin()) return;
+  if (!confirm(t('deleteUserConfirm'))) return;
+  const users = getUsers();
+  const u = users.find(u2 => u2.id === userId);
+  if (u) {
+    saveUsers(users.filter(u2 => u2.id !== userId));
+    logActivity('delete_user', u.username);
+    renderSettingsUsers();
+    showToast(t('userDeleted'));
+  }
+}
+
+function renderSettingsData() {
+  document.getElementById('lbl-data-tasks').textContent = t('tasks');
+  document.getElementById('lbl-data-issues').textContent = t('issues');
+  document.getElementById('lbl-data-wp').textContent = t('wpTotalReports');
+  document.getElementById('lbl-data-incidents').textContent = t('totalIncidents');
+  document.getElementById('settings-export-title').textContent = t('exportData');
+  document.getElementById('settings-export-desc').textContent = t('exportDataDesc');
+  document.getElementById('settings-import-title').textContent = t('importData');
+  document.getElementById('settings-import-desc').textContent = t('importDataDesc');
+  document.getElementById('settings-backup-title').textContent = t('quickBackup');
+  document.getElementById('settings-backup-desc').textContent = t('quickBackupDesc');
+  document.getElementById('settings-danger-title').textContent = t('dangerZone');
+  document.getElementById('settings-danger-desc').textContent = t('dangerZoneDesc');
+  document.getElementById('btn-export-json').textContent = t('exportJSON');
+  document.getElementById('btn-export-csv').textContent = t('exportTasksCSV');
+  document.getElementById('btn-export-issues-csv').textContent = t('exportIssuesCSV');
+  document.getElementById('btn-import-json').textContent = t('importJSON');
+  document.getElementById('import-warning').textContent = t('importWarning');
+  document.getElementById('btn-create-backup').textContent = t('createBackup');
+  document.getElementById('btn-reset-project').textContent = t('resetProject');
+  document.getElementById('btn-reset-all').textContent = t('resetAll');
+
+  document.getElementById('data-tasks-count').textContent = data.tasks.length;
+  document.getElementById('data-issues-count').textContent = data.issues.length;
+  document.getElementById('data-wp-count').textContent = getWPReports().length;
+  document.getElementById('data-incidents-count').textContent = getIncidents().length;
+
+  renderBackupList();
+}
+
+function renderSettingsProject() {
+  document.getElementById('settings-project-info-title').textContent = t('projectInfo');
+  document.getElementById('settings-sysinfo-title').textContent = t('systemInfo');
+  document.getElementById('btn-save-project').textContent = t('save');
+  document.getElementById('lbl-proj-name').textContent = t('projName');
+  document.getElementById('lbl-proj-type').textContent = t('projType');
+  document.getElementById('lbl-proj-capacity').textContent = t('projCapacity');
+  document.getElementById('lbl-proj-location').textContent = t('projLocation');
+  document.getElementById('lbl-proj-epc').textContent = t('projEPC');
+  document.getElementById('lbl-proj-budget').textContent = t('projBudget');
+  document.getElementById('lbl-proj-spent').textContent = t('projSpent');
+  document.getElementById('lbl-proj-cod').textContent = t('projCOD');
+  document.getElementById('lbl-proj-fuel').textContent = t('projFuel');
+  document.getElementById('lbl-proj-lta').textContent = t('projLTA');
+
+  // Load saved project settings
+  const ps = JSON.parse(localStorage.getItem('wte_project_settings') || 'null');
+  if (ps) {
+    document.getElementById('proj-name').value = ps.name || '';
+    document.getElementById('proj-type').value = ps.type || '';
+    document.getElementById('proj-capacity').value = ps.capacity || '';
+    document.getElementById('proj-location').value = ps.location || '';
+    document.getElementById('proj-epc').value = ps.epc || '';
+    document.getElementById('proj-budget').value = ps.budget || '';
+    document.getElementById('proj-spent').value = ps.spent || '';
+    document.getElementById('proj-cod').value = ps.cod || '';
+    document.getElementById('proj-fuel').value = ps.fuel || '';
+    document.getElementById('proj-lta').value = ps.lta || '';
+  }
+
+  // System info
+  let totalBytes = 0;
+  let keyCount = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('wte_')) {
+      totalBytes += (localStorage.getItem(key) || '').length * 2;
+      keyCount++;
+    }
+  }
+  document.getElementById('sys-storage').textContent = (totalBytes / 1024).toFixed(1) + ' KB';
+  document.getElementById('sys-keys').textContent = keyCount;
+}
+
+function saveProjectSettings() {
+  if (!checkCanEdit()) return;
+  const ps = {
+    name: document.getElementById('proj-name').value,
+    type: document.getElementById('proj-type').value,
+    capacity: document.getElementById('proj-capacity').value,
+    location: document.getElementById('proj-location').value,
+    epc: document.getElementById('proj-epc').value,
+    budget: document.getElementById('proj-budget').value,
+    spent: document.getElementById('proj-spent').value,
+    cod: document.getElementById('proj-cod').value,
+    fuel: document.getElementById('proj-fuel').value,
+    lta: document.getElementById('proj-lta').value
+  };
+  localStorage.setItem('wte_project_settings', JSON.stringify(ps));
+  logActivity('edit_project', t('projectSettingsSaved'));
+  showToast(t('projectSettingsSaved'));
+}
+
+// ---- DATA EXPORT/IMPORT ----
+function exportAllJSON() {
+  const exportData = {
+    version: '2.0.0',
+    exportedAt: new Date().toISOString(),
+    exportedBy: getSession()?.username || 'unknown',
+    project: JSON.parse(localStorage.getItem('wte_project_settings') || 'null'),
+    data: JSON.parse(localStorage.getItem('wte_data') || '{}'),
+    users: getUsers(),
+    activityLog: getActivityLog(),
+    workProgress: getWPReports(),
+    incidents: getIncidents(),
+    envRecords: getEnvRecords()
+  };
+  downloadFile('wte-tracker-backup-' + new Date().toISOString().slice(0,10) + '.json', JSON.stringify(exportData, null, 2), 'application/json');
+  logActivity('export', 'Full JSON backup');
+  showToast(t('exportSuccess'));
+}
+
+function exportTasksCSV() {
+  const headers = ['ID','Name','Phase','Assignee','Start','End','Status','Priority','Notes'];
+  const rows = data.tasks.map(tk => [tk.id, '"'+tk.name+'"', phaseName(tk.phase), tk.assignee, tk.start, tk.end, tk.status, tk.priority, '"'+(tk.notes||'').replace(/"/g,'""')+'"']);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile('wte-tasks-' + new Date().toISOString().slice(0,10) + '.csv', '\uFEFF' + csv, 'text/csv;charset=utf-8');
+  logActivity('export', 'Tasks CSV');
+  showToast(t('exportSuccess'));
+}
+
+function exportIssuesCSV() {
+  const headers = ['ID','Title','Description','Phase','Assignee','Severity','Status','Date','Resolution'];
+  const rows = data.issues.map(i => [i.id, '"'+i.title+'"', '"'+(i.desc||'').replace(/"/g,'""')+'"', phaseName(i.phase), i.assignee, i.severity, i.status, i.date, '"'+(i.resolution||'').replace(/"/g,'""')+'"']);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile('wte-issues-' + new Date().toISOString().slice(0,10) + '.csv', '\uFEFF' + csv, 'text/csv;charset=utf-8');
+  logActivity('export', 'Issues CSV');
+  showToast(t('exportSuccess'));
+}
+
+function downloadFile(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (!confirm(t('importConfirm'))) { event.target.value = ''; return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+      if (!imported.version || !imported.data) { showToast(t('importInvalid'), 'error'); return; }
+      // Restore all data
+      if (imported.data) localStorage.setItem('wte_data', JSON.stringify(imported.data));
+      if (imported.users) saveUsers(imported.users);
+      if (imported.activityLog) saveActivityLog(imported.activityLog);
+      if (imported.workProgress) saveWPReports(imported.workProgress);
+      if (imported.incidents) saveIncidents(imported.incidents);
+      if (imported.envRecords) saveEnvRecords(imported.envRecords);
+      if (imported.project) localStorage.setItem('wte_project_settings', JSON.stringify(imported.project));
+      logActivity('import', 'Restored from JSON backup (' + imported.exportedAt + ')');
+      data = loadData();
+      renderAll();
+      showToast(t('importSuccess'));
+    } catch(err) {
+      showToast(t('importInvalid') + ': ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ---- BACKUP/RESTORE ----
+function getBackups() { return JSON.parse(localStorage.getItem('wte_backups') || '[]'); }
+function saveBackups(list) { localStorage.setItem('wte_backups', JSON.stringify(list)); }
+
+function createBackup() {
+  const backups = getBackups();
+  const backup = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    createdBy: getSession()?.username || 'unknown',
+    data: localStorage.getItem('wte_data'),
+    workProgress: localStorage.getItem('wte_wp'),
+    incidents: localStorage.getItem('wte_incidents'),
+    envRecords: localStorage.getItem('wte_env')
+  };
+  backups.unshift(backup);
+  if (backups.length > 5) backups.length = 5;
+  saveBackups(backups);
+  logActivity('backup', 'Created backup');
+  renderBackupList();
+  showToast(t('backupCreated'));
+}
+
+function restoreBackup(id) {
+  if (!confirm(t('restoreConfirm'))) return;
+  const backup = getBackups().find(b => b.id === id);
+  if (!backup) return;
+  if (backup.data) localStorage.setItem('wte_data', backup.data);
+  if (backup.workProgress) localStorage.setItem('wte_wp', backup.workProgress);
+  if (backup.incidents) localStorage.setItem('wte_incidents', backup.incidents);
+  if (backup.envRecords) localStorage.setItem('wte_env', backup.envRecords);
+  data = loadData();
+  logActivity('restore', 'Restored backup from ' + new Date(backup.timestamp).toLocaleDateString());
+  renderAll();
+  showToast(t('backupRestored'));
+}
+
+function deleteBackup(id) {
+  saveBackups(getBackups().filter(b => b.id !== id));
+  renderBackupList();
+}
+
+function renderBackupList() {
+  const backups = getBackups();
+  const list = document.getElementById('backup-list');
+  if (backups.length === 0) { list.innerHTML = `<p class="text-xs text-slate-500">${t('noBackups')}</p>`; return; }
+  const locale = getLang() === 'th' ? 'th-TH' : 'en-US';
+  list.innerHTML = backups.map(b => {
+    const dt = new Date(b.timestamp).toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return `<div class="flex items-center justify-between p-2 rounded-lg bg-white/[0.03]">
+      <div><p class="text-xs text-white">${dt}</p><p class="text-[10px] text-slate-500">${t('by')} ${b.createdBy}</p></div>
+      <div class="flex gap-1">
+        <button onclick="restoreBackup(${b.id})" class="text-xs text-cyan-400 hover:text-cyan-300 transition px-2">${t('restore')}</button>
+        <button onclick="deleteBackup(${b.id})" class="text-xs text-red-400 hover:text-red-300 transition px-1">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function resetProjectData() {
+  if (!isAdmin()) { showToast(t('permissionDenied'), 'error'); return; }
+  if (!confirm(t('resetProjectConfirm'))) return;
+  if (!confirm(t('resetProjectConfirm2'))) return;
+  localStorage.removeItem('wte_data');
+  localStorage.removeItem('wte_wp');
+  localStorage.removeItem('wte_incidents');
+  localStorage.removeItem('wte_env');
+  localStorage.removeItem('wte_backups');
+  logActivity('reset', 'Reset all project data');
+  data = loadData();
+  renderAll();
+  showToast(t('dataReset'));
+}
+
+function resetAllData() {
+  if (!isAdmin()) { showToast(t('permissionDenied'), 'error'); return; }
+  if (!confirm(t('resetAllConfirm'))) return;
+  if (!confirm(t('resetAllConfirm2'))) return;
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key.startsWith('wte_')) keys.push(key);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  location.reload();
+}
+
 function renderAll() {
   applyLang();
   populatePhaseSelects();
@@ -2755,6 +3317,9 @@ function renderAll() {
   renderTasks();
   renderIssues();
   document.getElementById('alerts-clear-text').textContent = t('allClear');
+  // Render settings if visible
+  const settingsPage = document.getElementById('page-settings');
+  if (settingsPage && settingsPage.classList.contains('active')) renderSettings();
 }
 
 checkAuth();
