@@ -2911,7 +2911,52 @@ function wpSystemName(key) {
 }
 function wpSystemIcon(key) { return WP_SYSTEMS.find(s => s.key === key)?.icon || '📝'; }
 
-function getWPReports() { return JSON.parse(localStorage.getItem('wte_wp') || '[]'); }
+const DEFAULT_WP_REPORTS = [
+  {
+    id: 1001,
+    date: '2026-03-17',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 0,
+    equipment: 0,
+    system: 'boiler',
+    activities: 'LSB Production Status Update (Ref: KKG-TQ-LSB-2026-001):\n• Steel Structure: Ready for shipment (100%)\n• Air Preheater: Finished production (100%)\n• Economizer: Finished production (100%)\n• Membrane Wall: Production ~20%\n• Superheater: Production ~20%\n• Other components: Under production\n• MT SH tube material changed to TP347H per request email 24 Feb 2026 — new material purchased',
+    issues: 'TQ-06: Gas duct material SUS304 vs SUS316 — 304 plate ordered & arrived at LSB workshop, not yet cutting. KKG to confirm if change to 316 (gap price quotation from LSB). TQ-01: LAWI raised concern on 1st pass header screen design & bottom wall slope (45°) — LSB maintains design is proven from Global Green & Earth Tech projects.',
+    photos: '',
+    remarks: 'LSB reply to TRC Technical Clarification (9 items TQ-01 to TQ-09). Mass production started mid-Jan 2026. SNCR spray flow controllable with 3 rows of guns. APH tube material: 09CrCuSb with enamel coating. SB steam pipe DN50 main, DN80 distribution.'
+  },
+  {
+    id: 1002,
+    date: '2026-03-06',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 0,
+    equipment: 0,
+    system: 'boiler',
+    activities: 'LAWI Engineering Steam Boiler Technical Review Released (Doc: B-607-A4.1-00-00-QA-001 Rev.1)\n\nBoiler Design Parameters:\n• Live steam: 55 t/h BMCR, 51.4 t/h TMCR (9.9 MWel)\n• Steam: 415°C / 42 bar(a)\n• Feedwater: 130°C (LSB deviation: 135°C)\n• 5-path boiler layout with membrane walls\n• HT Superheater: TP347H material (10 radiant panels in 3rd pass)\n• Economizer: 3 packages, counter flow\n• Air Preheater: 09CrCuSb + enamel coating',
+    issues: 'LAWI Critical Issues Identified:\n1) 1st pass header screen & bottom wall slope 45° — risk of ash accumulation (LAWI recommends >55°)\n2) Economizer tube clearance only 30mm — high risk of ash blockage & evaporation at high load (12.7 mass% steam = 82.7 vol% at 100% TMCR)\n3) High flue gas temp & velocity at full load — MT SH inlet 686°C with 11.75 m/s (guideline: <650°C, <8 m/s) — HT-chlorine corrosion risk',
+    photos: '',
+    remarks: 'LAWI Conclusion: Boiler is suitable for operation at <60% load. At full TMCR/BMCR load, frequent maintenance expected. Deviations found: feedwater temp 135°C vs 130°C design, economizer outlet gas 255°C vs 220°C, air temp 160°C vs 132°C. FGR suction point moved to between APH packages (was after economizer). Recommend preparing for protective evaporator installation in front of MT-SH for future.'
+  },
+  {
+    id: 1003,
+    date: '2026-03-06',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 0,
+    equipment: 0,
+    system: 'boiler',
+    activities: 'LAWI Boiler Thermal Recalculation Results (PPSD Software):\n\nAt 100% TMCR (51.4 t/h / 9.9 MWel) — Fouled Condition:\n• 1st pass gas velocity: up to 16.2 m/s (very high)\n• HT-SH inlet temp: 807°C (LSB calc: 750°C)\n• MT-SH inlet: 686°C / 11.75 m/s — severe HT-chlorine corrosion risk\n• Economizer gas velocity: 12 m/s — tube erosion concern\n• Strong evaporation in economizer: plug flow condition\n\nAt 4 MWel (23.4 t/h) — Part Load:\n• Gas velocity 5-6 m/s — acceptable\n• HT-SH inlet: 678°C — low corrosion risk\n• MT-SH inlet: 537°C — acceptable\n• Boiler operates well at this load',
+    issues: 'Heat surface area discrepancy: LSB membrane wall pass 3 = 500 m² vs LAWI calc 184 m² based on GA drawing. LSB fouling factors appear closer to wood biomass than MSW. Soot blower steam supply DN32 may be undersized (consumption 80-100 kg/min per blower). SB nozzle-to-tube distance <230mm in HT-SH — tube erosion risk from jet impact.',
+    photos: '',
+    remarks: 'LAWI recommends: (1) Install tube protection covers on 1st row HT-SH tubes, (2) Extend service platform for soot blower maintenance, (3) Prepare nozzles for future protective evaporator, (4) Monitor SNCR urea jet penetration at high load — gas velocity 11-14 m/s will deflect spray. Boiler concept proven in similar RDF plant in Thailand but fuel composition differs.'
+  }
+];
+function getWPReports() {
+  const stored = localStorage.getItem('wte_wp');
+  if (!stored) { localStorage.setItem('wte_wp', JSON.stringify(DEFAULT_WP_REPORTS)); return [...DEFAULT_WP_REPORTS]; }
+  return JSON.parse(stored);
+}
 function saveWPReports(list) { localStorage.setItem('wte_wp', JSON.stringify(list)); }
 
 function renderWorkProgress() {
