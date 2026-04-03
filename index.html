@@ -77,6 +77,7 @@ tailwind.config = {
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   @keyframes blink-red { 0%,100% { box-shadow: 0 0 4px rgba(239,68,68,0.3); } 50% { box-shadow: 0 0 16px rgba(239,68,68,0.7); } }
   @keyframes blink-amber { 0%,100% { box-shadow: 0 0 4px rgba(245,158,11,0.3); } 50% { box-shadow: 0 0 16px rgba(245,158,11,0.7); } }
+  @keyframes blink-green { 0%,100% { box-shadow: 0 0 4px rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 12px rgba(16,185,129,0.6); } }
   .blink-red { animation: blink-red 1.5s ease-in-out infinite; }
   .blink-amber { animation: blink-amber 1.5s ease-in-out infinite; }
   .modal-overlay { background: var(--modal-overlay); backdrop-filter: blur(4px); }
@@ -187,17 +188,13 @@ tailwind.config = {
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
       Dashboard
     </div>
-    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="phases">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-      Phases
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="permits">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Permits & Licensing
     </div>
-    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="tasks">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-      Tasks
-    </div>
-    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="issues">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
-      Issues
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="workprogress">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      Work Progress
     </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="reports">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
@@ -211,10 +208,6 @@ tailwind.config = {
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="weather">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
       Weather
-    </div>
-    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="workprogress">
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-      Work Progress
     </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="safety">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
@@ -461,6 +454,16 @@ tailwind.config = {
   <h3 class="text-sm font-semibold text-white mb-4" id="dash-phase-progress-title">Phase Progress</h3>
   <div class="grid grid-cols-4 gap-4 mb-8" id="phase-cards"></div>
 
+  <!-- Permits Summary Widget -->
+  <div class="card p-5 mb-8 cursor-pointer" onclick="document.querySelector('[data-page=permits]').click()">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold text-white" id="dash-permits-title">Permits & Licensing</h3>
+      <span class="text-[10px] text-blue-400">View details →</span>
+    </div>
+    <div class="grid grid-cols-4 gap-3 mb-3" id="dash-permits-stats"></div>
+    <div id="dash-permits-alerts" class="space-y-1"></div>
+  </div>
+
   <!-- Recent Alerts -->
   <div class="card p-6">
     <h3 class="text-sm font-semibold text-white mb-4" id="dash-alerts-title">Recent Alerts</h3>
@@ -468,88 +471,195 @@ tailwind.config = {
   </div>
 </div>
 
-<!-- Phases Page -->
-<div id="page-phases" class="page">
-  <div class="flex items-center justify-between mb-8">
-    <div>
-      <h2 class="text-2xl font-bold text-white" id="phases-title">Construction Phases</h2>
-      <p class="text-sm text-slate-400 mt-1" id="phases-desc">Track progress for each construction phase</p>
-    </div>
-  </div>
-  <div class="space-y-4" id="phases-list"></div>
-</div>
-
-<!-- Tasks Page -->
-<div id="page-tasks" class="page">
+<!-- Permits & Licensing Page -->
+<div id="page-permits" class="page">
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h2 class="text-2xl font-bold text-white" id="tasks-title">Task Management</h2>
-      <p class="text-sm text-slate-400 mt-1" id="tasks-desc">Manage all construction tasks</p>
+      <h2 class="text-2xl font-bold text-white" id="permits-page-title">Permits & Licensing</h2>
+      <p class="text-sm text-slate-400 mt-1" id="permits-page-desc">Track all permits, licenses and regulatory approvals</p>
     </div>
-    <button onclick="openTaskModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      <span id="tasks-add-btn">Add Task</span>
-    </button>
+    <div class="flex gap-2">
+      <button onclick="exportPermitReport()" class="bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span id="permits-export-btn">Export Report</span>
+      </button>
+      <button onclick="openPermitModal()" class="bg-gradient-to-r from-cyan-600 to-teal-500 hover:from-cyan-500 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <span id="permits-add-btn">Add Permit</span>
+      </button>
+    </div>
   </div>
+
+  <!-- Stat Cards -->
+  <div class="grid grid-cols-4 gap-5 mb-8">
+    <div class="stat-card blue">
+      <p class="text-xs text-slate-400 mb-1" id="lbl-permits-total">Total Permits</p>
+      <p class="text-3xl font-bold text-white" id="permits-stat-total">0</p>
+    </div>
+    <div class="stat-card green">
+      <p class="text-xs text-slate-400 mb-1" id="lbl-permits-obtained">Obtained</p>
+      <p class="text-3xl font-bold text-white" id="permits-stat-obtained">0</p>
+      <p class="text-xs text-emerald-400 mt-2" id="permits-stat-obtained-pct">0%</p>
+    </div>
+    <div class="stat-card amber">
+      <p class="text-xs text-slate-400 mb-1" id="lbl-permits-pending">Pending</p>
+      <p class="text-3xl font-bold text-white" id="permits-stat-pending">0</p>
+    </div>
+    <div class="stat-card red">
+      <p class="text-xs text-slate-400 mb-1" id="lbl-permits-expired">Expired / At Risk</p>
+      <p class="text-3xl font-bold text-white" id="permits-stat-expired">0</p>
+    </div>
+  </div>
+
+  <!-- Overall Progress + Chart -->
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-5">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-white" id="permits-progress-title">Permit Acquisition S-Curve</h3>
+        <span class="text-lg font-bold text-cyan-400" id="permits-overall-pct">0%</span>
+      </div>
+      <div class="progress-bar mb-4"><div class="progress-fill bg-gradient-to-r from-cyan-500 to-teal-400" id="permits-progress-bar" style="width:0%"></div></div>
+      <canvas id="chart-permit-scurve" height="200"></canvas>
+    </div>
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-white mb-3" id="permits-chart-title">Progress by Category</h3>
+      <canvas id="chart-permit-progress" height="200"></canvas>
+    </div>
+  </div>
+
+  <!-- Expiry Alerts -->
+  <div id="permits-expiry-section" class="card p-5 mb-8 hidden">
+    <h3 class="text-sm font-semibold text-amber-400 mb-3 flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+      <span id="permits-expiry-title">Upcoming Renewals & Expirations</span>
+    </h3>
+    <div id="permits-expiry-list" class="space-y-2"></div>
+  </div>
+
+  <!-- Critical Path + Dependencies -->
+  <div class="grid grid-cols-2 gap-5 mb-8">
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-white mb-4" id="permits-critical-title">Critical Path Items</h3>
+      <div id="permits-critical-list" class="space-y-2"></div>
+    </div>
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-white mb-4" id="permits-dep-title">Dependencies</h3>
+      <div id="permits-dep-list" class="space-y-2"></div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card p-5 mb-8">
+    <h3 class="text-sm font-semibold text-white mb-4" id="permits-timeline-title">Permit Timeline</h3>
+    <div id="permits-timeline" class="relative overflow-x-auto"></div>
+  </div>
+
   <!-- Filters -->
-  <div class="flex gap-3 mb-6">
-    <select id="filter-phase" onchange="renderTasks()" class="text-sm">
-      <option value="">All Phases</option>
-    </select>
-    <select id="filter-status" onchange="renderTasks()" class="text-sm">
+  <div class="flex gap-3 mb-6 flex-wrap">
+    <select id="filter-permit-status" onchange="renderPermits()" class="text-sm">
       <option value="">All Status</option>
-      <option value="Pending">Pending</option>
+      <option value="Obtained">Obtained</option>
       <option value="In Progress">In Progress</option>
-      <option value="Completed">Completed</option>
-      <option value="Delayed">Delayed</option>
+      <option value="Not Started">Not Started</option>
+      <option value="Conditional">Conditional</option>
+      <option value="Expired">Expired</option>
     </select>
-    <select id="filter-assignee" onchange="renderTasks()" class="text-sm">
-      <option value="">All Assignees</option>
+    <select id="filter-permit-category" onchange="renderPermits()" class="text-sm">
+      <option value="">All Categories</option>
+      <option value="regulatory">Regulatory</option>
+      <option value="commercial">Commercial</option>
+      <option value="environmental">Environmental</option>
+      <option value="safety">Safety</option>
     </select>
-    <input type="text" id="filter-search" onkeyup="renderTasks()" placeholder="Search tasks..." class="text-sm flex-1">
+    <input type="text" id="filter-permit-search" onkeyup="renderPermits()" placeholder="Search permits..." class="text-sm flex-1 max-w-xs">
   </div>
+
+  <!-- Permits Table -->
   <div class="card overflow-hidden">
-    <table>
-      <thead id="tasks-thead"><tr><th>Task</th><th>Phase</th><th>Assignee</th><th>Start</th><th>End</th><th>Status</th><th>Priority</th><th class="text-right">Actions</th></tr></thead>
-      <tbody id="tasks-body"></tbody>
-    </table>
-    <div id="tasks-empty" class="hidden p-12 text-center text-slate-500 text-sm">No tasks found. Click "Add Task" to get started.</div>
+    <div class="overflow-x-auto">
+      <table>
+        <thead id="permits-thead"></thead>
+        <tbody id="permits-tbody"></tbody>
+      </table>
+    </div>
+    <div id="permits-empty" class="hidden p-8 text-center text-sm text-slate-500"></div>
+  </div>
+
+  <!-- Status History -->
+  <div class="card p-5 mt-8">
+    <h3 class="text-sm font-semibold text-white mb-4" id="permits-history-title">Status Change History</h3>
+    <div id="permits-history-list" class="space-y-1 max-h-60 overflow-y-auto"></div>
   </div>
 </div>
 
-<!-- Issues Page -->
-<div id="page-issues" class="page">
-  <div class="flex items-center justify-between mb-6">
-    <div>
-      <h2 class="text-2xl font-bold text-white" id="issues-title">Issues Tracker</h2>
-      <p class="text-sm text-slate-400 mt-1" id="issues-desc">Track and resolve construction issues</p>
+<!-- Permit Modal -->
+<div id="permit-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+  <div class="modal-overlay absolute inset-0" onclick="closePermitModal()"></div>
+  <div class="relative w-full max-w-lg mx-4 rounded-2xl p-6" style="background:var(--modal-bg); border:1px solid var(--card-border);">
+    <h3 class="text-lg font-bold text-white mb-4" id="permit-modal-title">Add Permit</h3>
+    <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-name">Permit Name</label><input type="text" id="pm-name" class="w-full" placeholder="e.g. EIA Approval"></div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-category">Category</label>
+          <select id="pm-category" class="w-full">
+            <option value="regulatory">Regulatory</option>
+            <option value="commercial">Commercial</option>
+            <option value="environmental">Environmental</option>
+            <option value="safety">Safety</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-assignee">Assignee</label><input type="text" id="pm-assignee" class="w-full" placeholder="e.g. GP4 Legal"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-authority">Authority</label><input type="text" id="pm-authority" class="w-full" placeholder="e.g. ONEP"></div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-ref">Reference No.</label><input type="text" id="pm-ref" class="w-full" placeholder="e.g. EIA-2024-001"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-status">Status</label>
+          <select id="pm-status" class="w-full">
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Conditional">Conditional</option>
+            <option value="Obtained">Obtained</option>
+            <option value="Expired">Expired</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-progress">Progress %</label><input type="number" id="pm-progress" class="w-full" min="0" max="100" value="0"></div>
+      </div>
+      <div class="grid grid-cols-3 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-deadline">Deadline</label><input type="date" id="pm-deadline" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-issue">Issue Date</label><input type="date" id="pm-issue-date" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-expiry">Expiry Date</label><input type="date" id="pm-expiry-date" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-depends">Dependencies (select permits required first)</label>
+        <div id="pm-depends-list" class="flex flex-wrap gap-1 mb-1"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-checklist">Document Checklist</label>
+        <div id="pm-checklist-items" class="space-y-1 mb-1"></div>
+        <div class="flex gap-1"><input type="text" id="pm-checklist-new" class="flex-1 text-xs" placeholder="Add document..."><button onclick="addChecklistItem()" class="text-xs text-cyan-400 px-2">+ Add</button></div>
+      </div>
+      <div>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="pm-critical" class="rounded"><span class="text-xs text-slate-400" id="lbl-pm-critical">Critical Path Item</span></label>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-pm-remarks">Remarks</label><textarea id="pm-remarks" class="w-full" rows="2" placeholder="Notes..."></textarea></div>
     </div>
-    <button onclick="openIssueModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      <span id="issues-add-btn">Report Issue</span>
-    </button>
+    <div class="flex gap-3 mt-4">
+      <button onclick="savePermit()" class="flex-1 bg-gradient-to-r from-cyan-600 to-teal-500 hover:from-cyan-500 hover:to-teal-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="pm-save-btn">Save</button>
+      <button onclick="closePermitModal()" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="pm-cancel-btn">Cancel</button>
+    </div>
   </div>
-  <div class="flex gap-3 mb-6">
-    <select id="filter-issue-severity" onchange="renderIssues()" class="text-sm">
-      <option value="">All Severity</option>
-      <option value="High">High</option>
-      <option value="Medium">Medium</option>
-      <option value="Low">Low</option>
-    </select>
-    <select id="filter-issue-status" onchange="renderIssues()" class="text-sm">
-      <option value="">All Status</option>
-      <option value="Open">Open</option>
-      <option value="In Progress">In Progress</option>
-      <option value="Resolved">Resolved</option>
-    </select>
-  </div>
-  <div class="card overflow-hidden">
-    <table>
-      <thead id="issues-thead"><tr><th>Issue</th><th>Phase</th><th>Severity</th><th>Status</th><th>Assigned To</th><th>Reported</th><th class="text-right">Actions</th></tr></thead>
-      <tbody id="issues-body"></tbody>
-    </table>
-    <div id="issues-empty" class="hidden p-12 text-center text-slate-500 text-sm">No issues found.</div>
-  </div>
+</div>
+
+<!-- Hidden containers for phases/tasks/issues data (used by dashboard/reports) -->
+<div id="page-phases" class="page"><div id="phases-list" class="hidden"></div></div>
+<div id="page-tasks" class="page" style="display:none">
+  <select id="filter-phase" class="hidden"></select><select id="filter-status" class="hidden"></select>
+  <select id="filter-assignee" class="hidden"></select><input id="filter-search" class="hidden">
+  <div id="tasks-empty" class="hidden"></div><table class="hidden"><thead id="tasks-thead"></thead><tbody id="tasks-body"></tbody></table>
+</div>
+<div id="page-issues" class="page" style="display:none">
+  <select id="filter-issue-severity" class="hidden"></select><select id="filter-issue-status" class="hidden"></select>
+  <div id="issues-empty" class="hidden"></div><table class="hidden"><thead id="issues-thead"></thead><tbody id="issues-body"></tbody></table>
 </div>
 
 <!-- Reports Page -->
@@ -1570,7 +1680,7 @@ function clearActivityLog() {
 const LANG = {
   en: {
     appName: 'WTE Tracker', appSub: 'Construction Management',
-    dashboard: 'Dashboard', phases: 'Phases', tasks: 'Tasks', issues: 'Issues', reports: 'Reports', alerts: 'Alerts', activity: 'Activity Log',
+    dashboard: 'Dashboard', permits: 'Permits & Licensing', phases: 'Phases', tasks: 'Tasks', issues: 'Issues', reports: 'Reports', alerts: 'Alerts', activity: 'Activity Log',
     projectTitle: 'GP4 Surat Thani 6.6 MW WtE — Construction Overview',
     overallProgress: 'Overall Progress', completedTasks: 'Completed Tasks', delayedTasks: 'Delayed Tasks', openIssues: 'Open Issues',
     ofTotal: 'of total', needsAttention: 'Needs attention', highSeverity: 'high severity',
@@ -1621,7 +1731,7 @@ const LANG = {
     loggedIn: 'Logged in', loggedOut: 'Logged out',
     // Activity
     // Work Progress
-    weather: 'Weather', workprogress: 'Work Progress', wpTitle: 'Work Progress', wpDesc: 'Daily construction progress reports',
+    weather: 'Weather', workprogress: 'EPC Progress', wpTitle: 'EPC Progress', wpDesc: 'Daily EPC construction progress reports',
     wpAddReport: 'Add Daily Report', wpEditReport: 'Edit Report', wpEmpty: 'No daily reports yet. Start recording progress!',
     wpTotalReports: 'Total Reports', wpAvgManpower: 'Avg. Manpower', wpWeatherLost: 'Weather Days Lost', wpEquipIssues: 'Issues Reported',
     wpManpower: 'Manpower', wpEquipment: 'Equipment',
@@ -1680,10 +1790,20 @@ const LANG = {
     projectInfo: 'Project Information', systemInfo: 'System Information', projectSettingsSaved: 'Project settings saved',
     projName: 'Project Name', projType: 'Project Type', projCapacity: 'Capacity', projLocation: 'Location', projEPC: 'EPC Contractor',
     projBudget: 'Total Budget (M THB)', projSpent: 'Spent (M THB)', projCOD: 'COD Date', projFuel: 'Fuel (MSW)', projLTA: 'LTA',
+    // Permits & Licensing
+    permitsPage: 'Permits & Licensing', permitsDesc: 'Track all permits, licenses and regulatory approvals',
+    permitsTotal: 'Total Permits', permitsObtained: 'Obtained', permitsPending: 'Pending', permitsExpired: 'Expired/At Risk',
+    permitName: 'Permit / License', permitAuthority: 'Authority', permitStatus: 'Status', permitIssueDate: 'Issue Date', permitExpiryDate: 'Expiry Date',
+    permitRefNo: 'Reference No.', permitRemarks: 'Remarks', permitProgress: 'Progress',
+    permitObtained: 'Obtained', permitInProgress: 'In Progress', permitNotStarted: 'Not Started', permitExpired: 'Expired', permitConditional: 'Conditional',
+    addPermit: 'Add Permit', editPermit: 'Edit Permit', deletePermit: 'Delete this permit?',
+    permitAdded: 'Permit added', permitUpdated: 'Permit updated', permitDeleted: 'Permit deleted',
+    permitNameRequired: 'Permit name is required', noPermits: 'No permits tracked yet. Click "Add Permit" to start.',
+    permitCriticalPath: 'Critical Path Items', permitUpcoming: 'Upcoming Renewals (90 days)',
   },
   th: {
     appName: 'WTE Tracker', appSub: 'ระบบติดตามงานก่อสร้าง',
-    dashboard: 'แดชบอร์ด', phases: 'เฟส', tasks: 'งาน', issues: 'ปัญหา', reports: 'รายงาน', alerts: 'แจ้งเตือน', activity: 'ประวัติการใช้งาน',
+    dashboard: 'แดชบอร์ด', permits: 'ใบอนุญาต', phases: 'เฟส', tasks: 'งาน', issues: 'ปัญหา', reports: 'รายงาน', alerts: 'แจ้งเตือน', activity: 'ประวัติการใช้งาน',
     projectTitle: 'GP4 สุราษฎร์ธานี 6.6 MW WtE — ภาพรวมการก่อสร้าง',
     overallProgress: 'ความคืบหน้ารวม', completedTasks: 'งานเสร็จแล้ว', delayedTasks: 'งานล่าช้า', openIssues: 'ปัญหาที่เปิดอยู่',
     ofTotal: 'ของทั้งหมด', needsAttention: 'ต้องดำเนินการ', highSeverity: 'ความรุนแรงสูง',
@@ -1722,7 +1842,7 @@ const LANG = {
     authPassTooShort: 'รหัสผ่านต้องมีอย่างน้อย 4 ตัวอักษร', authPassMismatch: 'รหัสผ่านไม่ตรงกัน',
     authUserExists: 'ชื่อผู้ใช้นี้มีอยู่แล้ว', authRegSuccess: 'สร้างบัญชีสำเร็จ! กรุณาเข้าสู่ระบบ',
     loggedIn: 'เข้าสู่ระบบแล้ว', loggedOut: 'ออกจากระบบแล้ว',
-    weather: 'สภาพอากาศ', workprogress: 'ความคืบหน้างาน', wpTitle: 'ความคืบหน้างาน', wpDesc: 'รายงานความคืบหน้างานก่อสร้างรายวัน',
+    weather: 'สภาพอากาศ', workprogress: 'EPC Progress', wpTitle: 'EPC Progress', wpDesc: 'รายงานความคืบหน้างาน EPC รายวัน',
     wpAddReport: 'เพิ่มรายงานวัน', wpEditReport: 'แก้ไขรายงาน', wpEmpty: 'ยังไม่มีรายงาน เริ่มบันทึกความคืบหน้า!',
     wpTotalReports: 'รายงานทั้งหมด', wpAvgManpower: 'แรงงานเฉลี่ย', wpWeatherLost: 'วันสูญเสียจากอากาศ', wpEquipIssues: 'ปัญหาที่รายงาน',
     wpManpower: 'แรงงาน', wpEquipment: 'อุปกรณ์',
@@ -1778,6 +1898,16 @@ const LANG = {
     projectInfo: 'ข้อมูลโครงการ', systemInfo: 'ข้อมูลระบบ', projectSettingsSaved: 'บันทึกข้อมูลโครงการแล้ว',
     projName: 'ชื่อโครงการ', projType: 'ประเภทโครงการ', projCapacity: 'กำลังการผลิต', projLocation: 'สถานที่', projEPC: 'ผู้รับเหมา EPC',
     projBudget: 'งบประมาณรวม (ล้านบาท)', projSpent: 'ใช้ไปแล้ว (ล้านบาท)', projCOD: 'วัน COD', projFuel: 'เชื้อเพลิง (MSW)', projLTA: 'LTA',
+    // Permits & Licensing
+    permitsPage: 'ใบอนุญาตและสัญญา', permitsDesc: 'ติดตามใบอนุญาต สัญญา และการอนุมัติจากหน่วยงาน',
+    permitsTotal: 'ใบอนุญาตทั้งหมด', permitsObtained: 'ได้รับแล้ว', permitsPending: 'รอดำเนินการ', permitsExpired: 'หมดอายุ/เสี่ยง',
+    permitName: 'ใบอนุญาต / สัญญา', permitAuthority: 'หน่วยงาน', permitStatus: 'สถานะ', permitIssueDate: 'วันที่ออก', permitExpiryDate: 'วันหมดอายุ',
+    permitRefNo: 'เลขอ้างอิง', permitRemarks: 'หมายเหตุ', permitProgress: 'ความคืบหน้า',
+    permitObtained: 'ได้รับแล้ว', permitInProgress: 'กำลังดำเนินการ', permitNotStarted: 'ยังไม่เริ่ม', permitExpired: 'หมดอายุ', permitConditional: 'อนุมัติเงื่อนไข',
+    addPermit: 'เพิ่มใบอนุญาต', editPermit: 'แก้ไขใบอนุญาต', deletePermit: 'ต้องการลบใบอนุญาตนี้?',
+    permitAdded: 'เพิ่มใบอนุญาตแล้ว', permitUpdated: 'อัปเดตใบอนุญาตแล้ว', permitDeleted: 'ลบใบอนุญาตแล้ว',
+    permitNameRequired: 'กรุณาระบุชื่อใบอนุญาต', noPermits: 'ยังไม่มีใบอนุญาต กดปุ่ม "เพิ่มใบอนุญาต" เพื่อเริ่มต้น',
+    permitCriticalPath: 'รายการ Critical Path', permitUpcoming: 'ใกล้ต่ออายุ (90 วัน)',
   }
 };
 
@@ -1892,6 +2022,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     item.classList.add('active'); item.classList.remove('text-slate-400');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + page).classList.add('active');
+    if (page === 'permits') renderPermits();
     if (page === 'reports') renderReports();
     if (page === 'alerts') renderAlerts();
     if (page === 'weather') { fetchSiteWeather(); }
@@ -2025,10 +2156,13 @@ function renderDashboard() {
   const badge = document.getElementById('alert-badge');
   if (alertCount > 0) { badge.textContent = alertCount; badge.classList.remove('hidden'); }
   else { badge.classList.add('hidden'); }
+
+  // Permits widget on dashboard
+  renderDashboardPermitsWidget();
 }
 
 // ---- CHARTS ----
-let scurveChart, phaseChart, taskStatusChart, issueSeverityChart, tasksPhaseChart;
+let scurveChart, phaseChart, taskStatusChart, issueSeverityChart, tasksPhaseChart, rptScurveChart, rptPhaseChart;
 let scGroupCharts = {};
 
 function scurveLabels() {
@@ -2430,8 +2564,6 @@ function saveIssue() {
 }
 
 // ---- REPORTS ----
-let rptScurveChart, rptPhaseChart;
-
 function switchReportTab(tab) {
   document.querySelectorAll('.report-tab').forEach(el => el.classList.add('hidden'));
   document.getElementById('report-' + tab).classList.remove('hidden');
@@ -3166,6 +3298,501 @@ function saveWPReport() {
   showToast(editId ? t('wpReportUpdated') : t('wpReportAdded'));
 }
 
+// ---- PERMITS & LICENSING ----
+function getPermitsData() { return JSON.parse(localStorage.getItem('wte_permits') || 'null'); }
+function savePermitsData(list) { localStorage.setItem('wte_permits', JSON.stringify(list)); }
+function getPermitHistory() { return JSON.parse(localStorage.getItem('wte_permit_history') || '[]'); }
+function savePermitHistory(list) { localStorage.setItem('wte_permit_history', JSON.stringify(list)); }
+
+const PERMIT_CATEGORIES = {
+  regulatory: { en: 'Regulatory', th: 'ใบอนุญาตราชการ', color: '#3b82f6', icon: '📋' },
+  commercial: { en: 'Commercial', th: 'สัญญาพาณิชย์', color: '#10b981', icon: '📄' },
+  environmental: { en: 'Environmental', th: 'สิ่งแวดล้อม', color: '#f59e0b', icon: '🌿' },
+  safety: { en: 'Safety', th: 'ความปลอดภัย', color: '#ef4444', icon: '🛡️' }
+};
+
+function defaultPermits() {
+  return [
+    { id: 1, name: 'EIA / EHIA Approval', authority: 'ONEP', status: 'Obtained', progress: 100, issueDate: '2024-03-15', expiryDate: '', refNo: 'EIA-2024-0156', critical: true, category: 'environmental', assignee: 'GP4 Legal', dependsOn: [], checklist: [{name:'EIA Report',done:true},{name:'Public Hearing',done:true},{name:'Expert Review',done:true}], remarks: 'Environmental Impact Assessment approved. Conditions met.' },
+    { id: 2, name: 'Construction Permit (CoP)', authority: 'Local Municipality', status: 'In Progress', progress: 88, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Structural Drawing',done:true},{name:'Soil Report',done:true},{name:'Final Inspection',done:false}], remarks: 'CM Q4: 88% complete. Pending final structural inspection.' },
+    { id: 3, name: 'Factory License (Ror.Ngor.4)', authority: 'DIW', status: 'In Progress', progress: 50, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Legal', dependsOn: [2, 4], checklist: [{name:'CoP Certificate',done:false},{name:'ESA Certificate',done:false},{name:'Factory Plan',done:true},{name:'DIW Application',done:true}], remarks: 'Critical for machine installation. Pending CoP and ESA completion.' },
+    { id: 4, name: 'ESA Approval', authority: 'EGAT / PEA', status: 'In Progress', progress: 88, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'KK Green', dependsOn: [], checklist: [{name:'Single Line Diagram',done:true},{name:'Protection Study',done:true},{name:'Site Inspection',done:false}], remarks: 'Electrical Safety Assessment 88% complete.' },
+    { id: 5, name: 'PPA (Power Purchase Agreement)', authority: 'PEA', status: 'Obtained', progress: 100, issueDate: '2024-06-20', expiryDate: '2044-06-19', refNo: 'PPA-GP4-2024', critical: true, category: 'commercial', assignee: 'GP4 Management', dependsOn: [], checklist: [{name:'PPA Application',done:true},{name:'Tariff Negotiation',done:true},{name:'PPA Signing',done:true}], remarks: 'FiT 20-year PPA signed with PEA.' },
+    { id: 6, name: 'WCA (Waste Collection Agreement)', authority: 'Phun Phin Municipality', status: 'Obtained', progress: 100, issueDate: '2024-08-01', expiryDate: '2044-07-31', refNo: 'WCA-PP-2024', critical: false, category: 'commercial', assignee: 'GP4 Management', dependsOn: [], checklist: [{name:'Waste Survey',done:true},{name:'Agreement Draft',done:true},{name:'Signing',done:true}], remarks: 'MSW supply agreement ~470 ton/day.' },
+    { id: 7, name: 'BOI Promotion Certificate', authority: 'BOI', status: 'In Progress', progress: 80, issueDate: '', expiryDate: '', refNo: '', critical: false, category: 'commercial', assignee: 'GP4 Finance', dependsOn: [], checklist: [{name:'BOI Application',done:true},{name:'Project Plan',done:true},{name:'Board Approval',done:false}], remarks: 'Board of Investment promotion application 80% complete.' },
+    { id: 8, name: 'Building Permit', authority: 'Local Authority', status: 'Obtained', progress: 100, issueDate: '2024-05-10', expiryDate: '2026-05-09', refNo: 'BP-2024-0312', critical: false, category: 'regulatory', assignee: 'GP4 Engineering', dependsOn: [], checklist: [{name:'Architectural Plan',done:true},{name:'Building Application',done:true}], remarks: 'Construction building permit obtained.' },
+    { id: 9, name: 'Grid Connection Agreement', authority: 'PEA', status: 'Obtained', progress: 100, issueDate: '2024-09-15', expiryDate: '', refNo: 'GCA-GP4-2024', critical: true, category: 'commercial', assignee: 'GP4 Engineering', dependsOn: [5], checklist: [{name:'Grid Study',done:true},{name:'Connection Design',done:true},{name:'Agreement Signing',done:true}], remarks: '22kV connection to PEA substation approved.' },
+    { id: 10, name: 'Water Supply Permit', authority: 'Royal Irrigation Dept.', status: 'Obtained', progress: 100, issueDate: '2024-04-22', expiryDate: '2029-04-21', refNo: 'WS-2024-089', critical: false, category: 'environmental', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Water Demand Study',done:true},{name:'Permit Application',done:true}], remarks: 'Cooling water supply permit.' },
+    { id: 11, name: 'Wastewater Discharge Permit', authority: 'PCD', status: 'In Progress', progress: 60, issueDate: '', expiryDate: '', refNo: '', critical: false, category: 'environmental', assignee: 'KK Green', dependsOn: [1], checklist: [{name:'Treatment Design',done:true},{name:'PCD Application',done:true},{name:'System Commissioning',done:false}], remarks: 'Pending treatment system commissioning for final approval.' },
+    { id: 12, name: 'Air Emission Permit', authority: 'PCD / DIW', status: 'Not Started', progress: 0, issueDate: '', expiryDate: '', refNo: '', critical: false, category: 'environmental', assignee: 'KK Green', dependsOn: [1, 3], checklist: [{name:'Emission Model',done:false},{name:'Stack Design',done:false},{name:'PCD Application',done:false}], remarks: 'Required before commissioning. Application after stack construction.' },
+    { id: 13, name: 'Fire Safety Certificate', authority: 'Fire Dept.', status: 'Not Started', progress: 0, issueDate: '', expiryDate: '', refNo: '', critical: false, category: 'safety', assignee: 'KK Green', dependsOn: [2], checklist: [{name:'Fire Protection Plan',done:false},{name:'Fire System Install',done:false},{name:'Fire Dept Inspection',done:false}], remarks: 'Required before COD. Inspection after fire protection system installed.' },
+    { id: 14, name: 'Customs Import License (Equipment)', authority: 'Customs Dept.', status: 'Obtained', progress: 100, issueDate: '2025-01-10', expiryDate: '', refNo: 'CIL-2025-0045', critical: false, category: 'commercial', assignee: 'GP4 Procurement', dependsOn: [7], checklist: [{name:'BOI Letter',done:true},{name:'Import List',done:true},{name:'Customs Application',done:true}], remarks: 'Import duty exemption for boiler and turbine equipment.' },
+  ];
+}
+
+function initPermits() {
+  const existing = getPermitsData();
+  if (!existing) { savePermitsData(defaultPermits()); }
+  else if (!existing[0]?.category) {
+    // Migrate old data: add new fields
+    const catMap = {1:'environmental',2:'regulatory',3:'regulatory',4:'regulatory',5:'commercial',6:'commercial',7:'commercial',8:'regulatory',9:'commercial',10:'environmental',11:'environmental',12:'environmental',13:'safety',14:'commercial'};
+    const updated = existing.map(p => ({
+      ...p,
+      category: p.category || catMap[p.id] || 'regulatory',
+      assignee: p.assignee || '',
+      dependsOn: p.dependsOn || [],
+      checklist: p.checklist || []
+    }));
+    savePermitsData(updated);
+  }
+}
+initPermits();
+
+let editPermitId = null;
+let permitScurveChart = null, permitProgressChart = null;
+
+function permitStatusBadge(status) {
+  const cls = { 'Obtained': 'badge-green', 'In Progress': 'badge-blue', 'Not Started': 'badge-gray', 'Conditional': 'badge-amber', 'Expired': 'badge-red' };
+  const th = getLang() === 'th';
+  const labels = { 'Obtained': th ? 'ได้รับแล้ว' : 'Obtained', 'In Progress': th ? 'ดำเนินการ' : 'In Progress', 'Not Started': th ? 'ยังไม่เริ่ม' : 'Not Started', 'Conditional': th ? 'เงื่อนไข' : 'Conditional', 'Expired': th ? 'หมดอายุ' : 'Expired' };
+  return `<span class="badge ${cls[status] || 'badge-gray'}">${labels[status] || status}</span>`;
+}
+
+function permitCatLabel(cat) {
+  const th = getLang() === 'th';
+  return PERMIT_CATEGORIES[cat] ? (th ? PERMIT_CATEGORIES[cat].th : PERMIT_CATEGORIES[cat].en) : cat;
+}
+
+function renderDashboardPermitsWidget() {
+  const permits = getPermitsData() || [];
+  const th = getLang() === 'th';
+  const total = permits.length;
+  const obtained = permits.filter(p => p.status === 'Obtained').length;
+  const critical = permits.filter(p => p.critical && p.status !== 'Obtained');
+  const expiring = permits.filter(p => p.expiryDate && ((new Date(p.expiryDate) - new Date()) / (1000*60*60*24)) < 90 && ((new Date(p.expiryDate) - new Date()) / (1000*60*60*24)) > 0);
+
+  const statsEl = document.getElementById('dash-permits-stats');
+  if (!statsEl) return;
+  document.getElementById('dash-permits-title').textContent = t('permitsPage');
+  statsEl.innerHTML = `
+    <div class="p-2 rounded-lg bg-white/[0.03] text-center"><p class="text-lg font-bold text-white">${obtained}/${total}</p><p class="text-[10px] text-slate-500">${t('permitsObtained')}</p></div>
+    <div class="p-2 rounded-lg bg-white/[0.03] text-center"><p class="text-lg font-bold text-cyan-400">${Math.round(obtained/total*100||0)}%</p><p class="text-[10px] text-slate-500">${t('permitProgress')}</p></div>
+    <div class="p-2 rounded-lg bg-white/[0.03] text-center"><p class="text-lg font-bold ${critical.length?'text-amber-400':'text-emerald-400'}">${critical.length}</p><p class="text-[10px] text-slate-500">${th?'Critical รอ':'Critical Pending'}</p></div>
+    <div class="p-2 rounded-lg bg-white/[0.03] text-center"><p class="text-lg font-bold ${expiring.length?'text-red-400':'text-emerald-400'}">${expiring.length}</p><p class="text-[10px] text-slate-500">${th?'ใกล้หมดอายุ':'Expiring Soon'}</p></div>`;
+
+  const alertsEl = document.getElementById('dash-permits-alerts');
+  const items = [];
+  critical.forEach(p => items.push(`<div class="flex items-center gap-2 p-1.5 rounded bg-amber-500/10"><span class="text-xs">⚠️</span><p class="text-[10px] text-amber-300 flex-1">${p.name} — ${p.progress}%</p>${permitStatusBadge(p.status)}</div>`));
+  expiring.forEach(p => { const d = Math.ceil((new Date(p.expiryDate)-new Date())/(1000*60*60*24)); items.push(`<div class="flex items-center gap-2 p-1.5 rounded bg-red-500/10"><span class="text-xs">🔴</span><p class="text-[10px] text-red-300 flex-1">${p.name} — ${th?'หมดอายุใน':'expires in'} ${d} ${th?'วัน':'days'}</p></div>`); });
+  alertsEl.innerHTML = items.length ? items.join('') : `<p class="text-[10px] text-emerald-400">✅ ${th?'ใบอนุญาตปกติ':'All permits on track'}</p>`;
+}
+
+function renderPermits() {
+  const th = getLang() === 'th';
+  const permits = getPermitsData() || [];
+
+  // Labels
+  document.getElementById('permits-page-title').textContent = t('permitsPage');
+  document.getElementById('permits-page-desc').textContent = t('permitsDesc');
+  document.getElementById('permits-add-btn').textContent = t('addPermit');
+  document.getElementById('permits-export-btn').textContent = th ? 'ส่งออกรายงาน' : 'Export Report';
+  document.getElementById('lbl-permits-total').textContent = t('permitsTotal');
+  document.getElementById('lbl-permits-obtained').textContent = t('permitsObtained');
+  document.getElementById('lbl-permits-pending').textContent = t('permitsPending');
+  document.getElementById('lbl-permits-expired').textContent = t('permitsExpired');
+  document.getElementById('permits-critical-title').textContent = t('permitCriticalPath');
+  document.getElementById('permits-dep-title').textContent = th ? 'การพึ่งพา (Dependencies)' : 'Dependencies';
+  document.getElementById('permits-timeline-title').textContent = th ? 'ไทม์ไลน์ใบอนุญาต' : 'Permit Timeline';
+  document.getElementById('permits-history-title').textContent = th ? 'ประวัติการเปลี่ยนสถานะ' : 'Status Change History';
+  document.getElementById('permits-chart-title').textContent = th ? 'ความคืบหน้าตามหมวด' : 'Progress by Category';
+  document.getElementById('permits-expiry-title').textContent = t('permitUpcoming');
+
+  // Stats
+  const total = permits.length;
+  const obtained = permits.filter(p => p.status === 'Obtained').length;
+  const pending = permits.filter(p => p.status === 'In Progress' || p.status === 'Not Started' || p.status === 'Conditional').length;
+  const expired = permits.filter(p => p.status === 'Expired' || (p.expiryDate && new Date(p.expiryDate) < new Date())).length;
+  const overallPct = total > 0 ? Math.round(permits.reduce((s, p) => s + (p.progress || 0), 0) / total) : 0;
+
+  document.getElementById('permits-stat-total').textContent = total;
+  document.getElementById('permits-stat-obtained').textContent = obtained;
+  document.getElementById('permits-stat-obtained-pct').textContent = total > 0 ? Math.round(obtained / total * 100) + '%' : '0%';
+  document.getElementById('permits-stat-pending').textContent = pending;
+  document.getElementById('permits-stat-expired').textContent = expired;
+  document.getElementById('permits-overall-pct').textContent = overallPct + '%';
+  document.getElementById('permits-progress-bar').style.width = overallPct + '%';
+
+  // Category chart (doughnut)
+  const catCounts = {};
+  Object.keys(PERMIT_CATEGORIES).forEach(k => catCounts[k] = { total: 0, obtained: 0 });
+  permits.forEach(p => { const c = p.category || 'regulatory'; if (!catCounts[c]) catCounts[c] = {total:0,obtained:0}; catCounts[c].total++; if (p.status === 'Obtained') catCounts[c].obtained++; });
+
+  // S-Curve chart
+  const ctx1 = document.getElementById('chart-permit-scurve')?.getContext('2d');
+  if (ctx1) {
+    if (permitScurveChart) permitScurveChart.destroy();
+    // Build planned S-curve (permits plan from GROUP_PLANS) and actual curve
+    const labels = scurveLabels();
+    const planData = GROUP_PLANS.permits;
+    const nowDate = new Date();
+    const currentIdx = (nowDate.getFullYear() - 2025) * 12 + nowDate.getMonth();
+    const actualData = [];
+    const planAtCurrent = planData[Math.min(currentIdx, 23)];
+    for (let i = 0; i < 24; i++) {
+      if (i > currentIdx) { actualData.push(null); continue; }
+      actualData.push(planAtCurrent > 0 ? Math.round(overallPct * planData[i] / planAtCurrent) : 0);
+    }
+    permitScurveChart = new Chart(ctx1, {
+      type: 'line',
+      data: { labels, datasets: [
+        { label: th ? 'แผน' : 'Plan', data: planData, borderColor: '#3b82f6', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
+        { label: th ? 'จริง' : 'Actual', data: actualData, borderColor: '#06b6d4', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: { target: 'origin', above: 'rgba(6,182,212,0.08)' } }
+      ] },
+      options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { ticks: { color: chartTextColor(), font: { size: 7 }, maxRotation: 45, maxTicksLimit: 12 }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 } } }
+    });
+  }
+  // Progress bar chart
+  const ctx2 = document.getElementById('chart-permit-progress')?.getContext('2d');
+  if (ctx2) {
+    if (permitProgressChart) permitProgressChart.destroy();
+    const cats = Object.keys(catCounts);
+    permitProgressChart = new Chart(ctx2, { type: 'bar', data: { labels: cats.map(k => permitCatLabel(k)), datasets: [
+      { label: th ? 'ได้รับ' : 'Obtained', data: cats.map(k => catCounts[k].obtained), backgroundColor: '#10b981', borderRadius: 4, barThickness: 18 },
+      { label: th ? 'รอ' : 'Pending', data: cats.map(k => catCounts[k].total - catCounts[k].obtained), backgroundColor: '#f59e0b', borderRadius: 4, barThickness: 18 }
+    ] }, options: { responsive: true, indexAxis: 'y', plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { stacked: true, ticks: { color: chartTextColor(), font: { size: 9 } }, grid: { color: chartGridColor() } }, y: { stacked: true, ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } } } } });
+  }
+
+  // Expiry alerts
+  const now = new Date();
+  const expiringPermits = permits.filter(p => {
+    if (!p.expiryDate) return false;
+    const d = (new Date(p.expiryDate) - now) / (1000*60*60*24);
+    return d > 0 && d < 90;
+  }).sort((a,b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+  const expiredPermits = permits.filter(p => p.expiryDate && new Date(p.expiryDate) < now);
+  const expirySection = document.getElementById('permits-expiry-section');
+  if (expiringPermits.length > 0 || expiredPermits.length > 0) {
+    expirySection.classList.remove('hidden');
+    document.getElementById('permits-expiry-list').innerHTML = [
+      ...expiredPermits.map(p => `<div class="flex items-center gap-3 p-2 rounded-lg bg-red-500/10 border border-red-500/20 blink-red"><span class="text-sm">🔴</span><div class="flex-1"><p class="text-xs text-white font-medium">${p.name}</p><p class="text-[10px] text-red-400">${th?'หมดอายุแล้ว':'EXPIRED'} — ${fmtDate(p.expiryDate)}</p></div>${permitStatusBadge('Expired')}</div>`),
+      ...expiringPermits.map(p => { const d = Math.ceil((new Date(p.expiryDate)-now)/(1000*60*60*24)); const cls = d < 30 ? 'border-red-500/20 blink-amber' : 'border-amber-500/20'; return `<div class="flex items-center gap-3 p-2 rounded-lg bg-amber-500/10 border ${cls}"><span class="text-sm">${d<30?'🔴':'🟡'}</span><div class="flex-1"><p class="text-xs text-white font-medium">${p.name}</p><p class="text-[10px] text-amber-400">${th?'หมดอายุใน':'Expires in'} ${d} ${th?'วัน':'days'} — ${fmtDate(p.expiryDate)}</p></div><span class="text-xs text-slate-400">${p.assignee||''}</span></div>`; })
+    ].join('');
+  } else { expirySection.classList.add('hidden'); }
+
+  // Critical path items
+  const criticals = permits.filter(p => p.critical && p.status !== 'Obtained');
+  document.getElementById('permits-critical-list').innerHTML = criticals.length ? criticals.map(p => {
+    const color = p.progress < 50 ? 'border-red-500/30' : p.progress < 80 ? 'border-amber-500/30' : 'border-blue-500/30';
+    return `<div class="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02] border ${color} cursor-pointer" onclick="openPermitModal(${p.id})">
+      <span class="text-lg">⚠️</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-sm text-white font-medium">${p.name}</p>
+        <p class="text-[10px] text-slate-500">${p.authority} ${p.assignee ? '• ' + p.assignee : ''}</p>
+      </div>
+      <div class="w-24"><div class="progress-bar"><div class="progress-fill bg-gradient-to-r from-cyan-500 to-teal-400" style="width:${p.progress}%"></div></div><p class="text-[10px] text-slate-400 text-center mt-1">${p.progress}%</p></div>
+      ${permitStatusBadge(p.status)}
+    </div>`;
+  }).join('') : `<p class="text-xs text-emerald-400">✅ ${th ? 'ใบอนุญาต Critical Path ได้รับครบแล้ว' : 'All critical path permits obtained'}</p>`;
+
+  // Dependencies
+  const deps = permits.filter(p => p.dependsOn && p.dependsOn.length > 0 && p.status !== 'Obtained');
+  document.getElementById('permits-dep-list').innerHTML = deps.length ? deps.map(p => {
+    const depNames = (p.dependsOn || []).map(did => { const dp = permits.find(x => x.id === did); return dp ? `<span class="${dp.status==='Obtained'?'text-emerald-400':'text-amber-400'}">${dp.status==='Obtained'?'✅':'⏳'} ${dp.name.split('(')[0].trim()}</span>` : ''; }).filter(Boolean);
+    return `<div class="p-2 rounded-lg bg-white/[0.02] border border-white/5">
+      <p class="text-xs text-white font-medium mb-1">${p.name}</p>
+      <p class="text-[10px] text-slate-500 mb-1">${th?'ต้องรอ:':'Requires:'}</p>
+      <div class="flex flex-wrap gap-1">${depNames.map(n => `<span class="text-[10px]">${n}</span>`).join('<span class="text-slate-600 text-[10px]"> → </span>')}</div>
+    </div>`;
+  }).join('') : `<p class="text-xs text-emerald-400">✅ ${th ? 'ไม่มี dependency ค้าง' : 'No pending dependencies'}</p>`;
+
+  // Timeline
+  renderPermitTimeline(permits);
+
+  // Filters
+  const filterStatus = document.getElementById('filter-permit-status').value;
+  const filterCat = document.getElementById('filter-permit-category').value;
+  const filterSearch = (document.getElementById('filter-permit-search').value || '').toLowerCase();
+  let filtered = permits;
+  if (filterStatus) filtered = filtered.filter(p => p.status === filterStatus);
+  if (filterCat) filtered = filtered.filter(p => p.category === filterCat);
+  if (filterSearch) filtered = filtered.filter(p => p.name.toLowerCase().includes(filterSearch) || (p.authority||'').toLowerCase().includes(filterSearch) || (p.refNo||'').toLowerCase().includes(filterSearch) || (p.assignee||'').toLowerCase().includes(filterSearch));
+
+  // Table
+  document.getElementById('permits-thead').innerHTML = `<tr>
+    <th>${t('permitName')}</th><th>${th?'หมวด':'Category'}</th><th>${t('permitAuthority')}</th><th>${th?'ผู้รับผิดชอบ':'Assignee'}</th>
+    <th>${t('permitStatus')}</th><th>${t('permitProgress')}</th><th>${th?'กำหนดเสร็จ':'Deadline'}</th><th>${th?'เอกสาร':'Docs'}</th><th>${t('actions')}</th>
+  </tr>`;
+
+  const tbody = document.getElementById('permits-tbody');
+  const empty = document.getElementById('permits-empty');
+  if (filtered.length === 0) { tbody.innerHTML = ''; empty.classList.remove('hidden'); empty.textContent = t('noPermits'); }
+  else {
+    empty.classList.add('hidden');
+    tbody.innerHTML = filtered.map(p => {
+      const cat = PERMIT_CATEGORIES[p.category] || PERMIT_CATEGORIES.regulatory;
+      const checkDone = (p.checklist||[]).filter(c=>c.done).length;
+      const checkTotal = (p.checklist||[]).length;
+      return `<tr class="cursor-pointer" onclick="openPermitModal(${p.id})">
+        <td><div class="flex items-center gap-2">${p.critical?'<span class="text-amber-400 text-xs">★</span>':''}<div><p class="text-sm text-white font-medium">${p.name}</p><p class="text-[10px] text-slate-500 max-w-[180px] truncate">${p.remarks||''}</p></div></div></td>
+        <td><span class="text-[10px] px-2 py-0.5 rounded-full" style="background:${cat.color}20;color:${cat.color}">${cat.icon} ${permitCatLabel(p.category)}</span></td>
+        <td class="text-xs text-slate-300">${p.authority||'—'}</td>
+        <td class="text-xs text-slate-300">${p.assignee||'—'}</td>
+        <td><div class="flex items-center gap-1.5">${(function(){
+          const dl = p.deadline ? new Date(p.deadline) : null;
+          const now3 = new Date();
+          const diff2 = dl ? Math.ceil((dl - now3)/(1000*60*60*24)) : null;
+          if (p.status === 'Obtained') return '<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]" style="animation:blink-green 2s ease-in-out infinite"></span>';
+          if (p.status === 'Expired' || (diff2 !== null && diff2 < 0)) return '<span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500 shadow-[0_0_6px_rgba(239,68,68,0.6)]" style="animation:blink-red 1.5s ease-in-out infinite"></span>';
+          if (diff2 !== null && diff2 < 30) return '<span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.6)]" style="animation:blink-amber 1.5s ease-in-out infinite"></span>';
+          if (p.status === 'In Progress') return '<span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500 shadow-[0_0_6px_rgba(59,130,246,0.4)]" style="animation:blink-amber 2s ease-in-out infinite"></span>';
+          return '<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-500"></span>';
+        })()}${permitStatusBadge(p.status)}</div></td>
+        <td><div class="w-16"><div class="progress-bar"><div class="progress-fill bg-gradient-to-r from-cyan-500 to-teal-400" style="width:${p.progress}%"></div></div><p class="text-[10px] text-slate-400 text-center">${p.progress}%</p></div></td>
+        <td>${(function(){
+          if (!p.deadline) return '<span class="text-xs text-slate-500">—</span>';
+          const dl = new Date(p.deadline); const now2 = new Date(); const diff = Math.ceil((dl - now2)/(1000*60*60*24));
+          if (p.status === 'Obtained') return '<span class="text-xs text-emerald-400">✅ ' + fmtDate(p.deadline) + '</span>';
+          if (diff < 0) return '<span class="text-xs text-red-400 font-bold">⚠️ ' + fmtDate(p.deadline) + ' <br><span class=text-[10px]>' + (th?'เกิน':'overdue') + ' ' + Math.abs(diff) + (th?'วัน':'d') + '</span></span>';
+          if (diff < 30) return '<span class="text-xs text-amber-400">' + fmtDate(p.deadline) + ' <br><span class=text-[10px]>' + diff + (th?'วัน':'d') + '</span></span>';
+          return '<span class="text-xs text-slate-300">' + fmtDate(p.deadline) + ' <br><span class="text-[10px] text-slate-500">' + diff + (th?'วัน':'d') + '</span></span>';
+        })()}</td>
+        <td><span class="text-[10px] ${checkDone===checkTotal&&checkTotal>0?'text-emerald-400':'text-slate-400'}">${checkDone}/${checkTotal}</span></td>
+        <td><div class="flex gap-1">
+          <button onclick="event.stopPropagation();openPermitModal(${p.id})" class="text-blue-400 hover:text-blue-300 text-xs px-1.5 py-0.5 rounded hover:bg-blue-500/10">✏️</button>
+          <button onclick="event.stopPropagation();deletePermit(${p.id})" class="text-red-400 hover:text-red-300 text-xs px-1.5 py-0.5 rounded hover:bg-red-500/10">🗑️</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Status history
+  const history = getPermitHistory().slice(0, 50);
+  document.getElementById('permits-history-list').innerHTML = history.length ? history.map(h => {
+    return `<div class="flex items-center gap-2 p-1.5 rounded bg-white/[0.02]">
+      <span class="text-[10px] text-slate-500 w-28 shrink-0">${new Date(h.timestamp).toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+      <p class="text-[10px] text-white flex-1"><strong>${h.permitName}</strong>: ${h.oldStatus} → ${h.newStatus}</p>
+      <span class="text-[10px] text-slate-500">${h.user||''}</span>
+    </div>`;
+  }).join('') : `<p class="text-xs text-slate-500">${th?'ยังไม่มีประวัติ':'No history yet'}</p>`;
+
+  // Also update dashboard widget
+  renderDashboardPermitsWidget();
+
+  // Sync to phase data
+  syncPermitsToPhase();
+}
+
+function renderPermitTimeline(permits) {
+  const th = getLang() === 'th';
+  const container = document.getElementById('permits-timeline');
+  const now = new Date();
+  const start = new Date('2024-01-01');
+  const end = new Date('2027-01-01');
+  const totalDays = (end - start) / (1000*60*60*24);
+  const nowPct = Math.min(100, Math.max(0, (now - start) / (end - start) * 100));
+  const years = [2024, 2025, 2026];
+  const statusColors = { 'Obtained': '#10b981', 'In Progress': '#3b82f6', 'Not Started': '#64748b', 'Conditional': '#f59e0b', 'Expired': '#ef4444' };
+  const sorted = [...permits].sort((a,b) => { const ca = Object.keys(PERMIT_CATEGORIES).indexOf(a.category||'regulatory'); const cb = Object.keys(PERMIT_CATEGORIES).indexOf(b.category||'regulatory'); return ca - cb || a.id - b.id; });
+
+  container.innerHTML = `<div class="relative" style="min-width:700px">
+    <div class="flex border-b border-white/10 mb-2 pb-1">${years.map(y => `<div class="flex-1 text-center text-[10px] text-slate-500 font-medium">${y}</div>`).join('')}</div>
+    <div class="absolute top-6 bottom-0" style="left:${nowPct}%;width:1px;background:#ef4444;z-index:2"></div>
+    <div class="absolute text-[8px] text-red-400 font-bold" style="left:${nowPct}%;top:0;transform:translateX(-50%)">▼ ${th?'วันนี้':'TODAY'}</div>
+    <div class="space-y-1 mt-3">${sorted.map(p => {
+      const pStart = p.issueDate ? new Date(p.issueDate) : now;
+      const pEnd = p.expiryDate ? new Date(p.expiryDate) : (p.status === 'Obtained' ? new Date(pStart.getTime() + 365*24*60*60*1000) : new Date('2026-11-30'));
+      const left = Math.max(0, (pStart - start) / (end - start) * 100);
+      const width = Math.max(2, Math.min(100 - left, (pEnd - pStart) / (end - start) * 100));
+      const color = statusColors[p.status] || '#64748b';
+      return `<div class="flex items-center gap-2 group">
+        <div class="w-36 shrink-0 text-[10px] text-slate-400 truncate pr-1">${p.critical?'★ ':''}${p.name.split('(')[0].trim()}</div>
+        <div class="flex-1 relative h-5 rounded" style="background:var(--progress-track)">
+          <div class="absolute h-full rounded" style="left:${left}%;width:${width}%;background:${color};opacity:0.7"></div>
+        </div>
+      </div>`;
+    }).join('')}</div>
+  </div>`;
+}
+
+function syncPermitsToPhase() {
+  // Sync overall permits progress to Phase index 1 (Permits & Licensing)
+  const permits = getPermitsData() || [];
+  if (permits.length === 0) return;
+  const avgProgress = Math.round(permits.reduce((s,p) => s + (p.progress||0), 0) / permits.length);
+  if (data.phases && data.phases[1] && data.phases[1].group === 'permits') {
+    data.phases[1].progress = avgProgress;
+    const allObtained = permits.every(p => p.status === 'Obtained');
+    const anyDelayed = permits.some(p => p.status === 'Expired') || permits.some(p => p.critical && p.progress < 50);
+    data.phases[1].status = allObtained ? 'Completed' : anyDelayed ? 'Delayed' : 'In Progress';
+  }
+}
+
+let tempChecklist = [];
+
+function addChecklistItem() {
+  const input = document.getElementById('pm-checklist-new');
+  const val = input.value.trim();
+  if (!val) return;
+  tempChecklist.push({ name: val, done: false });
+  input.value = '';
+  renderChecklistItems();
+}
+
+function toggleChecklistItem(idx) { tempChecklist[idx].done = !tempChecklist[idx].done; renderChecklistItems(); }
+function removeChecklistItem(idx) { tempChecklist.splice(idx, 1); renderChecklistItems(); }
+
+function renderChecklistItems() {
+  document.getElementById('pm-checklist-items').innerHTML = tempChecklist.map((c, i) => `<div class="flex items-center gap-2 p-1 rounded bg-white/[0.03]">
+    <input type="checkbox" ${c.done?'checked':''} onchange="toggleChecklistItem(${i})" class="rounded">
+    <span class="text-xs ${c.done?'text-slate-500 line-through':'text-white'} flex-1">${c.name}</span>
+    <button onclick="removeChecklistItem(${i})" class="text-red-400 text-xs px-1">✕</button>
+  </div>`).join('');
+}
+
+function openPermitModal(id) {
+  editPermitId = id || null;
+  const modal = document.getElementById('permit-modal');
+  modal.classList.remove('hidden');
+  const th = getLang() === 'th';
+  document.getElementById('permit-modal-title').textContent = id ? t('editPermit') : t('addPermit');
+  document.getElementById('pm-save-btn').textContent = t('save');
+  document.getElementById('pm-cancel-btn').textContent = t('cancel');
+  document.getElementById('lbl-pm-name').textContent = t('permitName');
+  document.getElementById('lbl-pm-category').textContent = th ? 'หมวดหมู่' : 'Category';
+  document.getElementById('lbl-pm-assignee').textContent = th ? 'ผู้รับผิดชอบ' : 'Assignee';
+  document.getElementById('lbl-pm-authority').textContent = t('permitAuthority');
+  document.getElementById('lbl-pm-ref').textContent = t('permitRefNo');
+  document.getElementById('lbl-pm-status').textContent = t('permitStatus');
+  document.getElementById('lbl-pm-progress').textContent = t('permitProgress');
+  document.getElementById('lbl-pm-deadline').textContent = th ? 'กำหนดแล้วเสร็จ' : 'Deadline';
+  document.getElementById('lbl-pm-issue').textContent = t('permitIssueDate');
+  document.getElementById('lbl-pm-expiry').textContent = t('permitExpiryDate');
+  document.getElementById('lbl-pm-depends').textContent = th ? 'ต้องได้รับก่อน (Dependencies)' : 'Dependencies (required first)';
+  document.getElementById('lbl-pm-checklist').textContent = th ? 'เอกสารที่ต้องยื่น' : 'Document Checklist';
+  document.getElementById('lbl-pm-critical').textContent = t('permitCriticalPath');
+  document.getElementById('lbl-pm-remarks').textContent = t('permitRemarks');
+
+  const permits = getPermitsData() || [];
+  if (id) {
+    const p = permits.find(x => x.id === id);
+    if (p) {
+      document.getElementById('pm-name').value = p.name;
+      document.getElementById('pm-category').value = p.category || 'regulatory';
+      document.getElementById('pm-assignee').value = p.assignee || '';
+      document.getElementById('pm-authority').value = p.authority || '';
+      document.getElementById('pm-ref').value = p.refNo || '';
+      document.getElementById('pm-status').value = p.status;
+      document.getElementById('pm-progress').value = p.progress || 0;
+      document.getElementById('pm-deadline').value = p.deadline || '';
+      document.getElementById('pm-issue-date').value = p.issueDate || '';
+      document.getElementById('pm-expiry-date').value = p.expiryDate || '';
+      document.getElementById('pm-critical').checked = !!p.critical;
+      document.getElementById('pm-remarks').value = p.remarks || '';
+      tempChecklist = JSON.parse(JSON.stringify(p.checklist || []));
+    }
+  } else {
+    ['pm-name','pm-authority','pm-ref','pm-assignee','pm-remarks'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pm-category').value = 'regulatory';
+    document.getElementById('pm-status').value = 'Not Started';
+    document.getElementById('pm-progress').value = 0;
+    document.getElementById('pm-deadline').value = '';
+    document.getElementById('pm-issue-date').value = '';
+    document.getElementById('pm-expiry-date').value = '';
+    document.getElementById('pm-critical').checked = false;
+    tempChecklist = [];
+  }
+  renderChecklistItems();
+
+  // Dependencies checkboxes
+  const depList = document.getElementById('pm-depends-list');
+  const currentDeps = id ? (permits.find(x=>x.id===id)?.dependsOn || []) : [];
+  depList.innerHTML = permits.filter(p => p.id !== id).map(p => `<label class="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg bg-white/[0.03] cursor-pointer">
+    <input type="checkbox" class="pm-dep-check rounded" value="${p.id}" ${currentDeps.includes(p.id)?'checked':''}>
+    <span class="text-slate-300">${p.name.split('(')[0].trim()}</span>
+  </label>`).join('');
+}
+
+function closePermitModal() { document.getElementById('permit-modal').classList.add('hidden'); editPermitId = null; }
+
+function savePermit() {
+  if (!checkCanEdit()) return;
+  const name = document.getElementById('pm-name').value.trim();
+  if (!name) { showToast(t('permitNameRequired'), 'error'); return; }
+  const permits = getPermitsData() || [];
+  const newStatus = document.getElementById('pm-status').value;
+  const dependsOn = Array.from(document.querySelectorAll('.pm-dep-check:checked')).map(el => parseInt(el.value));
+
+  const obj = {
+    name,
+    category: document.getElementById('pm-category').value,
+    assignee: document.getElementById('pm-assignee').value.trim(),
+    authority: document.getElementById('pm-authority').value.trim(),
+    refNo: document.getElementById('pm-ref').value.trim(),
+    status: newStatus,
+    progress: parseInt(document.getElementById('pm-progress').value) || 0,
+    deadline: document.getElementById('pm-deadline').value,
+    issueDate: document.getElementById('pm-issue-date').value,
+    expiryDate: document.getElementById('pm-expiry-date').value,
+    critical: document.getElementById('pm-critical').checked,
+    dependsOn,
+    checklist: tempChecklist,
+    remarks: document.getElementById('pm-remarks').value.trim()
+  };
+  if (editPermitId) {
+    const idx = permits.findIndex(p => p.id === editPermitId);
+    if (idx >= 0) {
+      const oldStatus = permits[idx].status;
+      permits[idx] = { ...permits[idx], ...obj };
+      if (oldStatus !== newStatus) {
+        const history = getPermitHistory();
+        history.unshift({ timestamp: new Date().toISOString(), permitId: editPermitId, permitName: name, oldStatus, newStatus, user: getSession()?.username || '' });
+        if (history.length > 100) history.length = 100;
+        savePermitHistory(history);
+      }
+    }
+    logActivity('edit_permit', name);
+    showToast(t('permitUpdated'));
+  } else {
+    obj.id = Date.now();
+    permits.push(obj);
+    const history = getPermitHistory();
+    history.unshift({ timestamp: new Date().toISOString(), permitId: obj.id, permitName: name, oldStatus: '—', newStatus: obj.status, user: getSession()?.username || '' });
+    savePermitHistory(history);
+    logActivity('add_permit', name);
+    showToast(t('permitAdded'));
+  }
+  savePermitsData(permits);
+  closePermitModal();
+  renderPermits();
+}
+
+function deletePermit(id) {
+  if (!checkCanEdit()) return;
+  if (!confirm(t('deletePermit'))) return;
+  const permits = (getPermitsData() || []).filter(p => p.id !== id);
+  savePermitsData(permits);
+  logActivity('delete_permit', 'Permit #' + id);
+  showToast(t('permitDeleted'));
+  renderPermits();
+}
+
+function exportPermitReport() {
+  const permits = getPermitsData() || [];
+  const th = getLang() === 'th';
+  const BOM = '\uFEFF';
+  const headers = ['ID','Permit Name','Category','Authority','Assignee','Status','Progress %','Deadline','Issue Date','Expiry Date','Ref No.','Critical Path','Dependencies','Documents Done','Documents Total','Remarks'];
+  const rows = permits.map(p => {
+    const depNames = (p.dependsOn||[]).map(did => { const dp = permits.find(x=>x.id===did); return dp ? dp.name : ''; }).filter(Boolean).join('; ');
+    const checkDone = (p.checklist||[]).filter(c=>c.done).length;
+    const checkTotal = (p.checklist||[]).length;
+    return [p.id, '"'+p.name+'"', permitCatLabel(p.category), '"'+(p.authority||'')+'"', '"'+(p.assignee||'')+'"', p.status, p.progress, p.deadline||'', p.issueDate||'', p.expiryDate||'', p.refNo||'', p.critical?'Yes':'No', '"'+depNames+'"', checkDone, checkTotal, '"'+(p.remarks||'').replace(/"/g,'""')+'"'];
+  });
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile('wte-permits-report-' + new Date().toISOString().slice(0,10) + '.csv', BOM + csv, 'text/csv;charset=utf-8');
+  logActivity('export', 'Permits Report CSV');
+  showToast(t('exportSuccess'));
+}
+
 // ---- ENVIRONMENT ----
 function getEnvRecords() { return JSON.parse(localStorage.getItem('wte_env') || '[]'); }
 function saveEnvRecords(list) { localStorage.setItem('wte_env', JSON.stringify(list)); }
@@ -3861,7 +4488,9 @@ function exportAllJSON() {
     activityLog: getActivityLog(),
     workProgress: getWPReports(),
     incidents: getIncidents(),
-    envRecords: getEnvRecords()
+    envRecords: getEnvRecords(),
+    permits: getPermitsData(),
+    permitHistory: getPermitHistory()
   };
   downloadFile('wte-tracker-backup-' + new Date().toISOString().slice(0,10) + '.json', JSON.stringify(exportData, null, 2), 'application/json');
   logActivity('export', 'Full JSON backup');
@@ -3910,6 +4539,8 @@ function importJSON(event) {
       if (imported.workProgress) saveWPReports(imported.workProgress);
       if (imported.incidents) saveIncidents(imported.incidents);
       if (imported.envRecords) saveEnvRecords(imported.envRecords);
+      if (imported.permits) savePermitsData(imported.permits);
+      if (imported.permitHistory) savePermitHistory(imported.permitHistory);
       if (imported.project) localStorage.setItem('wte_project_settings', JSON.stringify(imported.project));
       logActivity('import', 'Restored from JSON backup (' + imported.exportedAt + ')');
       data = loadData();
