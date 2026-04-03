@@ -2,7 +2,14 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WTE Tracker">
+<meta name="theme-color" content="#1a1f3a">
+<meta name="description" content="GP4 6.6 MW WtE Power Plant Construction Tracker">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>WTE Power Plant - Construction Tracker</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -50,7 +57,7 @@ tailwind.config = {
     --sidebar-active-bg: rgba(59,130,246,0.08); --row-subtle: #f8fafc;
   }
 
-  body { background: var(--bg-body); color: var(--text-main); transition: background 0.3s, color 0.3s; }
+  body { background: var(--bg-body); color: var(--text-main); transition: background 0.3s, color 0.3s; padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
   ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
@@ -5648,6 +5655,13 @@ function renderAll() {
 }
 
 checkAuth();
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    console.log('SW registered:', reg.scope);
+  }).catch(err => console.log('SW error:', err));
+}
 </script>
 </body>
 </html>

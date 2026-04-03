@@ -1,0 +1,25 @@
+{
+  "name": "WTE Tracker — Construction Management",
+  "short_name": "WTE Tracker",
+  "description": "GP4 6.6 MW Waste-to-Energy Power Plant Construction Tracker",
+  "start_url": "/wte-tracker/",
+  "scope": "/wte-tracker/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f1225",
+  "theme_color": "#1a1f3a",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
