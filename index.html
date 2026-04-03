@@ -965,10 +965,16 @@ tailwind.config = {
         <p class="text-sm text-slate-400 mt-0.5" id="wp-desc">Daily construction progress reports</p>
       </div>
     </div>
+    <div class="flex gap-2">
+    <button onclick="exportEPCSystems()" class="bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span id="epc-export-btn">Export</span>
+    </button>
     <button onclick="openWPModal()" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20">
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       <span id="wp-add-btn">Add Daily Report</span>
     </button>
+    </div>
   </div>
 
   <!-- Summary Stats — glass cards -->
@@ -1025,6 +1031,136 @@ tailwind.config = {
   </div>
   <div id="wp-list" class="space-y-3"></div>
   <div id="wp-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No daily reports yet. Start recording progress!</div>
+
+  <!-- EPC System Status History -->
+  <div class="card p-5 mt-6" id="epc-history-section">
+    <h3 class="text-sm font-semibold text-white mb-4" id="epc-history-title">System Status History</h3>
+    <div id="epc-history-list" class="space-y-1 max-h-60 overflow-y-auto"></div>
+  </div>
+
+  <!-- ========== EPC SYSTEM DETAIL DASHBOARD ========== -->
+  <div id="epc-detail" class="hidden">
+    <!-- Back + Header -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-4">
+        <button onclick="closeEPCDetail()" class="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center transition">
+          <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl" id="epc-d-icon-box">🏗️</div>
+        <div>
+          <h2 class="text-2xl font-bold text-white" id="epc-d-title">System Dashboard</h2>
+          <p class="text-sm text-slate-400 mt-0.5" id="epc-d-subtitle"></p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="exportSystemDailyReport()" class="bg-white/5 hover:bg-white/10 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Export
+        </button>
+        <button onclick="openEPCModal(currentEPCDetailKey)" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+          ✏️ Edit
+        </button>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-5 gap-4 mb-6">
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 uppercase mb-1">Progress</p><p class="text-3xl font-bold text-white" id="epc-d-progress">0%</p><div class="progress-bar mt-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" id="epc-d-progress-bar" style="width:0%"></div></div></div>
+      <div class="stat-card green"><p class="text-[10px] text-slate-400 uppercase mb-1">Status</p><div class="flex items-center gap-2 mt-1" id="epc-d-status-wrap"></div></div>
+      <div class="stat-card amber"><p class="text-[10px] text-slate-400 uppercase mb-1">Deadline</p><p class="text-xl font-bold text-white" id="epc-d-deadline">—</p><p class="text-xs mt-1" id="epc-d-deadline-days"></p></div>
+      <div class="stat-card blue"><p class="text-[10px] text-slate-400 uppercase mb-1">Milestones</p><p class="text-3xl font-bold text-white" id="epc-d-milestones">0/0</p></div>
+      <div class="stat-card green"><p class="text-[10px] text-slate-400 uppercase mb-1">Reports</p><p class="text-3xl font-bold text-white" id="epc-d-reports">0</p><p class="text-xs text-slate-400" id="epc-d-assignee"></p></div>
+    </div>
+
+    <!-- S-Curve + Manpower Chart -->
+    <div class="grid grid-cols-2 gap-5 mb-6">
+      <div class="card p-5">
+        <h3 class="text-sm font-semibold text-white mb-3" id="epc-d-scurve-title">S-Curve — Plan vs Actual</h3>
+        <canvas id="chart-epc-d-scurve" height="200"></canvas>
+      </div>
+      <div class="card p-5">
+        <h3 class="text-sm font-semibold text-white mb-3" id="epc-d-manpower-title">Manpower Trend</h3>
+        <canvas id="chart-epc-d-manpower" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Milestone Tracker -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="epc-d-milestone-title">Milestone Tracker</h3>
+      <div id="epc-d-milestone-list" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Work Items Table -->
+    <div class="card p-5 mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-sm font-semibold text-white" id="epc-d-items-title">Work Items</h3>
+        <button onclick="openWorkItemModal()" class="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white px-4 py-2 rounded-xl text-xs font-medium transition-all flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Add Item
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table><thead id="epc-d-items-thead"></thead><tbody id="epc-d-items-tbody"></tbody></table>
+      </div>
+      <p id="epc-d-no-items" class="text-xs text-slate-500 hidden text-center py-4"></p>
+    </div>
+
+    <!-- Work Item Edit Modal -->
+    <div id="workitem-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+      <div class="modal-overlay absolute inset-0" onclick="closeWorkItemModal()"></div>
+      <div class="relative w-full max-w-md mx-4 rounded-2xl p-6" style="background:var(--modal-bg); border:1px solid var(--card-border);">
+        <h3 class="text-lg font-bold text-white mb-4" id="wi-modal-title">Edit Item</h3>
+        <div class="space-y-3">
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2"><label class="text-xs text-slate-400 block mb-1">Name</label><input type="text" id="wi-name" class="w-full" placeholder="e.g. Piling Works"></div>
+            <div><label class="text-xs text-slate-400 block mb-1">Category</label>
+              <select id="wi-category" class="w-full">
+                <option value="engineering">Engineering</option>
+                <option value="procurement">Procurement</option>
+                <option value="fabrication">Fabrication</option>
+                <option value="construction">Construction</option>
+                <option value="system">System Works</option>
+              </select>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+              <select id="wi-status" class="w-full">
+                <option value="Not Started">Not Started</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+                <option value="Delayed">Delayed</option>
+              </select>
+            </div>
+            <div><label class="text-xs text-slate-400 block mb-1">Progress %</label><input type="number" id="wi-progress" class="w-full" min="0" max="100" value="0"></div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="text-xs text-slate-400 block mb-1">Assignee</label><input type="text" id="wi-assignee" class="w-full" placeholder="e.g. KK Green"></div>
+            <div><label class="text-xs text-slate-400 block mb-1">Deadline</label><input type="date" id="wi-deadline" class="w-full"></div>
+          </div>
+          <div><label class="text-xs text-slate-400 block mb-1">Remarks</label><textarea id="wi-remarks" class="w-full" rows="2"></textarea></div>
+        </div>
+        <div class="flex gap-3 mt-4">
+          <button onclick="saveWorkItem()" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white py-2.5 rounded-xl text-sm font-medium">Save</button>
+          <button onclick="closeWorkItemModal()" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl text-sm font-medium">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Photo Gallery -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-sm font-semibold text-white mb-4" id="epc-d-photo-title">Photo Gallery</h3>
+      <div id="epc-d-photos" class="grid grid-cols-4 gap-3"></div>
+      <p id="epc-d-no-photos" class="text-xs text-slate-500 hidden">No photos available for this system.</p>
+    </div>
+
+    <!-- Daily Reports -->
+    <div class="card p-5">
+      <h3 class="text-sm font-semibold text-white mb-4" id="epc-d-reports-title">Daily Reports</h3>
+      <div id="epc-d-reports-list" class="space-y-3"></div>
+      <p id="epc-d-no-reports" class="text-xs text-slate-500 hidden">No daily reports for this system yet.</p>
+    </div>
+  </div>
 </div>
 
 <!-- Work Progress Modal -->
@@ -1056,6 +1192,45 @@ tailwind.config = {
     <div class="flex justify-end gap-3 mt-6">
       <button onclick="closeWPModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
       <button onclick="saveWPReport()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EPC System Edit Modal -->
+<div id="epc-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center">
+  <div class="modal-overlay absolute inset-0" onclick="closeEPCModal()"></div>
+  <div class="relative w-full max-w-lg mx-4 rounded-2xl p-6" style="background:var(--modal-bg); border:1px solid var(--card-border);">
+    <h3 class="text-lg font-bold text-white mb-4" id="epc-modal-title">Edit System</h3>
+    <div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+      <div class="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] mb-2">
+        <span class="text-2xl" id="epc-modal-icon"></span>
+        <div><p class="text-sm font-bold text-white" id="epc-modal-name"></p><p class="text-[10px] text-slate-500" id="epc-modal-name-th"></p></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-status">Status</label>
+          <select id="epc-status" class="w-full">
+            <option value="Not Started">Not Started</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Delayed">Delayed</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-progress">Progress %</label><input type="number" id="epc-progress" class="w-full" min="0" max="100" value="0"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-assignee">Assignee</label><input type="text" id="epc-assignee" class="w-full" placeholder="e.g. KK Green"></div>
+        <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-deadline">Deadline</label><input type="date" id="epc-deadline" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-checklist">Milestone Checklist</label>
+        <div id="epc-checklist-items" class="space-y-1 mb-1"></div>
+        <div class="flex gap-1"><input type="text" id="epc-checklist-new" class="flex-1 text-xs" placeholder="Add milestone..."><button onclick="addEPCChecklistItem()" class="text-xs text-cyan-400 px-2">+ Add</button></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1" id="lbl-epc-remarks">Remarks</label><textarea id="epc-remarks" class="w-full" rows="2" placeholder="Notes..."></textarea></div>
+    </div>
+    <div class="flex gap-3 mt-4">
+      <button onclick="saveEPCSystem()" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="epc-save-btn">Save</button>
+      <button onclick="closeEPCModal()" class="flex-1 bg-white/5 hover:bg-white/10 text-white py-2.5 rounded-xl text-sm font-medium transition-all" id="epc-cancel-btn">Cancel</button>
     </div>
   </div>
 </div>
@@ -1737,6 +1912,12 @@ const LANG = {
     wpManpower: 'Manpower', wpEquipment: 'Equipment',
     wpDeleteReport: 'Delete this report?', wpActivitiesRequired: 'Activities description is required',
     wpReportAdded: 'Report added', wpReportUpdated: 'Report updated', wpReportDeleted: 'Report deleted',
+    // EPC Systems
+    epcSystemsTitle: 'Systems Overview', epcEditSystem: 'Edit System', epcSystemUpdated: 'System updated',
+    epcStatus: 'Status', epcProgress: 'Progress', epcAssignee: 'Assignee', epcDeadline: 'Deadline',
+    epcChecklist: 'Milestone Checklist', epcRemarks: 'Remarks', epcExportReport: 'Export Systems Report',
+    epcHistory: 'System Status History', epcNoHistory: 'No history yet',
+    epcCompleted: 'Completed', epcInProgress: 'In Progress', epcNotStarted: 'Not Started', epcDelayed: 'Delayed', epcSuspended: 'Suspended',
     // Environment
     environment: 'Environment', envTitle: 'Environmental Management', envDesc: 'Environmental monitoring & compliance tracking',
     envAddRecord: 'Add Record', envEditRecord: 'Edit Record', envEmpty: 'No environmental records yet.',
@@ -1848,6 +2029,12 @@ const LANG = {
     wpManpower: 'แรงงาน', wpEquipment: 'อุปกรณ์',
     wpDeleteReport: 'ต้องการลบรายงานนี้?', wpActivitiesRequired: 'กรุณาระบุกิจกรรมที่ทำ',
     wpReportAdded: 'เพิ่มรายงานแล้ว', wpReportUpdated: 'อัปเดตรายงานแล้ว', wpReportDeleted: 'ลบรายงานแล้ว',
+    // EPC Systems
+    epcSystemsTitle: 'ภาพรวมระบบ', epcEditSystem: 'แก้ไขระบบ', epcSystemUpdated: 'อัปเดตระบบแล้ว',
+    epcStatus: 'สถานะ', epcProgress: 'ความคืบหน้า', epcAssignee: 'ผู้รับผิดชอบ', epcDeadline: 'กำหนดเสร็จ',
+    epcChecklist: 'รายการที่ต้องทำ', epcRemarks: 'หมายเหตุ', epcExportReport: 'ส่งออกรายงานระบบ',
+    epcHistory: 'ประวัติสถานะระบบ', epcNoHistory: 'ยังไม่มีประวัติ',
+    epcCompleted: 'เสร็จแล้ว', epcInProgress: 'กำลังดำเนินการ', epcNotStarted: 'ยังไม่เริ่ม', epcDelayed: 'ล่าช้า', epcSuspended: 'หยุดชั่วคราว',
     environment: 'สิ่งแวดล้อม', envTitle: 'การจัดการสิ่งแวดล้อม', envDesc: 'ติดตามตรวจวัดและปฏิบัติตามข้อกำหนดสิ่งแวดล้อม',
     envAddRecord: 'เพิ่มบันทึก', envEditRecord: 'แก้ไขบันทึก', envEmpty: 'ยังไม่มีบันทึกสิ่งแวดล้อม',
     envAir: 'คุณภาพอากาศ', envWater: 'คุณภาพน้ำ', envNoise: 'ระดับเสียง', envWasteMgmt: 'จัดการของเสีย',
@@ -3018,7 +3205,6 @@ function renderAlerts() {
 // ---- RENDER ALL ----
 // ---- WORK PROGRESS ----
 const WP_SYSTEMS = [
-  { key: 'permits', en: 'Permits & Licensing', th: 'ใบอนุญาต', icon: '📋' },
   { key: 'civil', en: 'Civil Works', th: 'ระบบงานโยธา', icon: '🏗️' },
   { key: 'fuel', en: 'Fuel System', th: 'ระบบเชื้อเพลิง', icon: '♻️' },
   { key: 'ash', en: 'Ash Handling', th: 'ระบบขี้เถ้า', icon: '🪨' },
@@ -3118,23 +3304,56 @@ function renderWorkProgress() {
   filterSel.innerHTML = `<option value="">${allLabel}</option>` + WP_SYSTEMS.map(s => `<option value="${s.key}">${s.icon} ${th ? s.th : s.en}</option>`).join('');
   filterSel.value = fVal;
 
-  // Systems overview — visual cards with progress bar
-  const sysColors = { permits:'from-slate-500 to-slate-400', civil:'from-stone-500 to-stone-400', fuel:'from-green-500 to-emerald-400', ash:'from-gray-500 to-gray-400', combustion:'from-red-500 to-orange-400', boiler:'from-cyan-500 to-blue-400', fgt:'from-indigo-500 to-violet-400', turbine_gen:'from-purple-500 to-pink-400', cooling:'from-sky-500 to-cyan-400', water_prod:'from-blue-500 to-sky-400', wastewater:'from-teal-500 to-emerald-400', biogas:'from-lime-500 to-green-400', dcs:'from-violet-500 to-purple-400', power_dist:'from-yellow-500 to-amber-400', lv_elec:'from-orange-500 to-amber-400', fire:'from-red-600 to-red-400' };
-  document.getElementById('wp-systems-grid').innerHTML = WP_SYSTEMS.map(sys => {
+  // Systems overview — enhanced cards with progress, status, blink lights
+  const epcSystems = getEPCSystemsData();
+  const sysColors = { civil:'from-stone-500 to-stone-400', fuel:'from-green-500 to-emerald-400', ash:'from-gray-500 to-gray-400', combustion:'from-red-500 to-orange-400', boiler:'from-cyan-500 to-blue-400', fgt:'from-indigo-500 to-violet-400', turbine_gen:'from-purple-500 to-pink-400', cooling:'from-sky-500 to-cyan-400', water_prod:'from-blue-500 to-sky-400', wastewater:'from-teal-500 to-emerald-400', biogas:'from-lime-500 to-green-400', dcs:'from-violet-500 to-purple-400', power_dist:'from-yellow-500 to-amber-400', lv_elec:'from-orange-500 to-amber-400', fire:'from-red-600 to-red-400' };
+  // Sort: Delayed first, then In Progress, then rest
+  const statusOrder = { 'Delayed': 0, 'Suspended': 1, 'In Progress': 2, 'Not Started': 3, 'Completed': 4 };
+  const sortedSystems = [...epcSystems].sort((a, b) => (statusOrder[a.status]||3) - (statusOrder[b.status]||3));
+  document.getElementById('wp-systems-grid').innerHTML = sortedSystems.map(sys => {
     const count = reports.filter(r => r.system === sys.key).length;
     const isActive = fVal === sys.key;
-    const pct = reports.length ? Math.round(count / reports.length * 100) : 0;
-    return `<div class="relative group cursor-pointer rounded-xl p-2.5 transition-all ${isActive ? 'bg-white/[0.1] ring-1 ring-blue-500/50' : 'bg-white/[0.03] hover:bg-white/[0.06]'}" onclick="document.getElementById('filter-wp-system').value='${isActive ? '' : sys.key}'; renderWorkProgress();">
+    const dl = sys.deadline ? new Date(sys.deadline) : null;
+    const now2 = new Date();
+    const daysLeft = dl ? Math.ceil((dl - now2)/(1000*60*60*24)) : null;
+    const checkDone = (sys.checklist||[]).filter(c=>c.done).length;
+    const checkTotal = (sys.checklist||[]).length;
+    // Blink light
+    let blinkHtml = '';
+    if (sys.status === 'Completed') blinkHtml = '<span class="inline-block w-2 h-2 rounded-full bg-emerald-500" style="animation:blink-green 2s ease-in-out infinite"></span>';
+    else if (sys.status === 'Delayed' || sys.status === 'Suspended' || (daysLeft !== null && daysLeft < 0)) blinkHtml = '<span class="inline-block w-2 h-2 rounded-full bg-red-500" style="animation:blink-red 1.5s ease-in-out infinite"></span>';
+    else if (daysLeft !== null && daysLeft < 30) blinkHtml = '<span class="inline-block w-2 h-2 rounded-full bg-amber-500" style="animation:blink-amber 1.5s ease-in-out infinite"></span>';
+    else if (sys.status === 'In Progress') blinkHtml = '<span class="inline-block w-2 h-2 rounded-full bg-blue-500" style="animation:blink-amber 2s ease-in-out infinite"></span>';
+    else blinkHtml = '<span class="inline-block w-2 h-2 rounded-full bg-slate-500"></span>';
+
+    const borderClass = sys.status === 'Delayed' ? 'ring-1 ring-red-500/30' : sys.status === 'Completed' ? 'ring-1 ring-emerald-500/20' : isActive ? 'ring-1 ring-blue-500/50' : '';
+    return `<div class="relative group cursor-pointer rounded-xl p-2.5 transition-all ${isActive ? 'bg-white/[0.1]' : 'bg-white/[0.03] hover:bg-white/[0.06]'} ${borderClass}" onclick="openEPCDetail('${sys.key}')" oncontextmenu="event.preventDefault(); document.getElementById('filter-wp-system').value='${isActive ? '' : sys.key}'; renderWorkProgress();">
       <div class="flex items-center gap-2 mb-1.5">
         <div class="w-7 h-7 rounded-lg bg-gradient-to-br ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} flex items-center justify-center text-sm shadow-sm">${sys.icon}</div>
         <div class="flex-1 min-w-0">
-          <p class="text-[10px] text-white font-medium truncate">${th ? sys.th : sys.en}</p>
-          <p class="text-[9px] text-slate-500">${count} ${th ? 'รายงาน' : 'reports'}</p>
+          <p class="text-[10px] text-white font-medium truncate">${th ? sys.name_th : sys.name_en}</p>
+          <div class="flex items-center gap-1">
+            ${blinkHtml}
+            <span class="text-[9px] text-slate-500">${epcStatusLabel(sys.status)}</span>
+          </div>
+        </div>
+        <span class="text-xs font-bold ${sys.progress >= 80 ? 'text-emerald-400' : sys.progress >= 40 ? 'text-blue-400' : 'text-slate-400'}">${sys.progress}%</span>
+      </div>
+      <div class="w-full h-1.5 rounded-full bg-white/5 overflow-hidden mb-1"><div class="h-full rounded-full bg-gradient-to-r ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} transition-all" style="width:${sys.progress}%"></div></div>
+      <div class="flex items-center justify-between">
+        <span class="text-[8px] text-slate-500">${sys.assignee || '—'}</span>
+        <div class="flex items-center gap-2">
+          ${checkTotal > 0 ? `<span class="text-[8px] ${checkDone===checkTotal?'text-emerald-400':'text-slate-500'}">${checkDone}/${checkTotal}</span>` : ''}
+          ${daysLeft !== null ? `<span class="text-[8px] ${daysLeft < 0 ? 'text-red-400 font-bold' : daysLeft < 30 ? 'text-amber-400' : 'text-slate-500'}">${daysLeft < 0 ? (th?'เกิน':'overdue') + ' ' + Math.abs(daysLeft) + 'd' : daysLeft + 'd'}</span>` : ''}
         </div>
       </div>
-      <div class="w-full h-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} transition-all" style="width:${count ? Math.max(pct, 8) : 0}%"></div></div>
     </div>`;
   }).join('');
+
+  // EPC Export button label
+  document.getElementById('epc-export-btn').textContent = t('epcExportReport');
+  // EPC History
+  renderEPCHistory();
 
   // Filter by system
   const sysFilter = document.getElementById('filter-wp-system').value;
@@ -3791,6 +4010,627 @@ function exportPermitReport() {
   downloadFile('wte-permits-report-' + new Date().toISOString().slice(0,10) + '.csv', BOM + csv, 'text/csv;charset=utf-8');
   logActivity('export', 'Permits Report CSV');
   showToast(t('exportSuccess'));
+}
+
+// ---- EPC SYSTEMS TRACKING ----
+function getEPCSystemsData() {
+  const stored = localStorage.getItem('wte_epc_systems');
+  if (!stored) { const d = defaultEPCSystems(); saveEPCSystemsData(d); return d; }
+  const parsed = JSON.parse(stored);
+  // Migrate: add workItems from checklist if missing
+  let needsSave = false;
+  parsed.forEach(s => {
+    if (!s.workItems) {
+      s.workItems = (s.checklist||[]).map((c,i) => ({ id: Date.now()+i, name: c.name, status: c.done?'Completed':'Not Started', progress: c.done?100:0, assignee: s.assignee||'', deadline: s.deadline||'', remarks: '' }));
+      needsSave = true;
+    }
+  });
+  if (needsSave) saveEPCSystemsData(parsed);
+  return parsed;
+}
+function saveEPCSystemsData(list) { localStorage.setItem('wte_epc_systems', JSON.stringify(list)); }
+function getEPCHistory() { return JSON.parse(localStorage.getItem('wte_epc_history') || '[]'); }
+function saveEPCHistory(list) { localStorage.setItem('wte_epc_history', JSON.stringify(list)); }
+
+function defaultEPCSystems() {
+  return WP_SYSTEMS.map(s => {
+    const defaults = {
+      civil:       { progress: 15, status: 'In Progress', assignee: 'KK Green', deadline: '2026-06-30', checklist: [{name:'Piling',done:true},{name:'Foundation',done:true},{name:'Steel Structure',done:false},{name:'Building Envelope',done:false}], workItems: [
+        {id:1,name:'Structural Design & Drawing',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-06-30',remarks:'All structural drawings approved'},
+        {id:2,name:'Soil Investigation Report',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-05-15',remarks:'Soil test completed'},
+        {id:3,name:'Steel Structure Procurement',category:'procurement',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-08-31',remarks:'All steel purchased from local supplier'},
+        {id:4,name:'Concrete & Rebar Procurement',category:'procurement',status:'In Progress',progress:70,assignee:'KK Green',deadline:'2026-03-31',remarks:'Ongoing delivery schedule'},
+        {id:5,name:'Cladding Material Order',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-04-30',remarks:'After steel structure design finalized'},
+        {id:6,name:'Steel Fabrication — Main Building',category:'fabrication',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-04-15',remarks:'Column & beam fabrication ongoing'},
+        {id:7,name:'Steel Fabrication — Boiler House',category:'fabrication',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-05-15',remarks:'Fabrication started'},
+        {id:8,name:'Piling Works',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-09-30',remarks:'356 piles completed'},
+        {id:9,name:'Foundation & Ground Beam',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'All foundations poured'},
+        {id:10,name:'Steel Structure Erection — Main',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-04-30',remarks:'Columns 30% erected'},
+        {id:11,name:'Steel Structure Erection — Boiler House',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:'After fabrication'},
+        {id:12,name:'Concrete Slab & Floor',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-05-15',remarks:'Ground floor 40% complete'},
+        {id:13,name:'Building Envelope & Cladding',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'After steel structure'},
+        {id:14,name:'Road & Drainage',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:''},
+        {id:15,name:'Weighbridge & Gate House',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:''},
+        {id:16,name:'Grounding & Lightning Protection',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-15',remarks:'After steel structure'},
+        {id:17,name:'Underground Piping & Utilities',category:'system',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-05-31',remarks:'Drainage piping started'}
+      ] },
+      fuel:        { progress: 5, status: 'In Progress', assignee: 'KK Green', deadline: '2026-08-31', checklist: [{name:'Design Review',done:true},{name:'Equipment Procurement',done:false},{name:'Installation',done:false},{name:'Testing',done:false}] },
+      ash:         { progress: 3, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:true},{name:'Procurement',done:false},{name:'Installation',done:false}] },
+      combustion:  { progress: 10, status: 'In Progress', assignee: 'LAWI / KK Green', deadline: '2026-08-31', checklist: [{name:'Grate Design',done:true},{name:'Fabrication',done:false},{name:'Delivery',done:false},{name:'Installation',done:false}] },
+      boiler:      { progress: 25, status: 'In Progress', assignee: 'LSB / KK Green', deadline: '2026-08-31', checklist: [{name:'Design Review',done:true},{name:'Steel Structure',done:true},{name:'Membrane Wall',done:false},{name:'Superheater',done:false},{name:'Economizer',done:true},{name:'Air Preheater',done:true},{name:'Installation',done:false}] },
+      fgt:         { progress: 5, status: 'In Progress', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:true},{name:'Bag Filter Procurement',done:false},{name:'Scrubber Procurement',done:false},{name:'Installation',done:false}] },
+      turbine_gen: { progress: 20, status: 'In Progress', assignee: 'Shinko / TDPS', deadline: '2026-09-30', checklist: [{name:'Turbine Order (Shinko)',done:true},{name:'Generator Order (TDPS)',done:true},{name:'Fabrication',done:false},{name:'Delivery',done:false},{name:'Installation',done:false}] },
+      cooling:     { progress: 5, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:true},{name:'Cooling Tower Procurement',done:false},{name:'Piping',done:false},{name:'Installation',done:false}] },
+      water_prod:  { progress: 3, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:true},{name:'RO System',done:false},{name:'Storage Tanks',done:false},{name:'Installation',done:false}] },
+      wastewater:  { progress: 5, status: 'In Progress', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:true},{name:'Treatment System',done:false},{name:'Installation',done:false},{name:'Commissioning',done:false}] },
+      biogas:      { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:false},{name:'Procurement',done:false},{name:'Installation',done:false}] },
+      dcs:         { progress: 10, status: 'In Progress', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'I/O List',done:true},{name:'Logic Design',done:false},{name:'Hardware Procurement',done:false},{name:'Programming',done:false},{name:'Commissioning',done:false}] },
+      power_dist:  { progress: 8, status: 'In Progress', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'SLD Design',done:true},{name:'Transformer',done:false},{name:'Switchgear',done:false},{name:'Cable Laying',done:false}] },
+      lv_elec:     { progress: 3, status: 'Not Started', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:true},{name:'MDB/SDB Procurement',done:false},{name:'Wiring',done:false},{name:'Testing',done:false}] },
+      fire:        { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:false},{name:'Fire Pump',done:false},{name:'Sprinkler/Hydrant',done:false},{name:'Alarm System',done:false},{name:'Inspection',done:false}] },
+    };
+    const d = defaults[s.key] || { progress: 0, status: 'Not Started', assignee: '', deadline: '', checklist: [] };
+    return { key: s.key, name_en: s.en, name_th: s.th, icon: s.icon, ...d, remarks: '' };
+  });
+}
+
+function epcStatusLabel(status) {
+  const th = getLang() === 'th';
+  const m = { 'Completed': th?'เสร็จ':'Done', 'In Progress': th?'ดำเนินการ':'Active', 'Not Started': th?'ยังไม่เริ่ม':'Pending', 'Delayed': th?'ล่าช้า':'Delayed', 'Suspended': th?'หยุด':'Stopped' };
+  return m[status] || status;
+}
+
+function epcStatusBadge(status) {
+  const cls = { 'Completed': 'badge-green', 'In Progress': 'badge-blue', 'Not Started': 'badge-gray', 'Delayed': 'badge-red', 'Suspended': 'badge-amber' };
+  return `<span class="badge ${cls[status]||'badge-gray'}">${epcStatusLabel(status)}</span>`;
+}
+
+let editEPCKey = null;
+let epcTempChecklist = [];
+
+function addEPCChecklistItem() {
+  const input = document.getElementById('epc-checklist-new');
+  const val = input.value.trim();
+  if (!val) return;
+  epcTempChecklist.push({ name: val, done: false });
+  input.value = '';
+  renderEPCChecklistItems();
+}
+function toggleEPCChecklistItem(idx) { epcTempChecklist[idx].done = !epcTempChecklist[idx].done; renderEPCChecklistItems(); }
+function removeEPCChecklistItem(idx) { epcTempChecklist.splice(idx, 1); renderEPCChecklistItems(); }
+function renderEPCChecklistItems() {
+  document.getElementById('epc-checklist-items').innerHTML = epcTempChecklist.map((c, i) => `<div class="flex items-center gap-2 p-1 rounded bg-white/[0.03]">
+    <input type="checkbox" ${c.done?'checked':''} onchange="toggleEPCChecklistItem(${i})" class="rounded">
+    <span class="text-xs ${c.done?'text-slate-500 line-through':'text-white'} flex-1">${c.name}</span>
+    <button onclick="removeEPCChecklistItem(${i})" class="text-red-400 text-xs px-1">✕</button>
+  </div>`).join('');
+}
+
+function openEPCModal(key) {
+  editEPCKey = key;
+  const th = getLang() === 'th';
+  const systems = getEPCSystemsData();
+  const sys = systems.find(s => s.key === key);
+  if (!sys) return;
+
+  document.getElementById('epc-modal').classList.remove('hidden');
+  document.getElementById('epc-modal-title').textContent = t('epcEditSystem');
+  document.getElementById('epc-modal-icon').textContent = sys.icon;
+  document.getElementById('epc-modal-name').textContent = sys.name_en;
+  document.getElementById('epc-modal-name-th').textContent = sys.name_th;
+  document.getElementById('lbl-epc-status').textContent = t('epcStatus');
+  document.getElementById('lbl-epc-progress').textContent = t('epcProgress');
+  document.getElementById('lbl-epc-assignee').textContent = t('epcAssignee');
+  document.getElementById('lbl-epc-deadline').textContent = t('epcDeadline');
+  document.getElementById('lbl-epc-checklist').textContent = t('epcChecklist');
+  document.getElementById('lbl-epc-remarks').textContent = t('epcRemarks');
+  document.getElementById('epc-save-btn').textContent = t('save');
+  document.getElementById('epc-cancel-btn').textContent = t('cancel');
+
+  document.getElementById('epc-status').value = sys.status;
+  document.getElementById('epc-progress').value = sys.progress;
+  document.getElementById('epc-assignee').value = sys.assignee || '';
+  document.getElementById('epc-deadline').value = sys.deadline || '';
+  document.getElementById('epc-remarks').value = sys.remarks || '';
+  epcTempChecklist = JSON.parse(JSON.stringify(sys.checklist || []));
+  renderEPCChecklistItems();
+}
+
+function closeEPCModal() {
+  document.getElementById('epc-modal').classList.add('hidden');
+  editEPCKey = null;
+}
+
+function saveEPCSystem() {
+  if (!checkCanEdit()) return;
+  const systems = getEPCSystemsData();
+  const idx = systems.findIndex(s => s.key === editEPCKey);
+  if (idx < 0) return;
+
+  const oldStatus = systems[idx].status;
+  const newStatus = document.getElementById('epc-status').value;
+
+  systems[idx].status = newStatus;
+  systems[idx].progress = parseInt(document.getElementById('epc-progress').value) || 0;
+  systems[idx].assignee = document.getElementById('epc-assignee').value.trim();
+  systems[idx].deadline = document.getElementById('epc-deadline').value;
+  systems[idx].checklist = epcTempChecklist;
+  systems[idx].remarks = document.getElementById('epc-remarks').value.trim();
+
+  // Log status change
+  if (oldStatus !== newStatus) {
+    const history = getEPCHistory();
+    history.unshift({ timestamp: new Date().toISOString(), systemKey: editEPCKey, systemName: systems[idx].name_en, oldStatus, newStatus, user: getSession()?.username || '' });
+    if (history.length > 100) history.length = 100;
+    saveEPCHistory(history);
+  }
+
+  saveEPCSystemsData(systems);
+  logActivity('edit_epc_system', systems[idx].name_en + ' → ' + newStatus);
+  showToast(t('epcSystemUpdated'));
+  closeEPCModal();
+  renderWorkProgress();
+}
+
+function renderEPCHistory() {
+  const th = getLang() === 'th';
+  document.getElementById('epc-history-title').textContent = t('epcHistory');
+  const history = getEPCHistory().slice(0, 30);
+  document.getElementById('epc-history-list').innerHTML = history.length ? history.map(h => {
+    return `<div class="flex items-center gap-2 p-1.5 rounded bg-white/[0.02]">
+      <span class="text-[10px] text-slate-500 w-28 shrink-0">${new Date(h.timestamp).toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+      <p class="text-[10px] text-white flex-1"><strong>${h.systemName}</strong>: ${h.oldStatus} → ${h.newStatus}</p>
+      <span class="text-[10px] text-slate-500">${h.user||''}</span>
+    </div>`;
+  }).join('') : `<p class="text-xs text-slate-500">${t('epcNoHistory')}</p>`;
+}
+
+function exportEPCSystems() {
+  const systems = getEPCSystemsData();
+  const BOM = '\uFEFF';
+  const headers = ['System','Status','Progress %','Assignee','Deadline','Milestones Done','Milestones Total','Remarks'];
+  const rows = systems.map(s => {
+    const checkDone = (s.checklist||[]).filter(c=>c.done).length;
+    const checkTotal = (s.checklist||[]).length;
+    return ['"'+s.name_en+'"', s.status, s.progress, '"'+(s.assignee||'')+'"', s.deadline||'', checkDone, checkTotal, '"'+(s.remarks||'').replace(/"/g,'""')+'"'];
+  });
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile('wte-epc-systems-' + new Date().toISOString().slice(0,10) + '.csv', BOM + csv, 'text/csv;charset=utf-8');
+  logActivity('export', 'EPC Systems Report CSV');
+  showToast(t('exportSuccess'));
+}
+
+// ---- EPC SYSTEM DETAIL DASHBOARD ----
+let currentEPCDetailKey = null;
+let epcDetailSCurveChart = null, epcDetailManpowerChart = null;
+
+function openEPCDetail(key) {
+  currentEPCDetailKey = key;
+  // Hide overview sections, show detail
+  document.querySelectorAll('#page-workprogress > *:not(#epc-detail)').forEach(el => el.style.display = 'none');
+  document.getElementById('epc-detail').classList.remove('hidden');
+  window.scrollTo(0, 0);
+  renderEPCDetail(key);
+}
+
+function closeEPCDetail() {
+  currentEPCDetailKey = null;
+  document.getElementById('epc-detail').classList.add('hidden');
+  document.querySelectorAll('#page-workprogress > *:not(#epc-detail)').forEach(el => el.style.display = '');
+  renderWorkProgress();
+}
+
+function renderEPCDetail(key) {
+  const th = getLang() === 'th';
+  const systems = getEPCSystemsData();
+  const sys = systems.find(s => s.key === key);
+  if (!sys) return;
+  const reports = getWPReports().filter(r => r.system === key).sort((a,b) => new Date(b.date) - new Date(a.date));
+  const sysColors = { civil:'from-stone-500 to-stone-400', fuel:'from-green-500 to-emerald-400', ash:'from-gray-500 to-gray-400', combustion:'from-red-500 to-orange-400', boiler:'from-cyan-500 to-blue-400', fgt:'from-indigo-500 to-violet-400', turbine_gen:'from-purple-500 to-pink-400', cooling:'from-sky-500 to-cyan-400', water_prod:'from-blue-500 to-sky-400', wastewater:'from-teal-500 to-emerald-400', biogas:'from-lime-500 to-green-400', dcs:'from-violet-500 to-purple-400', power_dist:'from-yellow-500 to-amber-400', lv_elec:'from-orange-500 to-amber-400', fire:'from-red-600 to-red-400' };
+
+  // Header
+  const iconBox = document.getElementById('epc-d-icon-box');
+  iconBox.textContent = sys.icon;
+  iconBox.className = 'w-12 h-12 rounded-2xl flex items-center justify-center text-2xl bg-gradient-to-br ' + (sysColors[key] || 'from-slate-500 to-slate-400') + ' shadow-lg';
+  document.getElementById('epc-d-title').textContent = th ? sys.name_th : sys.name_en;
+  document.getElementById('epc-d-subtitle').textContent = th ? sys.name_en + ' — System Dashboard' : (th ? sys.name_th : '') + ' System Dashboard';
+
+  // Stat cards
+  document.getElementById('epc-d-progress').textContent = sys.progress + '%';
+  document.getElementById('epc-d-progress-bar').style.width = sys.progress + '%';
+
+  // Status with blink
+  const dl = sys.deadline ? new Date(sys.deadline) : null;
+  const now = new Date();
+  const daysLeft = dl ? Math.ceil((dl - now)/(1000*60*60*24)) : null;
+  let blinkHtml = '';
+  if (sys.status === 'Completed') blinkHtml = '<span class="inline-block w-3 h-3 rounded-full bg-emerald-500" style="animation:blink-green 2s ease-in-out infinite"></span>';
+  else if (sys.status === 'Delayed' || sys.status === 'Suspended' || (daysLeft !== null && daysLeft < 0)) blinkHtml = '<span class="inline-block w-3 h-3 rounded-full bg-red-500" style="animation:blink-red 1.5s ease-in-out infinite"></span>';
+  else if (daysLeft !== null && daysLeft < 30) blinkHtml = '<span class="inline-block w-3 h-3 rounded-full bg-amber-500" style="animation:blink-amber 1.5s ease-in-out infinite"></span>';
+  else if (sys.status === 'In Progress') blinkHtml = '<span class="inline-block w-3 h-3 rounded-full bg-blue-500" style="animation:blink-amber 2s ease-in-out infinite"></span>';
+  else blinkHtml = '<span class="inline-block w-3 h-3 rounded-full bg-slate-500"></span>';
+  document.getElementById('epc-d-status-wrap').innerHTML = blinkHtml + '<span class="text-xl font-bold text-white">' + epcStatusLabel(sys.status) + '</span>';
+
+  // Deadline
+  document.getElementById('epc-d-deadline').textContent = sys.deadline ? fmtDate(sys.deadline) : '—';
+  const ddEl = document.getElementById('epc-d-deadline-days');
+  if (daysLeft !== null) {
+    ddEl.textContent = daysLeft < 0 ? (th?'เกิน ':'overdue ') + Math.abs(daysLeft) + (th?' วัน':'d') : daysLeft + (th?' วันเหลือ':'d left');
+    ddEl.className = 'text-xs mt-1 ' + (daysLeft < 0 ? 'text-red-400 font-bold' : daysLeft < 30 ? 'text-amber-400' : 'text-slate-400');
+  } else { ddEl.textContent = ''; }
+
+  // Milestones
+  const checkDone = (sys.checklist||[]).filter(c=>c.done).length;
+  const checkTotal = (sys.checklist||[]).length;
+  document.getElementById('epc-d-milestones').textContent = checkDone + '/' + checkTotal;
+
+  // Reports count + assignee
+  document.getElementById('epc-d-reports').textContent = reports.length;
+  document.getElementById('epc-d-assignee').textContent = sys.assignee || '—';
+
+  // S-Curve
+  renderSystemSCurve(key, sys.progress);
+
+  // Manpower chart
+  renderManpowerChart(key, reports);
+
+  // Milestone tracker (visual stepper)
+  document.getElementById('epc-d-milestone-title').textContent = th ? 'ความคืบหน้า Milestone' : 'Milestone Tracker';
+  const milestoneList = document.getElementById('epc-d-milestone-list');
+  milestoneList.innerHTML = (sys.checklist||[]).map((c, i) => {
+    const color = c.done ? 'bg-emerald-500 border-emerald-500' : 'bg-white/5 border-white/20';
+    const textCls = c.done ? 'text-emerald-400 line-through' : 'text-white';
+    return `<div class="flex items-center gap-2 p-2.5 rounded-lg border ${c.done ? 'border-emerald-500/20 bg-emerald-500/5' : 'border-white/5 bg-white/[0.02]'}">
+      <div class="w-6 h-6 rounded-full ${color} border-2 flex items-center justify-center shrink-0">
+        ${c.done ? '<svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : `<span class="text-[9px] text-slate-500">${i+1}</span>`}
+      </div>
+      <span class="text-xs ${textCls}">${c.name}</span>
+    </div>`;
+  }).join('');
+
+  // Work items table
+  renderWorkItemsTable(key);
+
+  // Photo gallery
+  renderPhotoGallery(key, reports);
+
+  // Daily reports
+  renderSystemDailyReports(key, reports);
+}
+
+function renderSystemSCurve(key, currentProgress) {
+  const th = getLang() === 'th';
+  document.getElementById('epc-d-scurve-title').textContent = 'S-Curve — ' + (th ? 'แผน vs จริง' : 'Plan vs Actual');
+  const ctx = document.getElementById('chart-epc-d-scurve')?.getContext('2d');
+  if (!ctx) return;
+  if (epcDetailSCurveChart) epcDetailSCurveChart.destroy();
+
+  const labels = scurveLabels();
+  const plan = GROUP_PLANS.construction; // EPC systems follow construction plan curve
+  const nowDate = new Date();
+  const ci = (nowDate.getFullYear() - 2025) * 12 + nowDate.getMonth();
+  const actual = [];
+  const planAtCurrent = plan[Math.min(ci, 23)];
+  for (let i = 0; i < 24; i++) {
+    if (i > ci) { actual.push(null); continue; }
+    actual.push(planAtCurrent > 0 ? Math.round(currentProgress * plan[i] / planAtCurrent) : 0);
+  }
+
+  epcDetailSCurveChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels, datasets: [
+      { label: th ? 'แผน' : 'Plan', data: plan, borderColor: '#3b82f6', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
+      { label: th ? 'จริง' : 'Actual', data: actual, borderColor: '#06b6d4', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: { target: 'origin', above: 'rgba(6,182,212,0.08)' } }
+    ] },
+    options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { ticks: { color: chartTextColor(), font: { size: 7 }, maxRotation: 45, maxTicksLimit: 12 }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 } } }
+  });
+}
+
+function renderManpowerChart(key, reports) {
+  const th = getLang() === 'th';
+  document.getElementById('epc-d-manpower-title').textContent = th ? 'แรงงานรายวัน' : 'Manpower Trend';
+  const ctx = document.getElementById('chart-epc-d-manpower')?.getContext('2d');
+  if (!ctx) return;
+  if (epcDetailManpowerChart) epcDetailManpowerChart.destroy();
+
+  const sorted = [...reports].filter(r => parseInt(r.manpower) > 0).sort((a,b) => new Date(a.date) - new Date(b.date));
+  if (sorted.length === 0) {
+    epcDetailManpowerChart = new Chart(ctx, { type: 'bar', data: { labels: [th?'ไม่มีข้อมูล':'No data'], datasets: [{ data: [0], backgroundColor: '#334155' }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { ticks: { color: chartTextColor() } } } } });
+    return;
+  }
+  const labels = sorted.map(r => { const d = new Date(r.date); return d.toLocaleDateString(th?'th-TH':'en-US', { day:'numeric', month:'short' }); });
+  const mpData = sorted.map(r => parseInt(r.manpower) || 0);
+  const eqData = sorted.map(r => parseInt(r.equipment) || 0);
+
+  epcDetailManpowerChart = new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: th ? 'แรงงาน' : 'Manpower', data: mpData, backgroundColor: 'rgba(59,130,246,0.6)', borderRadius: 4, barThickness: 16 },
+      { label: th ? 'อุปกรณ์' : 'Equipment', data: eqData, backgroundColor: 'rgba(16,185,129,0.4)', borderRadius: 4, barThickness: 16 }
+    ] },
+    options: { responsive: true, plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { ticks: { color: chartTextColor(), font: { size: 8 } }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 } }, grid: { color: chartGridColor() }, beginAtZero: true } } }
+  });
+}
+
+function renderPhotoGallery(key, reports) {
+  const th = getLang() === 'th';
+  document.getElementById('epc-d-photo-title').textContent = th ? 'แกลเลอรีรูปภาพ' : 'Photo Gallery';
+  const allPhotos = [];
+  reports.forEach(r => {
+    if (r.photos) {
+      r.photos.split('\n').filter(u => u.trim()).forEach(url => {
+        allPhotos.push({ url: url.trim(), date: r.date });
+      });
+    }
+  });
+  const container = document.getElementById('epc-d-photos');
+  const noPhotos = document.getElementById('epc-d-no-photos');
+  if (allPhotos.length === 0) {
+    container.innerHTML = '';
+    noPhotos.classList.remove('hidden');
+    noPhotos.textContent = th ? 'ยังไม่มีรูปภาพสำหรับระบบนี้' : 'No photos available for this system.';
+  } else {
+    noPhotos.classList.add('hidden');
+    container.innerHTML = allPhotos.map(p => `<div class="relative group rounded-lg overflow-hidden bg-white/5 aspect-video">
+      <img src="${p.url}" alt="Photo" class="w-full h-full object-cover" onerror="this.parentElement.innerHTML='<div class=\\'flex items-center justify-center h-full text-slate-500 text-xs\\'>⚠️ Image not found</div>'">
+      <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 group-hover:opacity-100 transition">
+        <p class="text-[10px] text-white">${fmtDate(p.date)}</p>
+      </div>
+      <a href="${p.url}" target="_blank" class="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition text-white text-xs">↗</a>
+    </div>`).join('');
+  }
+}
+
+function renderSystemDailyReports(key, reports) {
+  const th = getLang() === 'th';
+  document.getElementById('epc-d-reports-title').textContent = th ? 'รายงานประจำวัน' : 'Daily Reports';
+  const container = document.getElementById('epc-d-reports-list');
+  const noReports = document.getElementById('epc-d-no-reports');
+
+  if (reports.length === 0) {
+    container.innerHTML = '';
+    noReports.classList.remove('hidden');
+    noReports.textContent = th ? 'ยังไม่มีรายงานสำหรับระบบนี้' : 'No daily reports for this system yet.';
+    return;
+  }
+  noReports.classList.add('hidden');
+  const weatherIcons = { Sunny: '☀️', Cloudy: '⛅', Rainy: '🌧️', 'Heavy Rain': '⛈️', Stormy: '🌪️' };
+  const statusDot = { Normal: 'bg-emerald-400', Delayed: 'bg-amber-400', Suspended: 'bg-red-400', Holiday: 'bg-slate-400' };
+
+  container.innerHTML = reports.map(r => {
+    const photos = (r.photos || '').split('\n').filter(u => u.trim());
+    return `<div class="card p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-3">
+          <div class="text-center"><p class="text-lg font-bold text-white">${new Date(r.date).getDate()}</p><p class="text-[10px] text-slate-500 uppercase">${new Date(r.date).toLocaleDateString(th?'th-TH':'en-US',{month:'short',year:'2-digit'})}</p></div>
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full ${statusDot[r.workStatus]||'bg-slate-400'}"></span>
+            <span class="text-xs text-slate-400">${r.workStatus}</span>
+            <span class="text-sm">${weatherIcons[r.weather]||''} ${r.weather}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 text-xs">
+          ${r.manpower ? `<span class="text-blue-400">👷 ${r.manpower}</span>` : ''}
+          ${r.equipment ? `<span class="text-emerald-400">🔧 ${r.equipment}</span>` : ''}
+        </div>
+      </div>
+      <div class="text-xs text-slate-300 whitespace-pre-line mb-2">${r.activities}</div>
+      ${r.issues ? `<div class="text-xs text-amber-400 bg-amber-500/10 rounded-lg p-2 mb-2">⚠️ ${r.issues}</div>` : ''}
+      ${photos.length ? `<div class="flex gap-2 mt-2">${photos.slice(0,3).map(u => `<img src="${u}" class="w-16 h-12 rounded object-cover bg-white/5" onerror="this.style.display='none'">`).join('')}${photos.length > 3 ? `<span class="text-[10px] text-slate-500 self-center">+${photos.length-3}</span>` : ''}</div>` : ''}
+      ${r.remarks ? `<p class="text-[10px] text-slate-500 mt-1">💬 ${r.remarks}</p>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function exportSystemDailyReport() {
+  if (!currentEPCDetailKey) return;
+  const reports = getWPReports().filter(r => r.system === currentEPCDetailKey).sort((a,b) => new Date(b.date) - new Date(a.date));
+  const sys = getEPCSystemsData().find(s => s.key === currentEPCDetailKey);
+  const sysName = sys ? sys.name_en : currentEPCDetailKey;
+  const BOM = '\uFEFF';
+  const headers = ['Date','Weather','Work Status','Manpower','Equipment','Activities','Issues','Remarks'];
+  const rows = reports.map(r => [r.date, r.weather, r.workStatus, r.manpower||0, r.equipment||0, '"'+(r.activities||'').replace(/"/g,'""')+'"', '"'+(r.issues||'').replace(/"/g,'""')+'"', '"'+(r.remarks||'').replace(/"/g,'""')+'"']);
+  const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+  downloadFile('wte-' + currentEPCDetailKey + '-reports-' + new Date().toISOString().slice(0,10) + '.csv', BOM + csv, 'text/csv;charset=utf-8');
+  logActivity('export', sysName + ' Daily Reports CSV');
+  showToast(t('exportSuccess'));
+}
+
+// ---- EPC WORK ITEMS ----
+const WORK_ITEM_CATEGORIES = {
+  engineering:   { en: 'Engineering', th: 'วิศวกรรม', color: '#6366f1', icon: '📐' },
+  procurement:   { en: 'Procurement', th: 'จัดซื้อ', color: '#f59e0b', icon: '📦' },
+  fabrication:   { en: 'Fabrication', th: 'ผลิต', color: '#8b5cf6', icon: '⚙️' },
+  construction:  { en: 'Construction', th: 'ก่อสร้าง', color: '#10b981', icon: '🏗️' },
+  system:        { en: 'System Works', th: 'งานระบบ', color: '#3b82f6', icon: '🔌' }
+};
+const WI_CAT_ORDER = ['engineering','procurement','fabrication','construction','system'];
+let editWorkItemId = null;
+
+function wiCatLabel(cat) {
+  const th = getLang() === 'th';
+  return WORK_ITEM_CATEGORIES[cat] ? (th ? WORK_ITEM_CATEGORIES[cat].th : WORK_ITEM_CATEGORIES[cat].en) : cat;
+}
+
+function renderWorkItemRow(item, th) {
+  const dl = item.deadline ? new Date(item.deadline) : null;
+  const now = new Date();
+  const diff = dl ? Math.ceil((dl - now)/(1000*60*60*24)) : null;
+  let light = '';
+  if (item.status === 'Completed') light = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500" style="animation:blink-green 2s ease-in-out infinite"></span>';
+  else if (item.status === 'Delayed' || (diff !== null && diff < 0)) light = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-red-500" style="animation:blink-red 1.5s ease-in-out infinite"></span>';
+  else if (diff !== null && diff < 30) light = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-500" style="animation:blink-amber 1.5s ease-in-out infinite"></span>';
+  else if (item.status === 'In Progress') light = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-500" style="animation:blink-amber 2s ease-in-out infinite"></span>';
+  else light = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-slate-500"></span>';
+  let dlHtml = '—';
+  if (dl) {
+    if (item.status === 'Completed') dlHtml = `<span class="text-emerald-400">✅ ${fmtDate(item.deadline)}</span>`;
+    else if (diff < 0) dlHtml = `<span class="text-red-400 font-bold">⚠️ ${fmtDate(item.deadline)}<br><span class="text-[10px]">${th?'เกิน':'overdue'} ${Math.abs(diff)}${th?'วัน':'d'}</span></span>`;
+    else if (diff < 30) dlHtml = `<span class="text-amber-400">${fmtDate(item.deadline)}<br><span class="text-[10px]">${diff}${th?'วัน':'d'}</span></span>`;
+    else dlHtml = `<span class="text-slate-300">${fmtDate(item.deadline)}<br><span class="text-[10px] text-slate-500">${diff}${th?'วัน':'d'}</span></span>`;
+  }
+  const statusCls = {'Completed':'badge-green','In Progress':'badge-blue','Delayed':'badge-red','Not Started':'badge-gray'};
+  const statusLabel = {'Completed':th?'เสร็จ':'Done','In Progress':th?'ดำเนินการ':'Active','Delayed':th?'ล่าช้า':'Delayed','Not Started':th?'ยังไม่เริ่ม':'Pending'};
+  return `<tr class="cursor-pointer" onclick="openWorkItemModal(${item.id})">
+    <td><p class="text-sm text-white font-medium">${item.name}</p></td>
+    <td class="text-xs text-slate-300">${item.assignee||'—'}</td>
+    <td><div class="flex items-center gap-1.5">${light}<span class="badge ${statusCls[item.status]||'badge-gray'}">${statusLabel[item.status]||item.status}</span></div></td>
+    <td><div class="w-16"><div class="progress-bar"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" style="width:${item.progress}%"></div></div><p class="text-[10px] text-slate-400 text-center">${item.progress}%</p></div></td>
+    <td class="text-xs">${dlHtml}</td>
+    <td class="text-xs text-slate-400 max-w-[150px] truncate">${item.remarks||'—'}</td>
+    <td><div class="flex gap-1">
+      <button onclick="event.stopPropagation();openWorkItemModal(${item.id})" class="text-blue-400 hover:text-blue-300 text-xs px-1.5 py-0.5 rounded hover:bg-blue-500/10">✏️</button>
+      <button onclick="event.stopPropagation();deleteWorkItem(${item.id})" class="text-red-400 hover:text-red-300 text-xs px-1.5 py-0.5 rounded hover:bg-red-500/10">🗑️</button>
+    </div></td>
+  </tr>`;
+}
+
+function renderWorkItemsTable(key) {
+  const th = getLang() === 'th';
+  const systems = getEPCSystemsData();
+  const sys = systems.find(s => s.key === key);
+  const items = sys?.workItems || [];
+
+  document.getElementById('epc-d-items-title').textContent = th ? 'รายการงาน' : 'Work Items';
+
+  const thead = document.getElementById('epc-d-items-thead');
+  const tbody = document.getElementById('epc-d-items-tbody');
+  const noItems = document.getElementById('epc-d-no-items');
+
+  const thRow = `<th>${th?'รายการ':'Item'}</th><th>${th?'ผู้รับผิดชอบ':'Assignee'}</th><th>${th?'สถานะ':'Status'}</th><th>${th?'ความคืบหน้า':'Progress'}</th><th>${th?'กำหนดเสร็จ':'Deadline'}</th><th>${th?'หมายเหตุ':'Remarks'}</th><th>${th?'จัดการ':'Actions'}</th>`;
+  thead.innerHTML = `<tr>${thRow}</tr>`;
+
+  if (items.length === 0) {
+    tbody.innerHTML = '';
+    noItems.classList.remove('hidden');
+    noItems.textContent = th ? 'ยังไม่มีรายการงาน กด "Add Item" เพื่อเพิ่ม' : 'No work items yet. Click "Add Item" to start.';
+    return;
+  }
+  noItems.classList.add('hidden');
+
+  // Group by category
+  let html = '';
+  WI_CAT_ORDER.forEach(cat => {
+    const catItems = items.filter(i => (i.category || 'construction') === cat);
+    if (catItems.length === 0) return;
+    const catDef = WORK_ITEM_CATEGORIES[cat];
+    const catDone = catItems.filter(i => i.status === 'Completed').length;
+    const catPct = Math.round(catItems.reduce((s,i) => s + (i.progress||0), 0) / catItems.length);
+    html += `<tr>
+      <td colspan="7" class="!border-t-0 !pt-4 !pb-2">
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm">${catDef?.icon||'📋'}</span>
+            <span class="text-xs font-bold uppercase tracking-wider" style="color:${catDef?.color||'#94a3b8'}">${wiCatLabel(cat)}</span>
+          </div>
+          <div class="flex-1 h-px" style="background:${catDef?.color||'#94a3b8'}30"></div>
+          <span class="text-[10px] text-slate-400">${catDone}/${catItems.length} ${th?'เสร็จ':'done'}</span>
+          <span class="text-[10px] font-bold" style="color:${catDef?.color||'#94a3b8'}">${catPct}%</span>
+        </div>
+      </td>
+    </tr>`;
+    catItems.forEach(item => { html += renderWorkItemRow(item, th); });
+  });
+
+  // Items without category
+  const uncategorized = items.filter(i => !i.category || !WI_CAT_ORDER.includes(i.category));
+  if (uncategorized.length > 0) {
+    html += `<tr><td colspan="7" class="!border-t-0 !pt-4 !pb-2"><div class="flex items-center gap-3"><span class="text-xs font-bold uppercase tracking-wider text-slate-500">${th?'อื่นๆ':'Other'}</span><div class="flex-1 h-px bg-white/5"></div></div></td></tr>`;
+    uncategorized.forEach(item => { html += renderWorkItemRow(item, th); });
+  }
+
+  tbody.innerHTML = html;
+}
+
+function openWorkItemModal(id) {
+  editWorkItemId = id || null;
+  const th = getLang() === 'th';
+  document.getElementById('workitem-modal').classList.remove('hidden');
+  document.getElementById('wi-modal-title').textContent = id ? (th?'แก้ไขรายการ':'Edit Item') : (th?'เพิ่มรายการ':'Add Item');
+
+  if (id) {
+    const sys = getEPCSystemsData().find(s => s.key === currentEPCDetailKey);
+    const item = (sys?.workItems||[]).find(w => w.id === id);
+    if (item) {
+      document.getElementById('wi-name').value = item.name;
+      document.getElementById('wi-category').value = item.category || 'construction';
+      document.getElementById('wi-status').value = item.status;
+      document.getElementById('wi-progress').value = item.progress;
+      document.getElementById('wi-assignee').value = item.assignee || '';
+      document.getElementById('wi-deadline').value = item.deadline || '';
+      document.getElementById('wi-remarks').value = item.remarks || '';
+    }
+  } else {
+    ['wi-name','wi-assignee','wi-remarks'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('wi-category').value = 'construction';
+    document.getElementById('wi-status').value = 'Not Started';
+    document.getElementById('wi-progress').value = 0;
+    document.getElementById('wi-deadline').value = '';
+  }
+}
+
+function closeWorkItemModal() { document.getElementById('workitem-modal').classList.add('hidden'); editWorkItemId = null; }
+
+function saveWorkItem() {
+  if (!checkCanEdit()) return;
+  const name = document.getElementById('wi-name').value.trim();
+  if (!name) { showToast('Name required', 'error'); return; }
+
+  const systems = getEPCSystemsData();
+  const sysIdx = systems.findIndex(s => s.key === currentEPCDetailKey);
+  if (sysIdx < 0) return;
+  if (!systems[sysIdx].workItems) systems[sysIdx].workItems = [];
+
+  const obj = {
+    name,
+    category: document.getElementById('wi-category').value,
+    status: document.getElementById('wi-status').value,
+    progress: parseInt(document.getElementById('wi-progress').value) || 0,
+    assignee: document.getElementById('wi-assignee').value.trim(),
+    deadline: document.getElementById('wi-deadline').value,
+    remarks: document.getElementById('wi-remarks').value.trim()
+  };
+
+  if (editWorkItemId) {
+    const idx = systems[sysIdx].workItems.findIndex(w => w.id === editWorkItemId);
+    if (idx >= 0) systems[sysIdx].workItems[idx] = { ...systems[sysIdx].workItems[idx], ...obj };
+    logActivity('edit_work_item', name);
+  } else {
+    obj.id = Date.now();
+    systems[sysIdx].workItems.push(obj);
+    logActivity('add_work_item', name);
+  }
+
+  // Auto-update system progress from work items average
+  const items = systems[sysIdx].workItems;
+  if (items.length > 0) {
+    systems[sysIdx].progress = Math.round(items.reduce((s,w) => s + (w.progress||0), 0) / items.length);
+    // Update checklist to match work items
+    systems[sysIdx].checklist = items.map(w => ({ name: w.name, done: w.status === 'Completed' }));
+  }
+
+  saveEPCSystemsData(systems);
+  closeWorkItemModal();
+  showToast(getLang()==='th' ? 'บันทึกแล้ว' : 'Saved');
+  renderEPCDetail(currentEPCDetailKey);
+}
+
+function deleteWorkItem(id) {
+  if (!checkCanEdit()) return;
+  if (!confirm(getLang()==='th' ? 'ลบรายการนี้?' : 'Delete this item?')) return;
+  const systems = getEPCSystemsData();
+  const sysIdx = systems.findIndex(s => s.key === currentEPCDetailKey);
+  if (sysIdx < 0) return;
+  systems[sysIdx].workItems = (systems[sysIdx].workItems||[]).filter(w => w.id !== id);
+  // Recalc progress
+  const items = systems[sysIdx].workItems;
+  if (items.length > 0) {
+    systems[sysIdx].progress = Math.round(items.reduce((s,w) => s + (w.progress||0), 0) / items.length);
+    systems[sysIdx].checklist = items.map(w => ({ name: w.name, done: w.status === 'Completed' }));
+  }
+  saveEPCSystemsData(systems);
+  showToast(getLang()==='th' ? 'ลบแล้ว' : 'Deleted');
+  renderEPCDetail(currentEPCDetailKey);
 }
 
 // ---- ENVIRONMENT ----
@@ -4490,7 +5330,9 @@ function exportAllJSON() {
     incidents: getIncidents(),
     envRecords: getEnvRecords(),
     permits: getPermitsData(),
-    permitHistory: getPermitHistory()
+    permitHistory: getPermitHistory(),
+    epcSystems: getEPCSystemsData(),
+    epcHistory: getEPCHistory()
   };
   downloadFile('wte-tracker-backup-' + new Date().toISOString().slice(0,10) + '.json', JSON.stringify(exportData, null, 2), 'application/json');
   logActivity('export', 'Full JSON backup');
@@ -4541,6 +5383,8 @@ function importJSON(event) {
       if (imported.envRecords) saveEnvRecords(imported.envRecords);
       if (imported.permits) savePermitsData(imported.permits);
       if (imported.permitHistory) savePermitHistory(imported.permitHistory);
+      if (imported.epcSystems) saveEPCSystemsData(imported.epcSystems);
+      if (imported.epcHistory) saveEPCHistory(imported.epcHistory);
       if (imported.project) localStorage.setItem('wte_project_settings', JSON.stringify(imported.project));
       logActivity('import', 'Restored from JSON backup (' + imported.exportedAt + ')');
       data = loadData();
