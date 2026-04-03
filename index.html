@@ -1118,6 +1118,7 @@ tailwind.config = {
                 <option value="engineering">Engineering</option>
                 <option value="procurement">Procurement</option>
                 <option value="fabrication">Fabrication</option>
+                <option value="delivery">Delivery</option>
                 <option value="construction">Construction</option>
                 <option value="system">System Works</option>
               </select>
@@ -4043,6 +4044,9 @@ function defaultEPCSystems() {
         {id:5,name:'Cladding Material Order',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-04-30',remarks:'After steel structure design finalized'},
         {id:6,name:'Steel Fabrication — Main Building',category:'fabrication',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-04-15',remarks:'Column & beam fabrication ongoing'},
         {id:7,name:'Steel Fabrication — Boiler House',category:'fabrication',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-05-15',remarks:'Fabrication started'},
+        {id:18,name:'Steel Structure Delivery — Batch 1',category:'delivery',status:'Completed',progress:100,assignee:'KK Green',deadline:'2026-02-28',remarks:'Columns & main beams delivered'},
+        {id:19,name:'Steel Structure Delivery — Batch 2',category:'delivery',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-04-15',remarks:'Boiler house steel pending'},
+        {id:20,name:'Cladding Material Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:'After procurement'},
         {id:8,name:'Piling Works',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-09-30',remarks:'356 piles completed'},
         {id:9,name:'Foundation & Ground Beam',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'All foundations poured'},
         {id:10,name:'Steel Structure Erection — Main',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-04-30',remarks:'Columns 30% erected'},
@@ -4080,6 +4084,7 @@ function defaultEPCSystems() {
         {id:304,name:'Primary & Secondary Air Fans',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:'Spec ready'},
         {id:305,name:'Grate Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI',deadline:'2026-06-30',remarks:'After material arrival'},
         {id:306,name:'Refractory Lining',category:'fabrication',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
+        {id:310,name:'Grate System Delivery to Site',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI',deadline:'2026-07-15',remarks:'From LAWI factory'},
         {id:307,name:'Grate Installation & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'LAWI / KK Green',deadline:'2026-07-31',remarks:'Critical path'},
         {id:308,name:'Combustion Air System Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:''},
         {id:309,name:'Combustion Control Integration',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'Link to DCS'}
@@ -4094,6 +4099,9 @@ function defaultEPCSystems() {
         {id:407,name:'Economizer Fabrication',category:'fabrication',status:'Completed',progress:100,assignee:'LSB',deadline:'2026-01-15',remarks:'3 packages complete'},
         {id:408,name:'Membrane Wall Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'LSB',deadline:'2026-04-30',remarks:'Production ~20%'},
         {id:409,name:'Superheater Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'LSB',deadline:'2026-04-30',remarks:'Production ~20%'},
+        {id:415,name:'Boiler Steel Structure Shipment',category:'delivery',status:'In Progress',progress:50,assignee:'LSB',deadline:'2026-04-30',remarks:'Ready for shipment, transport planning'},
+        {id:416,name:'Economizer & APH Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'LSB',deadline:'2026-05-15',remarks:'From LSB workshop to site'},
+        {id:417,name:'Membrane Wall & SH Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'LSB',deadline:'2026-05-31',remarks:'After fabrication complete'},
         {id:410,name:'Boiler Steel Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'After shipment from LSB'},
         {id:411,name:'Membrane Wall & Drum Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
         {id:412,name:'Superheater & Economizer Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
@@ -4108,6 +4116,7 @@ function defaultEPCSystems() {
         {id:505,name:'Activated Carbon Injection',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:''},
         {id:506,name:'SNCR Urea System',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-15',remarks:'3 rows of spray guns'},
         {id:507,name:'Gas Duct Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'SUS304 material (TQ-06 pending)'},
+        {id:511,name:'Bag Filter & Scrubber Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:'Large components, crane required'},
         {id:508,name:'FGT Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'After boiler erection'},
         {id:509,name:'Stack Construction',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:''},
         {id:510,name:'CEMS & Emission Monitoring',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'Continuous Emission Monitoring'}
@@ -4119,6 +4128,8 @@ function defaultEPCSystems() {
         {id:604,name:'Generator (TDPS)',category:'procurement',status:'Completed',progress:100,assignee:'TDPS',deadline:'2025-12-31',remarks:'PO placed'},
         {id:605,name:'Turbine Fabrication',category:'fabrication',status:'In Progress',progress:30,assignee:'Shinko',deadline:'2026-06-30',remarks:'Manufacturing in Japan'},
         {id:606,name:'Generator Fabrication',category:'fabrication',status:'In Progress',progress:25,assignee:'TDPS',deadline:'2026-06-30',remarks:'Manufacturing in progress'},
+        {id:612,name:'Turbine Shipment from Japan',category:'delivery',status:'Not Started',progress:0,assignee:'Shinko',deadline:'2026-07-15',remarks:'Sea freight Japan → Surat Thani'},
+        {id:613,name:'Generator Delivery to Site',category:'delivery',status:'Not Started',progress:0,assignee:'TDPS',deadline:'2026-07-15',remarks:'Oversize cargo, special transport'},
         {id:607,name:'TG Foundation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'Precision foundation required'},
         {id:608,name:'Turbine & Generator Installation',category:'construction',status:'Not Started',progress:0,assignee:'Shinko / KK Green',deadline:'2026-08-31',remarks:'Supervised by Shinko'},
         {id:609,name:'Steam Piping to Turbine',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
@@ -4577,10 +4588,11 @@ const WORK_ITEM_CATEGORIES = {
   engineering:   { en: 'Engineering', th: 'วิศวกรรม', color: '#6366f1', icon: '📐' },
   procurement:   { en: 'Procurement', th: 'จัดซื้อ', color: '#f59e0b', icon: '📦' },
   fabrication:   { en: 'Fabrication', th: 'ผลิต', color: '#8b5cf6', icon: '⚙️' },
+  delivery:      { en: 'Delivery', th: 'การส่งของ', color: '#ec4899', icon: '🚚' },
   construction:  { en: 'Construction', th: 'ก่อสร้าง', color: '#10b981', icon: '🏗️' },
   system:        { en: 'System Works', th: 'งานระบบ', color: '#3b82f6', icon: '🔌' }
 };
-const WI_CAT_ORDER = ['engineering','procurement','fabrication','construction','system'];
+const WI_CAT_ORDER = ['engineering','procurement','fabrication','delivery','construction','system'];
 let editWorkItemId = null;
 
 function wiCatLabel(cat) {
