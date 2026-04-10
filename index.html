@@ -224,11 +224,6 @@ tailwind.config = {
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Environment
     </div>
-    <div class="sidebar-item flex items-center gap-2 py-2 rounded-lg cursor-pointer text-xs text-slate-500 hover:text-slate-300" style="padding-left:3rem" data-page="cop">
-      <span class="w-1 h-1 rounded-full bg-emerald-500 flex-shrink-0"></span>
-      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-      CoP / ESA
-    </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="activity">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Activity Log
@@ -1315,44 +1310,108 @@ tailwind.config = {
 <!-- Environment Page -->
 <div id="page-environment" class="page">
   <div class="flex items-center justify-between mb-6">
-    <div>
-      <h2 class="text-2xl font-bold text-white" id="env-title">Environmental Management</h2>
-      <p class="text-sm text-slate-400 mt-1" id="env-desc">Environmental monitoring & compliance tracking</p>
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white" id="env-title">Environmental Management</h2>
+        <p class="text-sm text-slate-400 mt-0.5" id="env-desc">Environmental monitoring & compliance tracking</p>
+      </div>
     </div>
-    <button onclick="openEnvModal()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      <span id="env-add-btn">Add Record</span>
+    <div id="env-action-btns">
+      <button onclick="openEnvModal()" id="env-add-btn-wrap" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <span id="env-add-btn">Add Record</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Sub-group Tabs: Monitoring | CoP / ESA -->
+  <div class="flex gap-2 mb-6">
+    <button onclick="switchEnvTab('monitoring')" id="env-tab-monitoring" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span id="env-tab-monitoring-text">Monitoring</span>
+    </button>
+    <button onclick="switchEnvTab('cop')" id="env-tab-cop" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      <span id="env-tab-cop-text">CoP / ESA</span>
     </button>
   </div>
-  <!-- Env Stats -->
-  <div class="grid grid-cols-4 gap-4 mb-6">
-    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-air-status">Air Quality</p><p class="text-lg font-bold text-white" id="env-air">Compliant</p></div>
-    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-water-status">Water Quality</p><p class="text-lg font-bold text-white" id="env-water">Compliant</p></div>
-    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-noise-status">Noise Level</p><p class="text-lg font-bold text-white" id="env-noise">Compliant</p></div>
-    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-waste-status">Waste Mgmt</p><p class="text-lg font-bold text-white" id="env-waste">Compliant</p></div>
-  </div>
-  <!-- CoP Compliance from TDD -->
-  <div class="card p-5 mb-6">
-    <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="env-cop-title">CoP Compliance Areas</h3>
-    <div class="grid grid-cols-3 gap-2" id="env-cop-grid">
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ambient Air Quality</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Gaseous Emissions</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Noise Monitoring</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Drainage & Flood</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Water & Wastewater</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Solid Waste</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ash Handling</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Transportation</span></div>
-      <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-xs text-white">Green Area</span></div>
+
+  <!-- ===== TAB 1: MONITORING ===== -->
+  <div id="env-section-monitoring">
+    <!-- Env Stats -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-air-status">Air Quality</p><p class="text-lg font-bold text-white" id="env-air">Compliant</p></div>
+      <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-water-status">Water Quality</p><p class="text-lg font-bold text-white" id="env-water">Compliant</p></div>
+      <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-noise-status">Noise Level</p><p class="text-lg font-bold text-white" id="env-noise">Compliant</p></div>
+      <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-waste-status">Waste Mgmt</p><p class="text-lg font-bold text-white" id="env-waste">Compliant</p></div>
+    </div>
+    <!-- CoP Compliance Areas -->
+    <div class="card p-5 mb-6">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="env-cop-title">CoP Compliance Areas</h3>
+      <div class="grid grid-cols-3 gap-2" id="env-cop-grid">
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ambient Air Quality</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Gaseous Emissions</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Noise Monitoring</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Drainage & Flood</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Water & Wastewater</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Solid Waste</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ash Handling</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Transportation</span></div>
+        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-xs text-white">Green Area</span></div>
+      </div>
+    </div>
+    <!-- Env Records Table -->
+    <div class="card overflow-hidden">
+      <table>
+        <thead id="env-thead"><tr><th>Date</th><th>Category</th><th>Parameter</th><th>Value</th><th>Limit</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+        <tbody id="env-body"></tbody>
+      </table>
+      <div id="env-empty" class="hidden p-12 text-center text-slate-500 text-sm">No environmental records yet.</div>
     </div>
   </div>
-  <!-- Env Records Table -->
-  <div class="card overflow-hidden">
-    <table>
-      <thead id="env-thead"><tr><th>Date</th><th>Category</th><th>Parameter</th><th>Value</th><th>Limit</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
-      <tbody id="env-body"></tbody>
-    </table>
-    <div id="env-empty" class="hidden p-12 text-center text-slate-500 text-sm">No environmental records yet.</div>
+
+  <!-- ===== TAB 2: CoP / ESA ===== -->
+  <div id="env-section-cop" class="hidden">
+    <!-- CoP KPIs -->
+    <div class="grid grid-cols-5 gap-3 mb-6">
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-score">Compliance Score</p></div><p class="text-3xl font-bold text-white" id="cop-score">0%</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+        <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-total">Total Items</p></div><p class="text-3xl font-bold text-white" id="cop-total">0</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-compliant">Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-compliant">0</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+        <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-pending">Pending</p></div><p class="text-3xl font-bold text-white" id="cop-pending">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-red-400/10"></div>
+        <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-overdue">Non-Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-overdue">0</p></div>
+      </div>
+    </div>
+    <!-- Category Filter -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="switchCopTab('all')" id="cop-tab-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-emerald-600 text-white">All</button>
+      <button onclick="switchCopTab('air')" id="cop-tab-air" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Air Quality</button>
+      <button onclick="switchCopTab('water')" id="cop-tab-water" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Water Quality</button>
+      <button onclick="switchCopTab('noise')" id="cop-tab-noise" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Noise</button>
+      <button onclick="switchCopTab('waste')" id="cop-tab-waste" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Waste Management</button>
+      <button onclick="switchCopTab('community')" id="cop-tab-community" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Community</button>
+      <button onclick="switchCopTab('esa')" id="cop-tab-esa" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">ESA</button>
+      <button onclick="switchCopTab('audit')" id="cop-tab-audit" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Audit & Reports</button>
+    </div>
+    <!-- Compliance Items List -->
+    <div id="cop-list" class="space-y-3"></div>
+    <div id="cop-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No compliance records yet.</div>
   </div>
 </div>
 
@@ -1386,66 +1445,6 @@ tailwind.config = {
       <button onclick="saveEnvRecord()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
     </div>
   </div>
-</div>
-
-<!-- CoP / ESA Compliance Page -->
-<div id="page-cop" class="page">
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-6">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-      </div>
-      <div>
-        <h2 class="text-2xl font-bold text-white" id="cop-title">CoP / ESA Compliance</h2>
-        <p class="text-sm text-slate-400 mt-0.5" id="cop-desc">Code of Practice & Environmental Social Assessment tracking</p>
-      </div>
-    </div>
-    <button onclick="openCopModal()" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      <span id="cop-add-btn">Add Record</span>
-    </button>
-  </div>
-
-  <!-- Summary KPIs -->
-  <div class="grid grid-cols-5 gap-3 mb-6">
-    <div class="stat-card green relative overflow-hidden">
-      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
-      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-score">Compliance Score</p></div><p class="text-3xl font-bold text-white" id="cop-score">0%</p></div>
-    </div>
-    <div class="stat-card blue relative overflow-hidden">
-      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
-      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-total">Total Items</p></div><p class="text-3xl font-bold text-white" id="cop-total">0</p></div>
-    </div>
-    <div class="stat-card green relative overflow-hidden">
-      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
-      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-compliant">Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-compliant">0</p></div>
-    </div>
-    <div class="stat-card amber relative overflow-hidden">
-      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
-      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-pending">Pending</p></div><p class="text-3xl font-bold text-white" id="cop-pending">0</p></div>
-    </div>
-    <div class="stat-card red relative overflow-hidden">
-      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-red-400/10"></div>
-      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-overdue">Non-Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-overdue">0</p></div>
-    </div>
-  </div>
-
-  <!-- Category Tabs -->
-  <div class="flex gap-2 mb-5 flex-wrap">
-    <button onclick="switchCopTab('all')" id="cop-tab-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-emerald-600 text-white">All</button>
-    <button onclick="switchCopTab('air')" id="cop-tab-air" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Air Quality</button>
-    <button onclick="switchCopTab('water')" id="cop-tab-water" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Water Quality</button>
-    <button onclick="switchCopTab('noise')" id="cop-tab-noise" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Noise</button>
-    <button onclick="switchCopTab('waste')" id="cop-tab-waste" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Waste Management</button>
-    <button onclick="switchCopTab('community')" id="cop-tab-community" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Community</button>
-    <button onclick="switchCopTab('esa')" id="cop-tab-esa" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">ESA</button>
-    <button onclick="switchCopTab('audit')" id="cop-tab-audit" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Audit & Reports</button>
-  </div>
-
-  <!-- Compliance Items List -->
-  <div id="cop-list" class="space-y-3"></div>
-  <div id="cop-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No compliance records yet.</div>
 </div>
 
 <!-- CoP Modal -->
@@ -2052,6 +2051,7 @@ const LANG = {
     environment: 'Environment', envTitle: 'Environmental Management', envDesc: 'Environmental monitoring & compliance tracking',
     envAddRecord: 'Add Record', envEditRecord: 'Edit Record', envEmpty: 'No environmental records yet.',
     envAir: 'Air Quality', envWater: 'Water Quality', envNoise: 'Noise Level', envWasteMgmt: 'Waste Mgmt',
+    envMonitoring: 'Monitoring', envCopEsa: 'CoP / ESA',
     envCopTitle: 'CoP Compliance Areas', envCategory: 'Category', envParameter: 'Parameter', envValue: 'Value', envLimit: 'Limit',
     envCompliant: 'Compliant', envWarning: 'Warning', envExceeded: 'Exceeded',
     envDeleteRecord: 'Delete this record?', envRecordAdded: 'Record added', envRecordUpdated: 'Record updated', envRecordDeleted: 'Record deleted',
@@ -2175,6 +2175,7 @@ const LANG = {
     environment: 'สิ่งแวดล้อม', envTitle: 'การจัดการสิ่งแวดล้อม', envDesc: 'ติดตามตรวจวัดและปฏิบัติตามข้อกำหนดสิ่งแวดล้อม',
     envAddRecord: 'เพิ่มบันทึก', envEditRecord: 'แก้ไขบันทึก', envEmpty: 'ยังไม่มีบันทึกสิ่งแวดล้อม',
     envAir: 'คุณภาพอากาศ', envWater: 'คุณภาพน้ำ', envNoise: 'ระดับเสียง', envWasteMgmt: 'จัดการของเสีย',
+    envMonitoring: 'ตรวจวัด', envCopEsa: 'CoP / ESA',
     envCopTitle: 'การปฏิบัติตาม CoP', envCategory: 'หมวด', envParameter: 'พารามิเตอร์', envValue: 'ค่าวัดได้', envLimit: 'ค่ามาตรฐาน',
     envCompliant: 'ผ่าน', envWarning: 'เตือน', envExceeded: 'เกินมาตรฐาน',
     envDeleteRecord: 'ต้องการลบบันทึกนี้?', envRecordAdded: 'เพิ่มบันทึกแล้ว', envRecordUpdated: 'อัปเดตบันทึกแล้ว', envRecordDeleted: 'ลบบันทึกแล้ว',
@@ -2360,7 +2361,6 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     if (page === 'workprogress') renderWorkProgress();
     if (page === 'safety') renderSafety();
     if (page === 'environment') renderEnvironment();
-    if (page === 'cop') renderCop();
     if (page === 'activity') renderActivityLog();
     if (page === 'settings') renderSettings();
   });
@@ -4962,10 +4962,8 @@ function switchCopTab(tab) {
 
 function renderCop() {
   const th = getLang() === 'th';
-  document.getElementById('cop-title').textContent = t('copTitle');
-  document.getElementById('cop-desc').textContent = t('copDesc');
-  document.getElementById('cop-add-btn').textContent = t('copAddRecord');
-  document.getElementById('cop-empty').textContent = t('copEmpty');
+  const copEmpty = document.getElementById('cop-empty');
+  if (copEmpty) copEmpty.textContent = t('copEmpty');
   document.getElementById('lbl-cop-score').textContent = t('copScore');
   document.getElementById('lbl-cop-total').textContent = t('copTotal');
   document.getElementById('lbl-cop-compliant').textContent = t('copCompliant');
@@ -5120,11 +5118,48 @@ function saveCopRecord() {
 function getEnvRecords() { return JSON.parse(localStorage.getItem('wte_env') || '[]'); }
 function saveEnvRecords(list) { localStorage.setItem('wte_env', JSON.stringify(list)); }
 
+let activeEnvTab = 'monitoring';
+
+function switchEnvTab(tab) {
+  activeEnvTab = tab;
+  const monSection = document.getElementById('env-section-monitoring');
+  const copSection = document.getElementById('env-section-cop');
+  const monTab = document.getElementById('env-tab-monitoring');
+  const copTab = document.getElementById('env-tab-cop');
+  const actionBtns = document.getElementById('env-action-btns');
+
+  if (tab === 'monitoring') {
+    monSection.classList.remove('hidden');
+    copSection.classList.add('hidden');
+    monTab.className = 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white flex items-center gap-2';
+    copTab.className = 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2';
+    actionBtns.innerHTML = `<button onclick="openEnvModal()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>${t('envAddRecord')}</span></button>`;
+  } else {
+    monSection.classList.add('hidden');
+    copSection.classList.remove('hidden');
+    copTab.className = 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-emerald-600 text-white flex items-center gap-2';
+    monTab.className = 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2';
+    actionBtns.innerHTML = `<button onclick="openCopModal()" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>${t('copAddRecord')}</span></button>`;
+    renderCop();
+  }
+}
+
 function renderEnvironment() {
   document.getElementById('env-title').textContent = t('envTitle');
   document.getElementById('env-desc').textContent = t('envDesc');
   document.getElementById('env-add-btn').textContent = t('envAddRecord');
   document.getElementById('env-empty').textContent = t('envEmpty');
+  // Tab labels
+  const monText = document.getElementById('env-tab-monitoring-text');
+  const copText = document.getElementById('env-tab-cop-text');
+  if (monText) monText.textContent = t('envMonitoring') || 'Monitoring';
+  if (copText) copText.textContent = t('envCopEsa') || 'CoP / ESA';
+  // Render active tab
+  if (activeEnvTab === 'cop') { switchEnvTab('cop'); }
   document.getElementById('env-cop-title').textContent = t('envCopTitle');
   document.getElementById('lbl-air-status').textContent = t('envAir');
   document.getElementById('lbl-water-status').textContent = t('envWater');
