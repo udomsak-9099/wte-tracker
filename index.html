@@ -129,6 +129,20 @@ tailwind.config = {
   [data-theme="light"] .text-red-400 { color: #dc2626 !important; }
   [data-theme="light"] .text-blue-400 { color: #2563eb !important; }
   [data-theme="light"] .bg-white\/\[0\.02\] { background: rgba(0,0,0,0.03) !important; }
+
+  /* Mobile sidebar */
+  @media (max-width: 768px) {
+    #sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+    #sidebar.open { transform: translateX(0); }
+    #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(2px); z-index: 35; }
+    #sidebar-overlay.open { display: block; }
+    main.main-content { margin-left: 0 !important; padding: 1rem !important; padding-top: 3.5rem !important; }
+    #mobile-menu-btn { display: flex !important; }
+  }
+  @media (min-width: 769px) {
+    #sidebar-overlay { display: none !important; }
+    #mobile-menu-btn { display: none !important; }
+  }
 </style>
 </head>
 <body class="min-h-screen flex">
@@ -180,6 +194,14 @@ tailwind.config = {
     </div>
   </div>
 </div>
+
+<!-- Mobile menu button -->
+<button id="mobile-menu-btn" onclick="toggleSidebar()" style="display:none" class="fixed top-3 left-3 z-50 w-10 h-10 rounded-xl glass flex items-center justify-center text-white shadow-lg">
+  <svg id="menu-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+  <svg id="menu-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+</button>
+<!-- Sidebar overlay (mobile) -->
+<div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
 <!-- Sidebar -->
 <aside id="sidebar" class="w-64 min-h-screen glass fixed left-0 top-0 z-40 flex flex-col">
@@ -262,7 +284,7 @@ tailwind.config = {
 </aside>
 
 <!-- Main Content -->
-<main class="flex-1 ml-64 p-8">
+<main class="flex-1 ml-64 p-8 main-content">
 
 <!-- Dashboard Page -->
 <div id="page-dashboard" class="page active">
@@ -2823,8 +2845,26 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     if (page === 'environment') renderEnvironment();
     if (page === 'activity') renderActivityLog();
     if (page === 'settings') renderSettings();
+    closeSidebar();
   });
 });
+
+// ---- MOBILE SIDEBAR ----
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const isOpen = sb.classList.contains('open');
+  sb.classList.toggle('open', !isOpen);
+  ov.classList.toggle('open', !isOpen);
+  document.getElementById('menu-icon-open').classList.toggle('hidden', !isOpen);
+  document.getElementById('menu-icon-close').classList.toggle('hidden', isOpen);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+  document.getElementById('menu-icon-open').classList.remove('hidden');
+  document.getElementById('menu-icon-close').classList.add('hidden');
+}
 
 // ---- TOAST ----
 function showToast(msg, type = 'success') {
