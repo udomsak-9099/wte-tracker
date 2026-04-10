@@ -224,6 +224,10 @@ tailwind.config = {
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Environment
     </div>
+    <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400 pl-8" data-page="cop">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      CoP / ESA
+    </div>
     <div class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer text-sm text-slate-400" data-page="activity">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       Activity Log
@@ -1383,6 +1387,123 @@ tailwind.config = {
   </div>
 </div>
 
+<!-- CoP / ESA Compliance Page -->
+<div id="page-cop" class="page">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white" id="cop-title">CoP / ESA Compliance</h2>
+        <p class="text-sm text-slate-400 mt-0.5" id="cop-desc">Code of Practice & Environmental Social Assessment tracking</p>
+      </div>
+    </div>
+    <button onclick="openCopModal()" class="bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span id="cop-add-btn">Add Record</span>
+    </button>
+  </div>
+
+  <!-- Summary KPIs -->
+  <div class="grid grid-cols-5 gap-3 mb-6">
+    <div class="stat-card green relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-score">Compliance Score</p></div><p class="text-3xl font-bold text-white" id="cop-score">0%</p></div>
+    </div>
+    <div class="stat-card blue relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-total">Total Items</p></div><p class="text-3xl font-bold text-white" id="cop-total">0</p></div>
+    </div>
+    <div class="stat-card green relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-compliant">Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-compliant">0</p></div>
+    </div>
+    <div class="stat-card amber relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-pending">Pending</p></div><p class="text-3xl font-bold text-white" id="cop-pending">0</p></div>
+    </div>
+    <div class="stat-card red relative overflow-hidden">
+      <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-red-400/10"></div>
+      <div class="relative"><div class="flex items-center gap-2 mb-2"><svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium" id="lbl-cop-overdue">Non-Compliant</p></div><p class="text-3xl font-bold text-white" id="cop-overdue">0</p></div>
+    </div>
+  </div>
+
+  <!-- Category Tabs -->
+  <div class="flex gap-2 mb-5 flex-wrap">
+    <button onclick="switchCopTab('all')" id="cop-tab-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-emerald-600 text-white">All</button>
+    <button onclick="switchCopTab('air')" id="cop-tab-air" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Air Quality</button>
+    <button onclick="switchCopTab('water')" id="cop-tab-water" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Water Quality</button>
+    <button onclick="switchCopTab('noise')" id="cop-tab-noise" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Noise</button>
+    <button onclick="switchCopTab('waste')" id="cop-tab-waste" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Waste Management</button>
+    <button onclick="switchCopTab('community')" id="cop-tab-community" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Community</button>
+    <button onclick="switchCopTab('esa')" id="cop-tab-esa" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">ESA</button>
+    <button onclick="switchCopTab('audit')" id="cop-tab-audit" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Audit & Reports</button>
+  </div>
+
+  <!-- Compliance Items List -->
+  <div id="cop-list" class="space-y-3"></div>
+  <div id="cop-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No compliance records yet.</div>
+</div>
+
+<!-- CoP Modal -->
+<div id="cop-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeCopModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-lg font-bold text-white mb-5" id="cop-modal-title">Add Compliance Record</h3>
+    <input type="hidden" id="cop-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Category *</label>
+          <select id="cop-category" class="w-full">
+            <option value="air">Air Quality / คุณภาพอากาศ</option>
+            <option value="water">Water Quality / คุณภาพน้ำ</option>
+            <option value="noise">Noise / เสียง</option>
+            <option value="waste">Waste Management / กากของเสีย</option>
+            <option value="community">Community / ชุมชนสัมพันธ์</option>
+            <option value="esa">ESA / ประเมินผลกระทบ</option>
+            <option value="audit">Audit & Reports / ตรวจสอบ</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status *</label>
+          <select id="cop-status" class="w-full">
+            <option value="compliant">Compliant / ผ่าน</option>
+            <option value="pending">Pending / รอดำเนินการ</option>
+            <option value="in_progress">In Progress / กำลังดำเนินการ</option>
+            <option value="non_compliant">Non-Compliant / ไม่ผ่าน</option>
+            <option value="not_applicable">N/A</option>
+          </select>
+        </div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Item / หัวข้อ *</label><input type="text" id="cop-item" class="w-full" placeholder="e.g., Stack Emission Monitoring"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Standard / Limit</label><input type="text" id="cop-standard" class="w-full" placeholder="e.g., TSP < 120 mg/m³"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Actual Value</label><input type="text" id="cop-value" class="w-full" placeholder="e.g., 85 mg/m³"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Authority / หน่วยงาน</label><input type="text" id="cop-authority" class="w-full" placeholder="e.g., กกพ., อบจ., กรมโรงงาน"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Due Date / กำหนด</label><input type="date" id="cop-due" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Frequency / ความถี่</label>
+        <select id="cop-frequency" class="w-full">
+          <option value="once">One-time / ครั้งเดียว</option>
+          <option value="monthly">Monthly / รายเดือน</option>
+          <option value="quarterly">Quarterly / ราย 3 เดือน</option>
+          <option value="semi_annual">Semi-Annual / ราย 6 เดือน</option>
+          <option value="annual">Annual / รายปี</option>
+          <option value="continuous">Continuous / ต่อเนื่อง</option>
+        </select>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Details / รายละเอียด</label><textarea id="cop-details" class="w-full" rows="3" placeholder="Details, notes, corrective actions..."></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeCopModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveCopRecord()" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Activity Log Page -->
 <div id="page-activity" class="page">
   <div class="flex items-center justify-between mb-6">
@@ -1989,6 +2110,13 @@ const LANG = {
     permitAdded: 'Permit added', permitUpdated: 'Permit updated', permitDeleted: 'Permit deleted',
     permitNameRequired: 'Permit name is required', noPermits: 'No permits tracked yet. Click "Add Permit" to start.',
     permitCriticalPath: 'Critical Path Items', permitUpcoming: 'Upcoming Renewals (90 days)',
+    // CoP / ESA
+    cop: 'CoP / ESA', copTitle: 'CoP / ESA Compliance', copDesc: 'Code of Practice & Environmental Social Assessment tracking',
+    copScore: 'Compliance Score', copTotal: 'Total Items', copCompliant: 'Compliant', copPending: 'Pending', copOverdue: 'Non-Compliant',
+    copAddRecord: 'Add Record', copEditRecord: 'Edit Record', copEmpty: 'No compliance records yet.',
+    copDeleteConfirm: 'Delete this compliance record?', copRecordAdded: 'Record added', copRecordUpdated: 'Record updated', copRecordDeleted: 'Record deleted',
+    copItemRequired: 'Item name is required',
+    copAll: 'All', copAir: 'Air Quality', copWater: 'Water Quality', copNoise: 'Noise', copWaste: 'Waste Mgmt', copCommunity: 'Community', copEsa: 'ESA', copAudit: 'Audit & Reports',
   },
   th: {
     appName: 'WTE Tracker', appSub: 'ระบบติดตามงานก่อสร้าง',
@@ -2103,6 +2231,13 @@ const LANG = {
     permitAdded: 'เพิ่มใบอนุญาตแล้ว', permitUpdated: 'อัปเดตใบอนุญาตแล้ว', permitDeleted: 'ลบใบอนุญาตแล้ว',
     permitNameRequired: 'กรุณาระบุชื่อใบอนุญาต', noPermits: 'ยังไม่มีใบอนุญาต กดปุ่ม "เพิ่มใบอนุญาต" เพื่อเริ่มต้น',
     permitCriticalPath: 'รายการ Critical Path', permitUpcoming: 'ใกล้ต่ออายุ (90 วัน)',
+    // CoP / ESA
+    cop: 'CoP / ESA', copTitle: 'CoP / ESA การปฏิบัติตามข้อกำหนด', copDesc: 'ติดตามประมวลหลักการปฏิบัติ & การประเมินผลกระทบสิ่งแวดล้อมและสังคม',
+    copScore: 'คะแนนการปฏิบัติ', copTotal: 'รายการทั้งหมด', copCompliant: 'ผ่าน', copPending: 'รอดำเนินการ', copOverdue: 'ไม่ผ่าน',
+    copAddRecord: 'เพิ่มรายการ', copEditRecord: 'แก้ไขรายการ', copEmpty: 'ยังไม่มีรายการปฏิบัติตามข้อกำหนด',
+    copDeleteConfirm: 'ลบรายการนี้?', copRecordAdded: 'เพิ่มรายการแล้ว', copRecordUpdated: 'อัปเดตแล้ว', copRecordDeleted: 'ลบแล้ว',
+    copItemRequired: 'กรุณาระบุหัวข้อ',
+    copAll: 'ทั้งหมด', copAir: 'คุณภาพอากาศ', copWater: 'คุณภาพน้ำ', copNoise: 'เสียง', copWaste: 'กากของเสีย', copCommunity: 'ชุมชน', copEsa: 'ESA', copAudit: 'ตรวจสอบ & รายงาน',
   }
 };
 
@@ -2224,6 +2359,7 @@ document.querySelectorAll('.sidebar-item').forEach(item => {
     if (page === 'workprogress') renderWorkProgress();
     if (page === 'safety') renderSafety();
     if (page === 'environment') renderEnvironment();
+    if (page === 'cop') renderCop();
     if (page === 'activity') renderActivityLog();
     if (page === 'settings') renderSettings();
   });
@@ -4788,6 +4924,197 @@ function deleteWorkItem(id) {
   renderEPCDetail(currentEPCDetailKey);
 }
 
+// ---- CoP / ESA COMPLIANCE ----
+const DEFAULT_COP_RECORDS = [
+  { id: 2001, category: 'air', item: 'Stack Emission Monitoring — TSP (Total Suspended Particulates)', standard: 'TSP < 120 mg/Nm³ (ประกาศกระทรวงอุตสาหกรรม)', value: '', status: 'pending', authority: 'กรมโรงงานอุตสาหกรรม (DIW)', due: '2026-09-01', frequency: 'semi_annual', details: 'ต้องตรวจวัดคุณภาพอากาศจากปล่อง (Stack Emission) ก่อนเปิดดำเนินการเชิงพาณิชย์ (COD) พารามิเตอร์: TSP, SO2, NOx, HCl, CO, Dioxin/Furan, Heavy Metals (Hg, Cd, Pb)' },
+  { id: 2002, category: 'air', item: 'Ambient Air Quality Monitoring Station', standard: 'TSP 24hr < 0.33 mg/m³, PM10 < 0.12 mg/m³', value: '', status: 'in_progress', authority: 'กกพ. (ERC) / ทสจ.', due: '2026-06-01', frequency: 'continuous', details: 'ติดตั้งสถานีตรวจวัดคุณภาพอากาศโดยรอบ (Ambient) อย่างน้อย 2 สถานี (ต้นลม-ท้ายลม) ตรวจวัดต่อเนื่อง 24 ชม. รายงานผ่านระบบ CEMS' },
+  { id: 2003, category: 'water', item: 'Wastewater Treatment System & Effluent Standard', standard: 'BOD < 20 mg/L, SS < 30 mg/L, pH 5.5-9.0', value: '', status: 'pending', authority: 'กรมควบคุมมลพิษ (PCD)', due: '2026-08-01', frequency: 'monthly', details: 'Zero Liquid Discharge (ZLD) concept — น้ำเสียทั้งหมดผ่านระบบบำบัดและนำกลับมาใช้ใหม่ ไม่ปล่อยลงสู่แหล่งน้ำสาธารณะ ตรวจวัดคุณภาพน้ำทิ้ง BOD, COD, SS, TDS, Heavy Metals' },
+  { id: 2004, category: 'noise', item: 'Noise Level Monitoring — Plant Boundary', standard: 'Daytime < 75 dBA, Nighttime < 70 dBA (มาตรฐาน กกพ.)', value: '', status: 'pending', authority: 'กกพ. (ERC)', due: '2026-09-01', frequency: 'quarterly', details: 'ตรวจวัดระดับเสียงบริเวณรั้วโรงไฟฟ้า 4 จุด (N/S/E/W) และชุมชนใกล้เคียง ทั้งกลางวัน (06-22) และกลางคืน (22-06)' },
+  { id: 2005, category: 'waste', item: 'Bottom Ash & Fly Ash Management Plan', standard: 'ประกาศกระทรวงอุตสาหกรรม เรื่อง การกำจัดสิ่งปฏิกูลหรือวัสดุที่ไม่ใช้แล้ว', value: '', status: 'in_progress', authority: 'กรมโรงงานอุตสาหกรรม (DIW)', due: '2026-07-01', frequency: 'continuous', details: 'Bottom Ash: ใช้เป็นวัสดุก่อสร้าง (ต้องผ่านทดสอบ TCLP)\nFly Ash: จัดเก็บในไซโลปิดมิดชิด ส่งกำจัดโดย Landfill ที่ได้รับอนุญาต\nรายงาน สก.3 ทุก 6 เดือน' },
+  { id: 2006, category: 'community', item: 'Public Hearing & Community Engagement (CSR)', standard: 'ระเบียบ กกพ. ว่าด้วยการรับฟังความคิดเห็น', value: 'ดำเนินการครบ 3 ครั้ง', status: 'compliant', authority: 'กกพ. / อบจ. สุราษฎร์ธานี', due: '', frequency: 'annual', details: 'ดำเนินการรับฟังความคิดเห็น 3 ครั้ง:\n1) ก่อนโครงการ — ค.1 (เปิดเผยข้อมูล)\n2) ระหว่างก่อสร้าง — ค.2 (รับฟังความคิดเห็น)\n3) ก่อน COD — ค.3 (สรุปผล)\nจัดตั้งกองทุนพัฒนาชุมชนรอบโรงไฟฟ้า' },
+  { id: 2007, category: 'community', item: 'Community Development Fund (กองทุนพัฒนาชุมชน)', standard: '≥ 1 สตางค์/kWh ตาม พ.ร.บ. กกพ.', value: '', status: 'pending', authority: 'กกพ. (ERC)', due: '2026-10-01', frequency: 'annual', details: 'จัดตั้งกองทุนพัฒนาชุมชนรอบโรงไฟฟ้าตาม พ.ร.บ. การประกอบกิจการพลังงาน คณะกรรมการกองทุนประกอบด้วยตัวแทนชุมชน อบจ. และผู้ประกอบการ' },
+  { id: 2008, category: 'esa', item: 'Environmental Social Assessment (ESA) Report', standard: 'ประมวลหลักการปฏิบัติ (CoP) กกพ.', value: 'Rev.2 approved', status: 'compliant', authority: 'กกพ. (ERC)', due: '', frequency: 'once', details: 'จัดทำรายงาน ESA ครอบคลุม:\n- ผลกระทบด้านสิ่งแวดล้อม (อากาศ, น้ำ, เสียง, ขยะ)\n- ผลกระทบด้านสุขภาพชุมชน\n- ผลกระทบด้านเศรษฐกิจ-สังคม\n- มาตรการป้องกันและแก้ไข\n- แผนติดตามตรวจสอบ (Monitoring Plan)' },
+  { id: 2009, category: 'esa', item: 'CoP Self-Monitoring Report (รายงาน CoP ราย 6 เดือน)', standard: 'ระเบียบ กกพ. ว่าด้วย CoP', value: '', status: 'pending', authority: 'กกพ. (ERC)', due: '2026-12-31', frequency: 'semi_annual', details: 'จัดทำรายงานผลการปฏิบัติตาม CoP ส่ง กกพ. ทุก 6 เดือน ครอบคลุม:\n- ผลตรวจวัดคุณภาพอากาศ (Stack & Ambient)\n- ผลตรวจวัดคุณภาพน้ำ\n- ผลตรวจวัดเสียง\n- การจัดการกากของเสีย\n- กิจกรรมชุมชนสัมพันธ์\n- เรื่องร้องเรียน & การแก้ไข' },
+  { id: 2010, category: 'audit', item: 'ERC Compliance Audit (ตรวจสอบ กกพ.)', standard: 'เงื่อนไขใบอนุญาตประกอบกิจการ', value: '', status: 'pending', authority: 'กกพ. (ERC)', due: '2027-03-01', frequency: 'annual', details: 'การตรวจสอบการปฏิบัติตามเงื่อนไขใบอนุญาตโดย กกพ. หรือหน่วยงานที่ได้รับมอบหมาย ตรวจสอบ:\n- การปฏิบัติตาม CoP\n- ระบบควบคุมมลพิษ\n- ระบบความปลอดภัย\n- การจัดการเรื่องร้องเรียน' },
+  { id: 2011, category: 'audit', item: 'Annual Environmental Report (รายงานสิ่งแวดล้อมประจำปี)', standard: 'พ.ร.บ. โรงงาน พ.ศ. 2535', value: '', status: 'pending', authority: 'กรมโรงงานอุตสาหกรรม (DIW)', due: '2027-03-31', frequency: 'annual', details: 'รายงานประจำปีด้านสิ่งแวดล้อม ส่งกรมโรงงานอุตสาหกรรม ครอบคลุมผลตรวจวัดทั้งปี แผนการจัดการมลพิษ สถิติเรื่องร้องเรียน และแผนปรับปรุง' },
+  { id: 2012, category: 'air', item: 'CEMS — Continuous Emission Monitoring System', standard: 'ประกาศ กกพ. เรื่อง CEMS', value: '', status: 'in_progress', authority: 'กกพ. (ERC) / กรมควบคุมมลพิษ', due: '2026-08-01', frequency: 'continuous', details: 'ติดตั้งระบบ CEMS ที่ปล่องระบาย ตรวจวัดต่อเนื่อง: TSP, SO2, NOx, HCl, CO, O2, Temperature, Flow Rate ข้อมูลส่งเข้าระบบ กกพ. แบบ Real-time' },
+];
+
+function getCopRecords() {
+  const stored = localStorage.getItem('wte_cop');
+  if (!stored) { localStorage.setItem('wte_cop', JSON.stringify(DEFAULT_COP_RECORDS)); return [...DEFAULT_COP_RECORDS]; }
+  return JSON.parse(stored);
+}
+function saveCopRecords(list) { localStorage.setItem('wte_cop', JSON.stringify(list)); }
+
+let copActiveTab = 'all';
+function switchCopTab(tab) {
+  copActiveTab = tab;
+  document.querySelectorAll('[id^="cop-tab-"]').forEach(btn => {
+    btn.classList.remove('bg-emerald-600', 'text-white');
+    btn.classList.add('text-slate-400');
+  });
+  const activeBtn = document.getElementById('cop-tab-' + tab);
+  if (activeBtn) { activeBtn.classList.add('bg-emerald-600', 'text-white'); activeBtn.classList.remove('text-slate-400'); }
+  renderCop();
+}
+
+function renderCop() {
+  const th = getLang() === 'th';
+  document.getElementById('cop-title').textContent = t('copTitle');
+  document.getElementById('cop-desc').textContent = t('copDesc');
+  document.getElementById('cop-add-btn').textContent = t('copAddRecord');
+  document.getElementById('cop-empty').textContent = t('copEmpty');
+  document.getElementById('lbl-cop-score').textContent = t('copScore');
+  document.getElementById('lbl-cop-total').textContent = t('copTotal');
+  document.getElementById('lbl-cop-compliant').textContent = t('copCompliant');
+  document.getElementById('lbl-cop-pending').textContent = t('copPending');
+  document.getElementById('lbl-cop-overdue').textContent = t('copOverdue');
+
+  // Tab labels
+  document.getElementById('cop-tab-all').textContent = t('copAll');
+  document.getElementById('cop-tab-air').textContent = t('copAir');
+  document.getElementById('cop-tab-water').textContent = t('copWater');
+  document.getElementById('cop-tab-noise').textContent = t('copNoise');
+  document.getElementById('cop-tab-waste').textContent = t('copWaste');
+  document.getElementById('cop-tab-community').textContent = t('copCommunity');
+  document.getElementById('cop-tab-esa').textContent = t('copEsa');
+  document.getElementById('cop-tab-audit').textContent = t('copAudit');
+
+  const records = getCopRecords();
+  const compliant = records.filter(r => r.status === 'compliant').length;
+  const pending = records.filter(r => r.status === 'pending' || r.status === 'in_progress').length;
+  const nonCompliant = records.filter(r => r.status === 'non_compliant').length;
+  const applicable = records.filter(r => r.status !== 'not_applicable').length;
+  const score = applicable ? Math.round(compliant / applicable * 100) : 0;
+
+  document.getElementById('cop-score').textContent = score + '%';
+  document.getElementById('cop-total').textContent = records.length;
+  document.getElementById('cop-compliant').textContent = compliant;
+  document.getElementById('cop-pending').textContent = pending;
+  document.getElementById('cop-overdue').textContent = nonCompliant;
+
+  const filtered = copActiveTab === 'all' ? records : records.filter(r => r.category === copActiveTab);
+
+  const list = document.getElementById('cop-list');
+  const empty = document.getElementById('cop-empty');
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  const catIcons = { air: '💨', water: '💧', noise: '🔊', waste: '♻️', community: '🏘️', esa: '📋', audit: '🔍' };
+  const catColors = { air: 'from-sky-500 to-blue-500', water: 'from-blue-500 to-cyan-500', noise: 'from-violet-500 to-purple-500', waste: 'from-lime-500 to-green-500', community: 'from-amber-500 to-orange-500', esa: 'from-emerald-500 to-teal-500', audit: 'from-indigo-500 to-blue-500' };
+  const catNames = { air: th ? 'คุณภาพอากาศ' : 'Air Quality', water: th ? 'คุณภาพน้ำ' : 'Water Quality', noise: th ? 'เสียง' : 'Noise', waste: th ? 'กากของเสีย' : 'Waste Mgmt', community: th ? 'ชุมชน' : 'Community', esa: 'ESA', audit: th ? 'ตรวจสอบ' : 'Audit' };
+  const statusConfig = {
+    compliant: { label: th ? 'ผ่าน' : 'Compliant', bg: 'from-emerald-500/20 to-emerald-500/5 border-emerald-500/30 text-emerald-400', dot: 'bg-emerald-400', icon: '✓' },
+    pending: { label: th ? 'รอดำเนินการ' : 'Pending', bg: 'from-amber-500/20 to-amber-500/5 border-amber-500/30 text-amber-400', dot: 'bg-amber-400', icon: '○' },
+    in_progress: { label: th ? 'กำลังดำเนินการ' : 'In Progress', bg: 'from-blue-500/20 to-blue-500/5 border-blue-500/30 text-blue-400', dot: 'bg-blue-400 animate-pulse', icon: '◉' },
+    non_compliant: { label: th ? 'ไม่ผ่าน' : 'Non-Compliant', bg: 'from-red-500/20 to-red-500/5 border-red-500/30 text-red-400', dot: 'bg-red-400', icon: '✗' },
+    not_applicable: { label: 'N/A', bg: 'from-slate-500/20 to-slate-500/5 border-slate-500/30 text-slate-400', dot: 'bg-slate-400', icon: '—' }
+  };
+  const freqLabels = { once: th ? 'ครั้งเดียว' : 'One-time', monthly: th ? 'รายเดือน' : 'Monthly', quarterly: th ? 'ราย 3 เดือน' : 'Quarterly', semi_annual: th ? 'ราย 6 เดือน' : 'Semi-Annual', annual: th ? 'รายปี' : 'Annual', continuous: th ? 'ต่อเนื่อง' : 'Continuous' };
+
+  list.innerHTML = filtered.map(r => {
+    const st = statusConfig[r.status] || statusConfig.pending;
+    const catGrad = catColors[r.category] || 'from-slate-500 to-slate-400';
+    const detailLines = (r.details || '').split('\n').filter(l => l.trim());
+    const detailHtml = detailLines.length > 1
+      ? `<div class="space-y-1">${detailLines.map(l => {
+          const isBullet = /^[•\-\d]+[\.\)]?\s/.test(l.trim());
+          return isBullet
+            ? `<div class="flex gap-2 items-start"><span class="w-1 h-1 rounded-full bg-slate-500 mt-1.5 flex-shrink-0"></span><span class="text-xs text-slate-400">${l.trim().replace(/^[•\-]\s*/, '')}</span></div>`
+            : `<p class="text-xs text-slate-400">${l}</p>`;
+        }).join('')}</div>`
+      : `<p class="text-xs text-slate-400">${r.details || ''}</p>`;
+
+    const isOverdue = r.due && new Date(r.due) < new Date() && r.status !== 'compliant' && r.status !== 'not_applicable';
+
+    return `<div class="card p-0 overflow-hidden group">
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${catGrad}"></div>
+      <div class="px-5 pt-4 pb-3 relative">
+        <div class="flex items-start justify-between">
+          <div class="flex items-start gap-3 flex-1 min-w-0">
+            <div class="w-9 h-9 rounded-lg bg-gradient-to-br ${catGrad} flex items-center justify-center text-base shadow-sm flex-shrink-0">${catIcons[r.category] || '📋'}</div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-semibold text-white">${r.item}</p>
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r ${st.bg} border font-medium inline-flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full ${st.dot}"></span>${st.label}
+                </span>
+                <span class="text-[10px] text-slate-500">${catNames[r.category] || r.category}</span>
+                ${r.frequency ? `<span class="text-[10px] text-slate-600">⏱ ${freqLabels[r.frequency] || r.frequency}</span>` : ''}
+                ${isOverdue ? `<span class="text-[10px] text-red-400 font-medium animate-pulse">⚠ OVERDUE</span>` : ''}
+              </div>
+            </div>
+          </div>
+          <div class="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
+            <button onclick="editCopRecord(${r.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-blue-500/10 transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+            <button onclick="deleteCopRecord(${r.id})" class="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+          </div>
+        </div>
+      </div>
+      <div class="px-5 pb-4">
+        ${r.standard ? `<div class="flex gap-2 items-start mb-2"><span class="text-[10px] text-slate-600 font-medium uppercase flex-shrink-0 mt-0.5">Standard:</span><span class="text-xs text-cyan-400">${r.standard}</span></div>` : ''}
+        ${r.value ? `<div class="flex gap-2 items-start mb-2"><span class="text-[10px] text-slate-600 font-medium uppercase flex-shrink-0 mt-0.5">Actual:</span><span class="text-xs text-white font-medium">${r.value}</span></div>` : ''}
+        ${r.authority ? `<div class="flex gap-2 items-start mb-2"><span class="text-[10px] text-slate-600 font-medium uppercase flex-shrink-0 mt-0.5">Authority:</span><span class="text-xs text-slate-300">${r.authority}</span></div>` : ''}
+        ${r.due ? `<div class="flex gap-2 items-start mb-2"><span class="text-[10px] text-slate-600 font-medium uppercase flex-shrink-0 mt-0.5">Due:</span><span class="text-xs ${isOverdue ? 'text-red-400 font-medium' : 'text-slate-300'}">${fmtDate(r.due)} ${isOverdue ? '(OVERDUE)' : ''}</span></div>` : ''}
+        ${r.details ? `<div class="bg-white/[0.02] rounded-lg p-3 mt-2">${detailHtml}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openCopModal(rec) {
+  document.getElementById('cop-modal-title').textContent = rec ? t('copEditRecord') : t('copAddRecord');
+  document.getElementById('cop-edit-id').value = rec ? rec.id : '';
+  document.getElementById('cop-category').value = rec ? rec.category : 'air';
+  document.getElementById('cop-status').value = rec ? rec.status : 'pending';
+  document.getElementById('cop-item').value = rec ? rec.item : '';
+  document.getElementById('cop-standard').value = rec ? rec.standard : '';
+  document.getElementById('cop-value').value = rec ? rec.value : '';
+  document.getElementById('cop-authority').value = rec ? rec.authority : '';
+  document.getElementById('cop-due').value = rec ? rec.due : '';
+  document.getElementById('cop-frequency').value = rec ? rec.frequency : 'once';
+  document.getElementById('cop-details').value = rec ? rec.details : '';
+  document.getElementById('cop-modal').classList.remove('hidden');
+}
+function closeCopModal() { document.getElementById('cop-modal').classList.add('hidden'); }
+function editCopRecord(id) { openCopModal(getCopRecords().find(r => r.id === id)); }
+function deleteCopRecord(id) {
+  if (!confirm(t('copDeleteConfirm'))) return;
+  saveCopRecords(getCopRecords().filter(r => r.id !== id));
+  logActivity('delete_cop', 'Deleted compliance record');
+  renderCop(); showToast(t('copRecordDeleted'));
+}
+function saveCopRecord() {
+  if (!checkCanEdit()) return;
+  const item = document.getElementById('cop-item').value.trim();
+  if (!item) { showToast(t('copItemRequired'), 'error'); return; }
+  const editId = document.getElementById('cop-edit-id').value;
+  const rec = {
+    category: document.getElementById('cop-category').value,
+    status: document.getElementById('cop-status').value,
+    item,
+    standard: document.getElementById('cop-standard').value.trim(),
+    value: document.getElementById('cop-value').value.trim(),
+    authority: document.getElementById('cop-authority').value.trim(),
+    due: document.getElementById('cop-due').value,
+    frequency: document.getElementById('cop-frequency').value,
+    details: document.getElementById('cop-details').value.trim()
+  };
+  const list = getCopRecords();
+  if (editId) {
+    Object.assign(list.find(r => r.id === parseInt(editId)), rec);
+    logActivity('edit_cop', 'Updated: ' + item);
+  } else {
+    rec.id = Date.now();
+    list.push(rec);
+    logActivity('add_cop', 'Added: ' + item);
+  }
+  saveCopRecords(list);
+  closeCopModal(); renderCop();
+  showToast(editId ? t('copRecordUpdated') : t('copRecordAdded'));
+}
+
 // ---- ENVIRONMENT ----
 function getEnvRecords() { return JSON.parse(localStorage.getItem('wte_env') || '[]'); }
 function saveEnvRecords(list) { localStorage.setItem('wte_env', JSON.stringify(list)); }
@@ -5484,6 +5811,7 @@ function exportAllJSON() {
     workProgress: getWPReports(),
     incidents: getIncidents(),
     envRecords: getEnvRecords(),
+    copRecords: getCopRecords(),
     permits: getPermitsData(),
     permitHistory: getPermitHistory(),
     epcSystems: getEPCSystemsData(),
@@ -5536,6 +5864,7 @@ function importJSON(event) {
       if (imported.workProgress) saveWPReports(imported.workProgress);
       if (imported.incidents) saveIncidents(imported.incidents);
       if (imported.envRecords) saveEnvRecords(imported.envRecords);
+      if (imported.copRecords) saveCopRecords(imported.copRecords);
       if (imported.permits) savePermitsData(imported.permits);
       if (imported.permitHistory) savePermitHistory(imported.permitHistory);
       if (imported.epcSystems) saveEPCSystemsData(imported.epcSystems);
@@ -5566,7 +5895,8 @@ function createBackup() {
     data: localStorage.getItem('wte_data'),
     workProgress: localStorage.getItem('wte_wp'),
     incidents: localStorage.getItem('wte_incidents'),
-    envRecords: localStorage.getItem('wte_env')
+    envRecords: localStorage.getItem('wte_env'),
+    copRecords: localStorage.getItem('wte_cop')
   };
   backups.unshift(backup);
   if (backups.length > 5) backups.length = 5;
@@ -5584,6 +5914,7 @@ function restoreBackup(id) {
   if (backup.workProgress) localStorage.setItem('wte_wp', backup.workProgress);
   if (backup.incidents) localStorage.setItem('wte_incidents', backup.incidents);
   if (backup.envRecords) localStorage.setItem('wte_env', backup.envRecords);
+  if (backup.copRecords) localStorage.setItem('wte_cop', backup.copRecords);
   data = loadData();
   logActivity('restore', 'Restored backup from ' + new Date(backup.timestamp).toLocaleDateString());
   renderAll();
@@ -5620,6 +5951,7 @@ function resetProjectData() {
   localStorage.removeItem('wte_wp');
   localStorage.removeItem('wte_incidents');
   localStorage.removeItem('wte_env');
+  localStorage.removeItem('wte_cop');
   localStorage.removeItem('wte_backups');
   logActivity('reset', 'Reset all project data');
   data = loadData();
