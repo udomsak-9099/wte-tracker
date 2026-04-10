@@ -74,6 +74,8 @@ tailwind.config = {
   .stat-card.amber::before { background: #f59e0b; }
   .stat-card.red { background: var(--stat-red); }
   .stat-card.red::before { background: #ef4444; }
+  .stat-card.purple { background: linear-gradient(135deg, rgba(147,51,234,0.15) 0%, rgba(99,102,241,0.10) 100%); }
+  .stat-card.purple::before { background: #a855f7; }
   .progress-bar { height: 8px; border-radius: 4px; background: var(--progress-track); overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
   .sidebar-item { transition: all 0.2s ease; border-left: 3px solid transparent; }
@@ -1245,49 +1247,285 @@ tailwind.config = {
 
 <!-- Safety Page -->
 <div id="page-safety" class="page">
+  <!-- Header -->
   <div class="flex items-center justify-between mb-6">
-    <div>
-      <h2 class="text-2xl font-bold text-white" id="safety-title">Safety & HSE</h2>
-      <p class="text-sm text-slate-400 mt-1" id="safety-desc">Health, Safety & Environment records</p>
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-orange-600 flex items-center justify-center shadow-lg shadow-red-500/20">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+      </div>
+      <div>
+        <h2 class="text-2xl font-bold text-white" id="safety-title">Safety & HSE Management</h2>
+        <p class="text-sm text-slate-400 mt-0.5" id="safety-desc">WTE Power Plant Construction Safety Management System</p>
+      </div>
     </div>
-    <button onclick="openIncidentModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-      <span id="safety-add-btn">Report Incident</span>
+    <div id="safety-action-btns">
+      <button onclick="openIncidentModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+        <span id="safety-add-btn">Report Incident</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Safety Sub-tabs -->
+  <div class="flex gap-2 mb-6 flex-wrap">
+    <button onclick="switchSafetyTab('overview')" id="safety-tab-overview" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-red-600 text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      <span>Overview</span>
+    </button>
+    <button onclick="switchSafetyTab('incidents')" id="safety-tab-incidents" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+      <span>Incidents</span>
+    </button>
+    <button onclick="switchSafetyTab('ptw')" id="safety-tab-ptw" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+      <span>PTW</span>
+    </button>
+    <button onclick="switchSafetyTab('inspections')" id="safety-tab-inspections" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      <span>Inspections</span>
+    </button>
+    <button onclick="switchSafetyTab('training')" id="safety-tab-training" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      <span>Training</span>
     </button>
   </div>
-  <!-- HSE Stats -->
-  <div class="grid grid-cols-4 gap-4 mb-6">
-    <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-safe-days">Safe Days</p><p class="text-3xl font-bold text-white" id="safe-days-count">0</p></div>
-    <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-total-incidents">Total Incidents</p><p class="text-3xl font-bold text-white" id="total-incidents">0</p></div>
-    <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-near-miss">Near Miss</p><p class="text-3xl font-bold text-white" id="near-miss-count">0</p></div>
-    <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-fatalities">Fatalities</p><p class="text-3xl font-bold text-white" id="fatalities-count">0</p></div>
+
+  <!-- ===== TAB 1: OVERVIEW ===== -->
+  <div id="safety-section-overview">
+    <!-- KPI Row 1: Core Safety Metrics -->
+    <div class="grid grid-cols-6 gap-3 mb-4">
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-safe-days">LTI-Free Days</p><p class="text-2xl font-bold text-emerald-400" id="safe-days-count">0</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-man-hours">Man-Hours</p><p class="text-2xl font-bold text-blue-400" id="man-hours-count">0</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-ltifr">LTIFR</p><p class="text-2xl font-bold text-emerald-400" id="ltifr-value">0.00</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-trir">TRIR</p><p class="text-2xl font-bold text-amber-400" id="trir-value">0.00</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-near-miss">Near Miss</p><p class="text-2xl font-bold text-amber-400" id="near-miss-count">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-red-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-total-incidents">Total Incidents</p><p class="text-2xl font-bold text-red-400" id="total-incidents">0</p></div>
+      </div>
+    </div>
+
+    <!-- KPI Row 2: Detailed Breakdown -->
+    <div class="grid grid-cols-5 gap-3 mb-6">
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">First Aid</p><p class="text-xl font-bold text-blue-400" id="first-aid-count">0</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Medical Treatment</p><p class="text-xl font-bold text-amber-400" id="medical-count">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Lost Time Injury</p><p class="text-xl font-bold text-red-400" id="lti-count">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-fatalities">Fatalities</p><p class="text-xl font-bold text-red-400" id="fatalities-count">0</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Property Damage</p><p class="text-xl font-bold text-blue-400" id="prop-damage-count">0</p></div>
+      </div>
+    </div>
+
+    <!-- Safety Performance Cards -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <!-- PTW Summary -->
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          <h3 class="text-sm font-bold text-white">Permit to Work (PTW)</h3>
+        </div>
+        <div id="overview-ptw-summary" class="space-y-2">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Active Permits</span><span class="text-white font-medium" id="ptw-active-count">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Closed Today</span><span class="text-emerald-400 font-medium" id="ptw-closed-today">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Total Issued</span><span class="text-blue-400 font-medium" id="ptw-total-count">0</span></div>
+        </div>
+      </div>
+      <!-- Inspection Summary -->
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          <h3 class="text-sm font-bold text-white">Safety Inspections</h3>
+        </div>
+        <div id="overview-insp-summary" class="space-y-2">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">This Month</span><span class="text-white font-medium" id="insp-month-count">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Open Findings</span><span class="text-amber-400 font-medium" id="insp-open-findings">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Compliance Rate</span><span class="text-emerald-400 font-medium" id="insp-compliance">100%</span></div>
+        </div>
+      </div>
+      <!-- Training Summary -->
+      <div class="card p-5">
+        <div class="flex items-center gap-2 mb-3">
+          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          <h3 class="text-sm font-bold text-white">Safety Training</h3>
+        </div>
+        <div id="overview-train-summary" class="space-y-2">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Sessions This Month</span><span class="text-white font-medium" id="train-month-count">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Total Attendees</span><span class="text-purple-400 font-medium" id="train-attendees">0</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Certifications Due</span><span class="text-amber-400 font-medium" id="train-certs-due">0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Safety Requirements Checklist (WTE-specific) -->
+    <div class="card p-5">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-4">WTE Construction Safety Requirements</h3>
+      <div class="grid grid-cols-3 gap-3" id="safety-req-grid">
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Hot Work Procedures</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Confined Space Entry</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Working at Height</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">LOTO / Electrical Isolation</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Crane & Lifting Operations</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Excavation & Trenching</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Scaffolding Standards</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Radiography / NDT</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">PPE Compliance</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-xs text-white">Emergency Response Plan</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Fire Prevention</span></div>
+        <div class="flex items-center gap-2 p-2.5 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Hazardous Materials</span></div>
+      </div>
+    </div>
   </div>
-  <!-- Incident Log -->
-  <div class="card overflow-hidden">
-    <table>
-      <thead id="safety-thead"><tr><th>Date</th><th>Type</th><th>Description</th><th>Severity</th><th>Status</th><th>Location</th><th class="text-right">Actions</th></tr></thead>
-      <tbody id="safety-body"></tbody>
-    </table>
-    <div id="safety-empty" class="hidden p-12 text-center text-slate-500 text-sm">No incidents recorded. Maintain safe operations!</div>
+
+  <!-- ===== TAB 2: INCIDENTS ===== -->
+  <div id="safety-section-incidents" class="hidden">
+    <div class="grid grid-cols-4 gap-4 mb-6">
+      <div class="stat-card green"><p class="text-xs text-slate-400 mb-1">LTI-Free Days</p><p class="text-3xl font-bold text-white" id="inc-safe-days">0</p></div>
+      <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1">Total Incidents</p><p class="text-3xl font-bold text-white" id="inc-total">0</p></div>
+      <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1">Near Miss</p><p class="text-3xl font-bold text-white" id="inc-near-miss">0</p></div>
+      <div class="stat-card red"><p class="text-xs text-slate-400 mb-1">Fatalities</p><p class="text-3xl font-bold text-white" id="inc-fatalities">0</p></div>
+    </div>
+    <div class="card overflow-hidden">
+      <table>
+        <thead id="safety-thead"><tr><th>Date</th><th>Type</th><th>Description</th><th>Severity</th><th>Status</th><th>Location</th><th class="text-right">Actions</th></tr></thead>
+        <tbody id="safety-body"></tbody>
+      </table>
+      <div id="safety-empty" class="hidden p-12 text-center text-slate-500 text-sm">No incidents recorded. Maintain safe operations!</div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: PERMIT TO WORK ===== -->
+  <div id="safety-section-ptw" class="hidden">
+    <div class="grid grid-cols-4 gap-3 mb-6">
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Permits</p><p class="text-2xl font-bold text-blue-400" id="ptw-stat-total">0</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Active / Open</p><p class="text-2xl font-bold text-amber-400" id="ptw-stat-active">0</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Closed</p><p class="text-2xl font-bold text-emerald-400" id="ptw-stat-closed">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Expired / Rejected</p><p class="text-2xl font-bold text-red-400" id="ptw-stat-expired">0</p></div>
+      </div>
+    </div>
+    <!-- PTW Type Filter -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="filterPTW('all')" id="ptw-filter-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-red-600 text-white">All</button>
+      <button onclick="filterPTW('hot_work')" id="ptw-filter-hot_work" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Hot Work</button>
+      <button onclick="filterPTW('confined_space')" id="ptw-filter-confined_space" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Confined Space</button>
+      <button onclick="filterPTW('height')" id="ptw-filter-height" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Working at Height</button>
+      <button onclick="filterPTW('lifting')" id="ptw-filter-lifting" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Lifting</button>
+      <button onclick="filterPTW('excavation')" id="ptw-filter-excavation" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Excavation</button>
+      <button onclick="filterPTW('electrical')" id="ptw-filter-electrical" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Electrical / LOTO</button>
+      <button onclick="filterPTW('radiography')" id="ptw-filter-radiography" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Radiography</button>
+    </div>
+    <div id="ptw-list" class="space-y-3"></div>
+    <div id="ptw-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No permits issued yet.</div>
+  </div>
+
+  <!-- ===== TAB 4: INSPECTIONS ===== -->
+  <div id="safety-section-inspections" class="hidden">
+    <div class="grid grid-cols-4 gap-3 mb-6">
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Inspections</p><p class="text-2xl font-bold text-blue-400" id="insp-stat-total">0</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Pass</p><p class="text-2xl font-bold text-emerald-400" id="insp-stat-pass">0</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Findings</p><p class="text-2xl font-bold text-amber-400" id="insp-stat-findings">0</p></div>
+      </div>
+      <div class="stat-card red relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Stop Work</p><p class="text-2xl font-bold text-red-400" id="insp-stat-stop">0</p></div>
+      </div>
+    </div>
+    <!-- Inspection Type Filter -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="filterInsp('all')" id="insp-filter-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-red-600 text-white">All</button>
+      <button onclick="filterInsp('toolbox')" id="insp-filter-toolbox" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Toolbox Talk</button>
+      <button onclick="filterInsp('walkthrough')" id="insp-filter-walkthrough" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Safety Walk</button>
+      <button onclick="filterInsp('audit')" id="insp-filter-audit" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Safety Audit</button>
+      <button onclick="filterInsp('equipment')" id="insp-filter-equipment" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Equipment</button>
+      <button onclick="filterInsp('scaffold')" id="insp-filter-scaffold" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Scaffold</button>
+      <button onclick="filterInsp('crane')" id="insp-filter-crane" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Crane / Lifting</button>
+    </div>
+    <div id="insp-list" class="space-y-3"></div>
+    <div id="insp-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No inspection records yet.</div>
+  </div>
+
+  <!-- ===== TAB 5: TRAINING ===== -->
+  <div id="safety-section-training" class="hidden">
+    <div class="grid grid-cols-4 gap-3 mb-6">
+      <div class="stat-card purple relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Sessions</p><p class="text-2xl font-bold text-purple-400" id="train-stat-total">0</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Attendees</p><p class="text-2xl font-bold text-blue-400" id="train-stat-attendees">0</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">This Month</p><p class="text-2xl font-bold text-emerald-400" id="train-stat-month">0</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Certs Expiring</p><p class="text-2xl font-bold text-amber-400" id="train-stat-expiring">0</p></div>
+      </div>
+    </div>
+    <!-- Training Type Filter -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="filterTrain('all')" id="train-filter-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-red-600 text-white">All</button>
+      <button onclick="filterTrain('induction')" id="train-filter-induction" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Induction</button>
+      <button onclick="filterTrain('toolbox')" id="train-filter-toolbox" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Toolbox Talk</button>
+      <button onclick="filterTrain('confined_space')" id="train-filter-confined_space" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Confined Space</button>
+      <button onclick="filterTrain('height')" id="train-filter-height" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Working at Height</button>
+      <button onclick="filterTrain('fire')" id="train-filter-fire" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Fire Fighting</button>
+      <button onclick="filterTrain('first_aid')" id="train-filter-first_aid" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">First Aid</button>
+      <button onclick="filterTrain('crane')" id="train-filter-crane" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Crane / Rigging</button>
+      <button onclick="filterTrain('electrical')" id="train-filter-electrical" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Electrical</button>
+    </div>
+    <div id="train-list" class="space-y-3"></div>
+    <div id="train-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No training records yet.</div>
   </div>
 </div>
 
 <!-- Incident Modal -->
 <div id="incident-modal" class="fixed inset-0 z-50 hidden">
   <div class="modal-overlay absolute inset-0" onclick="closeIncidentModal()"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
     <h3 class="text-lg font-bold text-white mb-5" id="incident-modal-title">Report Incident</h3>
     <input type="hidden" id="incident-edit-id">
     <div class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div><label class="text-xs text-slate-400 block mb-1">Date</label><input type="date" id="incident-date" class="w-full"></div>
         <div><label class="text-xs text-slate-400 block mb-1">Type</label>
-          <select id="incident-type" class="w-full"><option>Near Miss</option><option>First Aid</option><option>Medical Treatment</option><option>Lost Time Injury</option><option>Fatality</option><option>Property Damage</option><option>Environmental</option></select>
+          <select id="incident-type" class="w-full"><option>Near Miss</option><option>First Aid</option><option>Medical Treatment</option><option>Lost Time Injury</option><option>Fatality</option><option>Property Damage</option><option>Environmental</option><option>Fire</option><option>Vehicle</option></select>
         </div>
       </div>
       <div><label class="text-xs text-slate-400 block mb-1">Description *</label><textarea id="incident-desc" class="w-full" rows="3"></textarea></div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-slate-400 block mb-1">Location</label><input type="text" id="incident-location" class="w-full" placeholder="Area / Zone"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Location / Zone</label><input type="text" id="incident-location" class="w-full" placeholder="e.g. Boiler Area, Turbine Hall"></div>
         <div><label class="text-xs text-slate-400 block mb-1">Severity</label>
           <select id="incident-severity" class="w-full"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
         </div>
@@ -1298,11 +1536,153 @@ tailwind.config = {
           <select id="incident-status" class="w-full"><option>Open</option><option>Investigating</option><option>Corrective Action</option><option>Closed</option></select>
         </div>
       </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Root Cause</label><input type="text" id="incident-root-cause" class="w-full" placeholder="e.g. Unsafe act, Unsafe condition"></div>
       <div><label class="text-xs text-slate-400 block mb-1">Corrective Action</label><textarea id="incident-action" class="w-full" rows="2"></textarea></div>
     </div>
     <div class="flex justify-end gap-3 mt-6">
       <button onclick="closeIncidentModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
       <button onclick="saveIncident()" class="bg-gradient-to-r from-red-600 to-red-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- PTW Modal -->
+<div id="ptw-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closePTWModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-lg font-bold text-white mb-5" id="ptw-modal-title">Issue Permit to Work</h3>
+    <input type="hidden" id="ptw-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Permit Type *</label>
+          <select id="ptw-type" class="w-full">
+            <option value="hot_work">Hot Work / งานเชื่อม-ตัด</option>
+            <option value="confined_space">Confined Space Entry / ที่อับอากาศ</option>
+            <option value="height">Working at Height / ทำงานที่สูง</option>
+            <option value="lifting">Lifting Operations / ยกของหนัก</option>
+            <option value="excavation">Excavation / ขุดเจาะ</option>
+            <option value="electrical">Electrical Isolation / LOTO</option>
+            <option value="radiography">Radiography / NDT</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Permit No.</label><input type="text" id="ptw-number" class="w-full" placeholder="e.g. PTW-2026-001"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Work Description *</label><textarea id="ptw-desc" class="w-full" rows="2" placeholder="Describe the work to be performed"></textarea></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Location / Area *</label><input type="text" id="ptw-location" class="w-full" placeholder="e.g. Boiler #1, Stack Area"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Contractor</label><input type="text" id="ptw-contractor" class="w-full" placeholder="Contractor company name"></div>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Start Date</label><input type="date" id="ptw-start" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">End Date</label><input type="date" id="ptw-end" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Status</label>
+          <select id="ptw-status" class="w-full">
+            <option value="draft">Draft / ร่าง</option>
+            <option value="active">Active / อนุมัติ</option>
+            <option value="suspended">Suspended / ระงับ</option>
+            <option value="closed">Closed / ปิด</option>
+            <option value="expired">Expired / หมดอายุ</option>
+            <option value="rejected">Rejected / ไม่อนุมัติ</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Issued By</label><input type="text" id="ptw-issuer" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Approved By</label><input type="text" id="ptw-approver" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Safety Precautions / Hazard Controls</label><textarea id="ptw-precautions" class="w-full" rows="3" placeholder="List required PPE, barriers, gas testing, fire watch, etc."></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closePTWModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="savePTW()" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inspection Modal -->
+<div id="insp-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeInspModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-lg font-bold text-white mb-5" id="insp-modal-title">Add Inspection Record</h3>
+    <input type="hidden" id="insp-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Inspection Type *</label>
+          <select id="insp-type" class="w-full">
+            <option value="toolbox">Toolbox Talk / ประชุมก่อนงาน</option>
+            <option value="walkthrough">Safety Walk / ตรวจพื้นที่</option>
+            <option value="audit">Safety Audit / ตรวจสอบ</option>
+            <option value="equipment">Equipment Inspection / ตรวจอุปกรณ์</option>
+            <option value="scaffold">Scaffold Inspection / ตรวจนั่งร้าน</option>
+            <option value="crane">Crane / Lifting Inspection</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Date *</label><input type="date" id="insp-date" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Description / Topic *</label><input type="text" id="insp-desc" class="w-full" placeholder="e.g. Daily toolbox talk - Fall prevention"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Location / Area</label><input type="text" id="insp-location" class="w-full" placeholder="e.g. Boiler Area"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Inspector</label><input type="text" id="insp-inspector" class="w-full"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Result</label>
+          <select id="insp-result" class="w-full">
+            <option value="pass">Pass / ผ่าน</option>
+            <option value="minor_findings">Minor Findings / พบข้อบกพร่องเล็กน้อย</option>
+            <option value="major_findings">Major Findings / พบข้อบกพร่องร้ายแรง</option>
+            <option value="stop_work">Stop Work Order / สั่งหยุดงาน</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Attendees (count)</label><input type="number" id="insp-attendees" class="w-full" min="0" placeholder="0"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Findings / Notes</label><textarea id="insp-findings" class="w-full" rows="3" placeholder="Describe findings, observations, recommendations..."></textarea></div>
+      <div><label class="text-xs text-slate-400 block mb-1">Corrective Actions Required</label><textarea id="insp-corrective" class="w-full" rows="2" placeholder="List required corrective actions with deadlines"></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeInspModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveInspection()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Training Modal -->
+<div id="train-modal" class="fixed inset-0 z-50 hidden">
+  <div class="modal-overlay absolute inset-0" onclick="closeTrainModal()"></div>
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
+    <h3 class="text-lg font-bold text-white mb-5" id="train-modal-title">Add Training Record</h3>
+    <input type="hidden" id="train-edit-id">
+    <div class="space-y-4">
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Training Type *</label>
+          <select id="train-type" class="w-full">
+            <option value="induction">Safety Induction / ปฐมนิเทศ</option>
+            <option value="toolbox">Toolbox Talk / ประชุมก่อนงาน</option>
+            <option value="confined_space">Confined Space / ที่อับอากาศ</option>
+            <option value="height">Working at Height / ทำงานที่สูง</option>
+            <option value="fire">Fire Fighting / ดับเพลิง</option>
+            <option value="first_aid">First Aid & CPR / ปฐมพยาบาล</option>
+            <option value="crane">Crane & Rigging / เครน</option>
+            <option value="electrical">Electrical Safety / ไฟฟ้า</option>
+            <option value="hazmat">HazMat / สารเคมี</option>
+            <option value="ppe">PPE Usage / อุปกรณ์ป้องกัน</option>
+          </select>
+        </div>
+        <div><label class="text-xs text-slate-400 block mb-1">Date *</label><input type="date" id="train-date" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Topic / Course Name *</label><input type="text" id="train-topic" class="w-full" placeholder="e.g. Fall Protection Awareness"></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Trainer / Instructor</label><input type="text" id="train-trainer" class="w-full"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Attendees (count)</label><input type="number" id="train-attendees-count" class="w-full" min="0" placeholder="0"></div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Duration (hours)</label><input type="number" id="train-duration" class="w-full" min="0" step="0.5" placeholder="e.g. 2"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Certification Expiry</label><input type="date" id="train-cert-expiry" class="w-full"></div>
+      </div>
+      <div><label class="text-xs text-slate-400 block mb-1">Notes / Remarks</label><textarea id="train-notes" class="w-full" rows="2" placeholder="Additional notes..."></textarea></div>
+    </div>
+    <div class="flex justify-end gap-3 mt-6">
+      <button onclick="closeTrainModal()" class="px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white transition">Cancel</button>
+      <button onclick="saveTraining()" class="bg-gradient-to-r from-purple-600 to-purple-500 text-white px-6 py-2 rounded-lg text-sm font-medium">Save</button>
     </div>
   </div>
 </div>
@@ -5255,25 +5635,177 @@ function saveEnvRecord() {
 function getIncidents() { return JSON.parse(localStorage.getItem('wte_incidents') || '[]'); }
 function saveIncidents(list) { localStorage.setItem('wte_incidents', JSON.stringify(list)); }
 
+// ---- SAFETY TAB MANAGEMENT ----
+let activeSafetyTab = 'overview';
+const safetyTabs = ['overview', 'incidents', 'ptw', 'inspections', 'training'];
+
+function switchSafetyTab(tab) {
+  activeSafetyTab = tab;
+  safetyTabs.forEach(t => {
+    const section = document.getElementById('safety-section-' + t);
+    const btn = document.getElementById('safety-tab-' + t);
+    if (section) section.classList.toggle('hidden', t !== tab);
+    if (btn) {
+      btn.className = t === tab
+        ? 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all bg-red-600 text-white flex items-center gap-2'
+        : 'px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2';
+    }
+  });
+  const actionBtns = document.getElementById('safety-action-btns');
+  if (tab === 'overview') {
+    actionBtns.innerHTML = `<button onclick="openIncidentModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>${t('reportIncident')}</span></button>`;
+  } else if (tab === 'incidents') {
+    actionBtns.innerHTML = `<button onclick="openIncidentModal()" class="bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>${t('reportIncident')}</span></button>`;
+    renderIncidentTab();
+  } else if (tab === 'ptw') {
+    actionBtns.innerHTML = `<button onclick="openPTWModal()" class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>Issue PTW</span></button>`;
+    renderPTW();
+  } else if (tab === 'inspections') {
+    actionBtns.innerHTML = `<button onclick="openInspModal()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>Add Inspection</span></button>`;
+    renderInspections();
+  } else if (tab === 'training') {
+    actionBtns.innerHTML = `<button onclick="openTrainModal()" class="bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      <span>Add Training</span></button>`;
+    renderTraining();
+  }
+}
+
+// ---- SAFETY DATA HELPERS ----
+function getPTWRecords() {
+  const stored = localStorage.getItem('wte_ptw');
+  if (!stored) { localStorage.setItem('wte_ptw', JSON.stringify(DEFAULT_PTW)); return [...DEFAULT_PTW]; }
+  return JSON.parse(stored);
+}
+function savePTWRecords(list) { localStorage.setItem('wte_ptw', JSON.stringify(list)); }
+
+function getInspRecords() {
+  const stored = localStorage.getItem('wte_inspections');
+  if (!stored) { localStorage.setItem('wte_inspections', JSON.stringify(DEFAULT_INSPECTIONS)); return [...DEFAULT_INSPECTIONS]; }
+  return JSON.parse(stored);
+}
+function saveInspRecords(list) { localStorage.setItem('wte_inspections', JSON.stringify(list)); }
+
+function getTrainRecords() {
+  const stored = localStorage.getItem('wte_training');
+  if (!stored) { localStorage.setItem('wte_training', JSON.stringify(DEFAULT_TRAINING)); return [...DEFAULT_TRAINING]; }
+  return JSON.parse(stored);
+}
+function saveTrainRecords(list) { localStorage.setItem('wte_training', JSON.stringify(list)); }
+
+// Safety man-hours setting (stored separately)
+function getManHours() { return parseInt(localStorage.getItem('wte_manhours') || '850000'); }
+function setManHours(v) { localStorage.setItem('wte_manhours', v); }
+
+// ---- DEFAULT DATA ----
+const DEFAULT_PTW = [
+  { id: 1, type: 'hot_work', number: 'PTW-HW-001', desc: 'Welding on boiler support structure - Level 3', location: 'Boiler Area', contractor: 'LAWI Engineering', start: '2026-04-07', end: '2026-04-10', status: 'active', issuer: 'Safety Officer', approver: 'Site Manager', precautions: 'Fire watch required, fire extinguisher within 5m, welding blanket on combustibles, gas test before work' },
+  { id: 2, type: 'confined_space', number: 'PTW-CS-001', desc: 'Internal inspection of feed water tank', location: 'Water Treatment Area', contractor: 'LAWI Engineering', start: '2026-04-08', end: '2026-04-08', status: 'active', issuer: 'Safety Officer', approver: 'Site Manager', precautions: 'Gas test (O2, LEL, H2S, CO), ventilation fan, standby man, rescue tripod, SCBA on standby' },
+  { id: 3, type: 'height', number: 'PTW-WH-001', desc: 'Steel structure erection at boiler house roof level (+32m)', location: 'Boiler House', contractor: 'SteelCon Co.', start: '2026-04-05', end: '2026-04-15', status: 'active', issuer: 'Safety Officer', approver: 'Construction Manager', precautions: 'Full body harness, lifeline, safety net below, barricade ground area, wind speed monitor < 40 km/h' },
+  { id: 4, type: 'lifting', number: 'PTW-LF-001', desc: 'Boiler drum lifting by 250T crawler crane', location: 'Boiler Area', contractor: 'Heavy Lift Co.', start: '2026-04-12', end: '2026-04-12', status: 'draft', issuer: '', approver: '', precautions: 'Lifting plan approved, exclusion zone 1.5x boom length, rigger signals, load test certificate valid' },
+  { id: 5, type: 'excavation', number: 'PTW-EX-001', desc: 'Foundation excavation for cooling tower basin', location: 'Cooling Tower Area', contractor: 'Civil Works Ltd.', start: '2026-03-20', end: '2026-04-05', status: 'closed', issuer: 'Safety Officer', approver: 'Site Manager', precautions: 'Shoring > 1.5m depth, underground utility check, access ladder every 7.5m, daily inspection' },
+  { id: 6, type: 'electrical', number: 'PTW-EI-001', desc: 'MV switchgear installation and cable termination', location: 'Electrical Substation', contractor: 'ElecPower Co.', start: '2026-04-09', end: '2026-04-11', status: 'active', issuer: 'Safety Officer', approver: 'Electrical Engineer', precautions: 'LOTO procedure, verify zero energy, grounding device installed, insulated tools, arc flash PPE' },
+  { id: 7, type: 'radiography', number: 'PTW-RT-001', desc: 'Radiographic testing on boiler header welds', location: 'Boiler Area', contractor: 'NDT Services', start: '2026-04-06', end: '2026-04-06', status: 'closed', issuer: 'Safety Officer', approver: 'QA Manager', precautions: 'Radiation exclusion zone 30m, warning signs/lights, radiation badge, night shift only, area clearance verified' },
+];
+
+const DEFAULT_INSPECTIONS = [
+  { id: 1, type: 'toolbox', date: '2026-04-10', desc: 'Daily Toolbox Talk - Heat stress prevention and hydration', location: 'Main Gate Assembly', inspector: 'Safety Officer', result: 'pass', attendees: 145, findings: 'All workers briefed on heat index monitoring. Water stations confirmed at all work areas.', corrective: '' },
+  { id: 2, type: 'walkthrough', date: '2026-04-09', desc: 'Weekly Safety Walk - Boiler Area & Steel Erection Zone', location: 'Boiler House', inspector: 'Site Manager', result: 'minor_findings', attendees: 5, findings: '1. Housekeeping at Level 2 platform needs improvement\n2. One worker missing safety glasses at grinding area\n3. Fire extinguisher tag expired at Boiler #1', corrective: '1. Clean up by end of shift\n2. Verbal warning issued\n3. Replace extinguisher by Apr 10' },
+  { id: 3, type: 'scaffold', date: '2026-04-08', desc: 'Scaffold Inspection - Boiler house external scaffold system', location: 'Boiler House East Side', inspector: 'Scaffold Supervisor', result: 'pass', attendees: 2, findings: 'All connections secure, toe boards in place, tag system current. Green tag issued valid until Apr 15.', corrective: '' },
+  { id: 4, type: 'crane', date: '2026-04-07', desc: 'Monthly Crane Inspection - 250T Crawler Crane', location: 'Main Laydown Area', inspector: 'Third Party Inspector', result: 'pass', attendees: 3, findings: 'Wire rope condition: OK, Safety devices: functional, Load test: passed at 110%. Certificate renewed.', corrective: '' },
+  { id: 5, type: 'audit', date: '2026-04-01', desc: 'Monthly Safety Audit - March 2026', location: 'Entire Site', inspector: 'HSE Manager', result: 'minor_findings', attendees: 8, findings: '1. PTW compliance: 95% (target 100%)\n2. PPE compliance: 98%\n3. Housekeeping score: 85/100\n4. Emergency drill overdue (Q1)', corrective: '1. Retrain supervisors on PTW process\n2. Replace worn PPE identified\n3. Intensify daily housekeeping\n4. Schedule emergency drill by Apr 15' },
+  { id: 6, type: 'equipment', date: '2026-04-05', desc: 'Welding Machine Inspection - All units', location: 'Workshop', inspector: 'Maintenance Engineer', result: 'minor_findings', attendees: 2, findings: 'Unit WM-07: damaged cable insulation found. All other 12 units passed.', corrective: 'WM-07 cable replacement scheduled Apr 6. Unit tagged out until repair complete.' },
+];
+
+const DEFAULT_TRAINING = [
+  { id: 1, type: 'induction', date: '2026-04-01', topic: 'Site Safety Induction - New Workers Batch 12', trainer: 'Safety Officer', attendees: 35, duration: 4, certExpiry: '', notes: 'Covered: site rules, emergency procedures, PPE requirements, hazard identification, reporting procedures' },
+  { id: 2, type: 'toolbox', date: '2026-04-10', topic: 'Heat Stress Prevention & First Aid for Heat Stroke', trainer: 'Safety Officer', attendees: 145, duration: 0.5, certExpiry: '', notes: 'Daily pre-work briefing. WBGT monitoring > 32°C = mandatory rest periods' },
+  { id: 3, type: 'confined_space', date: '2026-03-25', topic: 'Confined Space Entry Competency Training', trainer: 'External Trainer - SafePro', attendees: 20, duration: 8, certExpiry: '2027-03-25', notes: 'Practical + theory. Gas detector usage, rescue procedures, standby man duties. Certificate valid 1 year.' },
+  { id: 4, type: 'height', date: '2026-03-20', topic: 'Working at Height & Fall Protection', trainer: 'External Trainer - SafePro', attendees: 45, duration: 8, certExpiry: '2027-03-20', notes: 'Full body harness inspection, anchor point selection, scaffold safety, ladder safety. Certificate valid 1 year.' },
+  { id: 5, type: 'fire', date: '2026-03-15', topic: 'Basic Fire Fighting & Evacuation Drill', trainer: 'Local Fire Department', attendees: 200, duration: 4, certExpiry: '2027-03-15', notes: 'Fire extinguisher practical (ABC, CO2), evacuation routes, assembly points, fire warden duties' },
+  { id: 6, type: 'first_aid', date: '2026-03-10', topic: 'First Aid & CPR Certification', trainer: 'Red Cross', attendees: 25, duration: 16, certExpiry: '2028-03-10', notes: '2-day course. CPR/AED, wound care, fracture immobilization, heat stroke treatment. Certificate valid 2 years.' },
+  { id: 7, type: 'crane', date: '2026-03-05', topic: 'Crane Operator & Rigger Competency', trainer: 'External - CraneSafe', attendees: 12, duration: 16, certExpiry: '2027-03-05', notes: 'Signal person, rigger, crane operator certification. Load chart reading, sling inspection, lift planning.' },
+  { id: 8, type: 'electrical', date: '2026-02-28', topic: 'Electrical Safety & LOTO Procedures', trainer: 'Electrical Engineer', attendees: 30, duration: 4, certExpiry: '', notes: 'LOTO procedures, arc flash awareness, electrical PPE, emergency response for electrocution' },
+];
+
+// ---- RENDER SAFETY ----
 function renderSafety() {
   document.getElementById('safety-title').textContent = t('safetyTitle');
   document.getElementById('safety-desc').textContent = t('safetyDesc');
-  document.getElementById('safety-add-btn').textContent = t('reportIncident');
-  document.getElementById('safety-empty').textContent = t('safetyEmpty');
-  document.getElementById('lbl-safe-days').textContent = t('safeDays');
-  document.getElementById('lbl-total-incidents').textContent = t('totalIncidents');
-  document.getElementById('lbl-near-miss').textContent = t('nearMiss');
-  document.getElementById('lbl-fatalities').textContent = t('fatalities');
-  document.getElementById('safety-thead').innerHTML = `<tr><th>${t('safetyDate')}</th><th>${t('safetyType')}</th><th>${t('description')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('safetyLocation')}</th><th class="text-right">${t('actions')}</th></tr>`;
 
   const incidents = getIncidents();
-  // Stats
-  const lastIncident = incidents.filter(i => i.type !== 'Near Miss').sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-  const safeDays = lastIncident ? Math.floor((new Date() - new Date(lastIncident.date)) / (1000*60*60*24)) : Math.floor((new Date() - new Date('2024-11-01')) / (1000*60*60*24));
+  const ptws = getPTWRecords();
+  const insps = getInspRecords();
+  const trains = getTrainRecords();
+  const manHours = getManHours();
+
+  // Calculate safety stats
+  const lastLTI = incidents.filter(i => i.type === 'Lost Time Injury' || i.type === 'Fatality').sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  const safeDays = lastLTI ? Math.floor((new Date() - new Date(lastLTI.date)) / (1000*60*60*24)) : Math.floor((new Date() - new Date('2024-11-01')) / (1000*60*60*24));
+  const ltiCount = incidents.filter(i => i.type === 'Lost Time Injury').length;
+  const recordable = incidents.filter(i => ['Lost Time Injury', 'Medical Treatment', 'Fatality'].includes(i.type)).length;
+  const ltifr = manHours > 0 ? ((ltiCount * 1000000) / manHours).toFixed(2) : '0.00';
+  const trir = manHours > 0 ? ((recordable * 200000) / manHours).toFixed(2) : '0.00';
+
+  // Overview KPIs
   document.getElementById('safe-days-count').textContent = safeDays;
-  document.getElementById('total-incidents').textContent = incidents.length;
+  document.getElementById('man-hours-count').textContent = manHours.toLocaleString();
+  document.getElementById('ltifr-value').textContent = ltifr;
+  document.getElementById('trir-value').textContent = trir;
   document.getElementById('near-miss-count').textContent = incidents.filter(i => i.type === 'Near Miss').length;
+  document.getElementById('total-incidents').textContent = incidents.length;
+  document.getElementById('first-aid-count').textContent = incidents.filter(i => i.type === 'First Aid').length;
+  document.getElementById('medical-count').textContent = incidents.filter(i => i.type === 'Medical Treatment').length;
+  document.getElementById('lti-count').textContent = ltiCount;
   document.getElementById('fatalities-count').textContent = incidents.filter(i => i.type === 'Fatality').length;
+  document.getElementById('prop-damage-count').textContent = incidents.filter(i => i.type === 'Property Damage').length;
+
+  // PTW summary
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('ptw-active-count').textContent = ptws.filter(p => p.status === 'active').length;
+  document.getElementById('ptw-closed-today').textContent = ptws.filter(p => p.status === 'closed' && p.end === today).length;
+  document.getElementById('ptw-total-count').textContent = ptws.length;
+
+  // Inspection summary
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  document.getElementById('insp-month-count').textContent = insps.filter(i => i.date.startsWith(thisMonth)).length;
+  document.getElementById('insp-open-findings').textContent = insps.filter(i => i.result === 'minor_findings' || i.result === 'major_findings' || i.result === 'stop_work').length;
+  const inspTotal = insps.length;
+  const inspPass = insps.filter(i => i.result === 'pass').length;
+  document.getElementById('insp-compliance').textContent = inspTotal > 0 ? Math.round((inspPass / inspTotal) * 100) + '%' : '100%';
+
+  // Training summary
+  document.getElementById('train-month-count').textContent = trains.filter(t => t.date.startsWith(thisMonth)).length;
+  document.getElementById('train-attendees').textContent = trains.reduce((sum, t) => sum + (t.attendees || 0), 0);
+  const certsExpiring = trains.filter(t => t.certExpiry && new Date(t.certExpiry) < new Date(Date.now() + 90*24*60*60*1000) && new Date(t.certExpiry) > new Date()).length;
+  document.getElementById('train-certs-due').textContent = certsExpiring;
+
+  // Render active tab content
+  if (activeSafetyTab === 'incidents') renderIncidentTab();
+  else if (activeSafetyTab === 'ptw') renderPTW();
+  else if (activeSafetyTab === 'inspections') renderInspections();
+  else if (activeSafetyTab === 'training') renderTraining();
+}
+
+// ---- INCIDENTS TAB ----
+function renderIncidentTab() {
+  const incidents = getIncidents();
+  const lastLTI = incidents.filter(i => i.type === 'Lost Time Injury' || i.type === 'Fatality').sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+  const safeDays = lastLTI ? Math.floor((new Date() - new Date(lastLTI.date)) / (1000*60*60*24)) : Math.floor((new Date() - new Date('2024-11-01')) / (1000*60*60*24));
+  document.getElementById('inc-safe-days').textContent = safeDays;
+  document.getElementById('inc-total').textContent = incidents.length;
+  document.getElementById('inc-near-miss').textContent = incidents.filter(i => i.type === 'Near Miss').length;
+  document.getElementById('inc-fatalities').textContent = incidents.filter(i => i.type === 'Fatality').length;
+
+  document.getElementById('safety-thead').innerHTML = `<tr><th>${t('safetyDate')}</th><th>${t('safetyType')}</th><th>${t('description')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('safetyLocation')}</th><th class="text-right">${t('actions')}</th></tr>`;
 
   const body = document.getElementById('safety-body');
   const empty = document.getElementById('safety-empty');
@@ -5305,6 +5837,7 @@ function openIncidentModal(inc) {
   document.getElementById('incident-reporter').value = inc ? inc.reporter : (getSession()?.username || '');
   document.getElementById('incident-status').value = inc ? inc.status : 'Open';
   document.getElementById('incident-action').value = inc ? inc.action : '';
+  document.getElementById('incident-root-cause').value = inc ? (inc.rootCause || '') : '';
   document.getElementById('incident-modal').classList.remove('hidden');
 }
 function closeIncidentModal() { document.getElementById('incident-modal').classList.add('hidden'); }
@@ -5329,7 +5862,8 @@ function saveIncident() {
     severity: document.getElementById('incident-severity').value,
     reporter: document.getElementById('incident-reporter').value.trim(),
     status: document.getElementById('incident-status').value,
-    action: document.getElementById('incident-action').value.trim()
+    action: document.getElementById('incident-action').value.trim(),
+    rootCause: document.getElementById('incident-root-cause').value.trim()
   };
   const list = getIncidents();
   if (editId) {
@@ -5344,6 +5878,367 @@ function saveIncident() {
   saveIncidents(list);
   closeIncidentModal(); renderSafety();
   showToast(editId ? t('incidentUpdated') : t('incidentReported'));
+}
+
+// ---- PTW ----
+let ptwActiveFilter = 'all';
+const PTW_TYPE_LABELS = {
+  hot_work: 'Hot Work', confined_space: 'Confined Space', height: 'Working at Height',
+  lifting: 'Lifting', excavation: 'Excavation', electrical: 'Electrical / LOTO', radiography: 'Radiography / NDT'
+};
+const PTW_TYPE_COLORS = {
+  hot_work: 'from-orange-500 to-red-500', confined_space: 'from-purple-500 to-indigo-500', height: 'from-blue-500 to-cyan-500',
+  lifting: 'from-amber-500 to-yellow-500', excavation: 'from-yellow-600 to-orange-500', electrical: 'from-red-500 to-pink-500', radiography: 'from-indigo-500 to-purple-500'
+};
+const PTW_STATUS_BADGES = {
+  draft: 'badge-blue', active: 'badge-green', suspended: 'badge-amber', closed: 'badge-green', expired: 'badge-red', rejected: 'badge-red'
+};
+
+function filterPTW(filter) {
+  ptwActiveFilter = filter;
+  document.querySelectorAll('[id^="ptw-filter-"]').forEach(btn => {
+    btn.classList.remove('bg-red-600', 'text-white');
+    btn.classList.add('text-slate-400');
+  });
+  const activeBtn = document.getElementById('ptw-filter-' + filter);
+  if (activeBtn) { activeBtn.classList.add('bg-red-600', 'text-white'); activeBtn.classList.remove('text-slate-400'); }
+  renderPTW();
+}
+
+function renderPTW() {
+  const records = getPTWRecords();
+  const filtered = ptwActiveFilter === 'all' ? records : records.filter(r => r.type === ptwActiveFilter);
+
+  // Stats
+  document.getElementById('ptw-stat-total').textContent = records.length;
+  document.getElementById('ptw-stat-active').textContent = records.filter(r => r.status === 'active' || r.status === 'draft').length;
+  document.getElementById('ptw-stat-closed').textContent = records.filter(r => r.status === 'closed').length;
+  document.getElementById('ptw-stat-expired').textContent = records.filter(r => r.status === 'expired' || r.status === 'rejected').length;
+
+  const list = document.getElementById('ptw-list');
+  const empty = document.getElementById('ptw-empty');
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.innerHTML = filtered.sort((a, b) => new Date(b.start) - new Date(a.start)).map(p => `
+    <div class="card p-4 hover:bg-white/[0.03] transition">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${PTW_TYPE_COLORS[p.type] || 'from-gray-500 to-gray-600'} flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-mono text-slate-500">${p.number || ''}</span>
+            <span class="badge ${PTW_STATUS_BADGES[p.status] || 'badge-blue'}">${p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] text-slate-400">${PTW_TYPE_LABELS[p.type] || p.type}</span>
+          </div>
+          <h4 class="text-sm font-semibold text-white mb-1">${p.desc}</h4>
+          <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+            <span>Location: <span class="text-slate-300">${p.location}</span></span>
+            <span>Contractor: <span class="text-slate-300">${p.contractor || '—'}</span></span>
+            <span>Period: <span class="text-slate-300">${fmtDate(p.start)} — ${fmtDate(p.end)}</span></span>
+          </div>
+          ${p.precautions ? `<p class="text-xs text-slate-500 mt-2 line-clamp-2">${p.precautions}</p>` : ''}
+        </div>
+        <div class="flex gap-1 flex-shrink-0">
+          <button onclick="editPTW(${p.id})" class="text-slate-400 hover:text-blue-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deletePTW(${p.id})" class="text-slate-400 hover:text-red-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openPTWModal(rec) {
+  document.getElementById('ptw-modal-title').textContent = rec ? 'Edit PTW' : 'Issue Permit to Work';
+  document.getElementById('ptw-edit-id').value = rec ? rec.id : '';
+  document.getElementById('ptw-type').value = rec ? rec.type : 'hot_work';
+  document.getElementById('ptw-number').value = rec ? rec.number : '';
+  document.getElementById('ptw-desc').value = rec ? rec.desc : '';
+  document.getElementById('ptw-location').value = rec ? rec.location : '';
+  document.getElementById('ptw-contractor').value = rec ? rec.contractor : '';
+  document.getElementById('ptw-start').value = rec ? rec.start : new Date().toISOString().slice(0, 10);
+  document.getElementById('ptw-end').value = rec ? rec.end : new Date().toISOString().slice(0, 10);
+  document.getElementById('ptw-status').value = rec ? rec.status : 'draft';
+  document.getElementById('ptw-issuer').value = rec ? rec.issuer : (getSession()?.username || '');
+  document.getElementById('ptw-approver').value = rec ? rec.approver : '';
+  document.getElementById('ptw-precautions').value = rec ? rec.precautions : '';
+  document.getElementById('ptw-modal').classList.remove('hidden');
+}
+function closePTWModal() { document.getElementById('ptw-modal').classList.add('hidden'); }
+function editPTW(id) { openPTWModal(getPTWRecords().find(r => r.id === id)); }
+function deletePTW(id) {
+  if (!confirm('Delete this permit?')) return;
+  const list = getPTWRecords().filter(r => r.id !== id);
+  savePTWRecords(list);
+  logActivity('delete_ptw', 'Deleted PTW #' + id);
+  renderPTW(); renderSafety(); showToast('Permit deleted');
+}
+function savePTW() {
+  if (!checkCanEdit()) return;
+  const desc = document.getElementById('ptw-desc').value.trim();
+  if (!desc) { showToast('Work description is required', 'error'); return; }
+  const editId = document.getElementById('ptw-edit-id').value;
+  const data = {
+    type: document.getElementById('ptw-type').value,
+    number: document.getElementById('ptw-number').value.trim(),
+    desc,
+    location: document.getElementById('ptw-location').value.trim(),
+    contractor: document.getElementById('ptw-contractor').value.trim(),
+    start: document.getElementById('ptw-start').value,
+    end: document.getElementById('ptw-end').value,
+    status: document.getElementById('ptw-status').value,
+    issuer: document.getElementById('ptw-issuer').value.trim(),
+    approver: document.getElementById('ptw-approver').value.trim(),
+    precautions: document.getElementById('ptw-precautions').value.trim()
+  };
+  const list = getPTWRecords();
+  if (editId) {
+    const rec = list.find(r => r.id === parseInt(editId));
+    Object.assign(rec, data);
+    logActivity('edit_ptw', desc);
+  } else {
+    data.id = Date.now();
+    list.push(data);
+    logActivity('add_ptw', desc);
+  }
+  savePTWRecords(list);
+  closePTWModal(); renderPTW(); renderSafety();
+  showToast(editId ? 'Permit updated' : 'Permit issued');
+}
+
+// ---- INSPECTIONS ----
+let inspActiveFilter = 'all';
+const INSP_TYPE_LABELS = {
+  toolbox: 'Toolbox Talk', walkthrough: 'Safety Walk', audit: 'Safety Audit',
+  equipment: 'Equipment', scaffold: 'Scaffold', crane: 'Crane / Lifting'
+};
+const INSP_RESULT_BADGES = {
+  pass: 'badge-green', minor_findings: 'badge-amber', major_findings: 'badge-red', stop_work: 'badge-red'
+};
+const INSP_RESULT_LABELS = {
+  pass: 'Pass', minor_findings: 'Minor Findings', major_findings: 'Major Findings', stop_work: 'Stop Work'
+};
+
+function filterInsp(filter) {
+  inspActiveFilter = filter;
+  document.querySelectorAll('[id^="insp-filter-"]').forEach(btn => {
+    btn.classList.remove('bg-red-600', 'text-white');
+    btn.classList.add('text-slate-400');
+  });
+  const activeBtn = document.getElementById('insp-filter-' + filter);
+  if (activeBtn) { activeBtn.classList.add('bg-red-600', 'text-white'); activeBtn.classList.remove('text-slate-400'); }
+  renderInspections();
+}
+
+function renderInspections() {
+  const records = getInspRecords();
+  const filtered = inspActiveFilter === 'all' ? records : records.filter(r => r.type === inspActiveFilter);
+
+  document.getElementById('insp-stat-total').textContent = records.length;
+  document.getElementById('insp-stat-pass').textContent = records.filter(r => r.result === 'pass').length;
+  document.getElementById('insp-stat-findings').textContent = records.filter(r => r.result === 'minor_findings' || r.result === 'major_findings').length;
+  document.getElementById('insp-stat-stop').textContent = records.filter(r => r.result === 'stop_work').length;
+
+  const list = document.getElementById('insp-list');
+  const empty = document.getElementById('insp-empty');
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.innerHTML = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => `
+    <div class="card p-4 hover:bg-white/[0.03] transition">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs text-slate-500">${fmtDate(r.date)}</span>
+            <span class="badge ${INSP_RESULT_BADGES[r.result] || 'badge-blue'}">${INSP_RESULT_LABELS[r.result] || r.result}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] text-slate-400">${INSP_TYPE_LABELS[r.type] || r.type}</span>
+            ${r.attendees ? `<span class="text-[10px] text-slate-500">${r.attendees} attendees</span>` : ''}
+          </div>
+          <h4 class="text-sm font-semibold text-white mb-1">${r.desc}</h4>
+          <div class="text-xs text-slate-400 mb-1">Location: <span class="text-slate-300">${r.location || '—'}</span> | Inspector: <span class="text-slate-300">${r.inspector || '—'}</span></div>
+          ${r.findings ? `<p class="text-xs text-slate-500 mt-1 whitespace-pre-line line-clamp-2">${r.findings}</p>` : ''}
+          ${r.corrective ? `<p class="text-xs text-amber-400/70 mt-1 whitespace-pre-line line-clamp-2">Action: ${r.corrective}</p>` : ''}
+        </div>
+        <div class="flex gap-1 flex-shrink-0">
+          <button onclick="editInsp(${r.id})" class="text-slate-400 hover:text-blue-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deleteInsp(${r.id})" class="text-slate-400 hover:text-red-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openInspModal(rec) {
+  document.getElementById('insp-modal-title').textContent = rec ? 'Edit Inspection' : 'Add Inspection Record';
+  document.getElementById('insp-edit-id').value = rec ? rec.id : '';
+  document.getElementById('insp-type').value = rec ? rec.type : 'toolbox';
+  document.getElementById('insp-date').value = rec ? rec.date : new Date().toISOString().slice(0, 10);
+  document.getElementById('insp-desc').value = rec ? rec.desc : '';
+  document.getElementById('insp-location').value = rec ? rec.location : '';
+  document.getElementById('insp-inspector').value = rec ? rec.inspector : (getSession()?.username || '');
+  document.getElementById('insp-result').value = rec ? rec.result : 'pass';
+  document.getElementById('insp-attendees').value = rec ? rec.attendees : '';
+  document.getElementById('insp-findings').value = rec ? rec.findings : '';
+  document.getElementById('insp-corrective').value = rec ? rec.corrective : '';
+  document.getElementById('insp-modal').classList.remove('hidden');
+}
+function closeInspModal() { document.getElementById('insp-modal').classList.add('hidden'); }
+function editInsp(id) { openInspModal(getInspRecords().find(r => r.id === id)); }
+function deleteInsp(id) {
+  if (!confirm('Delete this inspection record?')) return;
+  const list = getInspRecords().filter(r => r.id !== id);
+  saveInspRecords(list);
+  logActivity('delete_inspection', 'Deleted inspection #' + id);
+  renderInspections(); renderSafety(); showToast('Inspection deleted');
+}
+function saveInspection() {
+  if (!checkCanEdit()) return;
+  const desc = document.getElementById('insp-desc').value.trim();
+  if (!desc) { showToast('Description is required', 'error'); return; }
+  const editId = document.getElementById('insp-edit-id').value;
+  const data = {
+    type: document.getElementById('insp-type').value,
+    date: document.getElementById('insp-date').value,
+    desc,
+    location: document.getElementById('insp-location').value.trim(),
+    inspector: document.getElementById('insp-inspector').value.trim(),
+    result: document.getElementById('insp-result').value,
+    attendees: parseInt(document.getElementById('insp-attendees').value) || 0,
+    findings: document.getElementById('insp-findings').value.trim(),
+    corrective: document.getElementById('insp-corrective').value.trim()
+  };
+  const list = getInspRecords();
+  if (editId) {
+    const rec = list.find(r => r.id === parseInt(editId));
+    Object.assign(rec, data);
+    logActivity('edit_inspection', desc);
+  } else {
+    data.id = Date.now();
+    list.push(data);
+    logActivity('add_inspection', desc);
+  }
+  saveInspRecords(list);
+  closeInspModal(); renderInspections(); renderSafety();
+  showToast(editId ? 'Inspection updated' : 'Inspection recorded');
+}
+
+// ---- TRAINING ----
+let trainActiveFilter = 'all';
+const TRAIN_TYPE_LABELS = {
+  induction: 'Safety Induction', toolbox: 'Toolbox Talk', confined_space: 'Confined Space',
+  height: 'Working at Height', fire: 'Fire Fighting', first_aid: 'First Aid & CPR',
+  crane: 'Crane & Rigging', electrical: 'Electrical Safety', hazmat: 'HazMat', ppe: 'PPE Usage'
+};
+
+function filterTrain(filter) {
+  trainActiveFilter = filter;
+  document.querySelectorAll('[id^="train-filter-"]').forEach(btn => {
+    btn.classList.remove('bg-red-600', 'text-white');
+    btn.classList.add('text-slate-400');
+  });
+  const activeBtn = document.getElementById('train-filter-' + filter);
+  if (activeBtn) { activeBtn.classList.add('bg-red-600', 'text-white'); activeBtn.classList.remove('text-slate-400'); }
+  renderTraining();
+}
+
+function renderTraining() {
+  const records = getTrainRecords();
+  const filtered = trainActiveFilter === 'all' ? records : records.filter(r => r.type === trainActiveFilter);
+  const thisMonth = new Date().toISOString().slice(0, 7);
+
+  document.getElementById('train-stat-total').textContent = records.length;
+  document.getElementById('train-stat-attendees').textContent = records.reduce((sum, t) => sum + (t.attendees || 0), 0);
+  document.getElementById('train-stat-month').textContent = records.filter(t => t.date.startsWith(thisMonth)).length;
+  const certsExpiring = records.filter(t => t.certExpiry && new Date(t.certExpiry) < new Date(Date.now() + 90*24*60*60*1000) && new Date(t.certExpiry) > new Date()).length;
+  document.getElementById('train-stat-expiring').textContent = certsExpiring;
+
+  const list = document.getElementById('train-list');
+  const empty = document.getElementById('train-empty');
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+
+  list.innerHTML = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => `
+    <div class="card p-4 hover:bg-white/[0.03] transition">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs text-slate-500">${fmtDate(r.date)}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300">${TRAIN_TYPE_LABELS[r.type] || r.type}</span>
+            ${r.duration ? `<span class="text-[10px] text-slate-500">${r.duration}h</span>` : ''}
+            ${r.attendees ? `<span class="text-[10px] text-slate-500">${r.attendees} attendees</span>` : ''}
+          </div>
+          <h4 class="text-sm font-semibold text-white mb-1">${r.topic}</h4>
+          <div class="text-xs text-slate-400">Trainer: <span class="text-slate-300">${r.trainer || '—'}</span>
+            ${r.certExpiry ? ` | Cert expires: <span class="${new Date(r.certExpiry) < new Date(Date.now() + 90*24*60*60*1000) ? 'text-amber-400' : 'text-emerald-400'}">${fmtDate(r.certExpiry)}</span>` : ''}
+          </div>
+          ${r.notes ? `<p class="text-xs text-slate-500 mt-1 line-clamp-2">${r.notes}</p>` : ''}
+        </div>
+        <div class="flex gap-1 flex-shrink-0">
+          <button onclick="editTrain(${r.id})" class="text-slate-400 hover:text-blue-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deleteTrain(${r.id})" class="text-slate-400 hover:text-red-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openTrainModal(rec) {
+  document.getElementById('train-modal-title').textContent = rec ? 'Edit Training' : 'Add Training Record';
+  document.getElementById('train-edit-id').value = rec ? rec.id : '';
+  document.getElementById('train-type').value = rec ? rec.type : 'induction';
+  document.getElementById('train-date').value = rec ? rec.date : new Date().toISOString().slice(0, 10);
+  document.getElementById('train-topic').value = rec ? rec.topic : '';
+  document.getElementById('train-trainer').value = rec ? rec.trainer : '';
+  document.getElementById('train-attendees-count').value = rec ? rec.attendees : '';
+  document.getElementById('train-duration').value = rec ? rec.duration : '';
+  document.getElementById('train-cert-expiry').value = rec ? rec.certExpiry : '';
+  document.getElementById('train-notes').value = rec ? rec.notes : '';
+  document.getElementById('train-modal').classList.remove('hidden');
+}
+function closeTrainModal() { document.getElementById('train-modal').classList.add('hidden'); }
+function editTrain(id) { openTrainModal(getTrainRecords().find(r => r.id === id)); }
+function deleteTrain(id) {
+  if (!confirm('Delete this training record?')) return;
+  const list = getTrainRecords().filter(r => r.id !== id);
+  saveTrainRecords(list);
+  logActivity('delete_training', 'Deleted training #' + id);
+  renderTraining(); renderSafety(); showToast('Training record deleted');
+}
+function saveTraining() {
+  if (!checkCanEdit()) return;
+  const topic = document.getElementById('train-topic').value.trim();
+  if (!topic) { showToast('Topic is required', 'error'); return; }
+  const editId = document.getElementById('train-edit-id').value;
+  const data = {
+    type: document.getElementById('train-type').value,
+    date: document.getElementById('train-date').value,
+    topic,
+    trainer: document.getElementById('train-trainer').value.trim(),
+    attendees: parseInt(document.getElementById('train-attendees-count').value) || 0,
+    duration: parseFloat(document.getElementById('train-duration').value) || 0,
+    certExpiry: document.getElementById('train-cert-expiry').value,
+    notes: document.getElementById('train-notes').value.trim()
+  };
+  const list = getTrainRecords();
+  if (editId) {
+    const rec = list.find(r => r.id === parseInt(editId));
+    Object.assign(rec, data);
+    logActivity('edit_training', topic);
+  } else {
+    data.id = Date.now();
+    list.push(data);
+    logActivity('add_training', topic);
+  }
+  saveTrainRecords(list);
+  closeTrainModal(); renderTraining(); renderSafety();
+  showToast(editId ? 'Training updated' : 'Training recorded');
 }
 
 // ---- SITE WEATHER ----
@@ -5932,7 +6827,10 @@ function createBackup() {
     workProgress: localStorage.getItem('wte_wp'),
     incidents: localStorage.getItem('wte_incidents'),
     envRecords: localStorage.getItem('wte_env'),
-    copRecords: localStorage.getItem('wte_cop')
+    copRecords: localStorage.getItem('wte_cop'),
+    ptwRecords: localStorage.getItem('wte_ptw'),
+    inspRecords: localStorage.getItem('wte_inspections'),
+    trainRecords: localStorage.getItem('wte_training')
   };
   backups.unshift(backup);
   if (backups.length > 5) backups.length = 5;
@@ -5951,6 +6849,9 @@ function restoreBackup(id) {
   if (backup.incidents) localStorage.setItem('wte_incidents', backup.incidents);
   if (backup.envRecords) localStorage.setItem('wte_env', backup.envRecords);
   if (backup.copRecords) localStorage.setItem('wte_cop', backup.copRecords);
+  if (backup.ptwRecords) localStorage.setItem('wte_ptw', backup.ptwRecords);
+  if (backup.inspRecords) localStorage.setItem('wte_inspections', backup.inspRecords);
+  if (backup.trainRecords) localStorage.setItem('wte_training', backup.trainRecords);
   data = loadData();
   logActivity('restore', 'Restored backup from ' + new Date(backup.timestamp).toLocaleDateString());
   renderAll();
