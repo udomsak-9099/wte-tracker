@@ -3121,8 +3121,10 @@ function renderPhaseCard(p, i) {
 }
 
 function renderPhases() {
-  document.getElementById('phases-title').textContent = t('constructionPhases');
-  document.getElementById('phases-desc').textContent = t('trackPhases');
+  const ptEl = document.getElementById('phases-title');
+  const pdEl = document.getElementById('phases-desc');
+  if (ptEl) ptEl.textContent = t('constructionPhases');
+  if (pdEl) pdEl.textContent = t('trackPhases');
   let html = '';
   GROUP_ORDER.forEach(group => {
     const phases = data.phases.map((p, i) => ({ ...p, idx: i })).filter(p => p.group === group);
@@ -3168,23 +3170,25 @@ function savePhase() {
 
 // ---- TASKS ----
 function renderTasks() {
-  document.getElementById('tasks-title').textContent = t('taskManagement');
-  document.getElementById('tasks-desc').textContent = t('manageTasks');
-  document.getElementById('tasks-add-btn').textContent = t('addTask');
-  document.getElementById('filter-search').placeholder = t('searchTasks');
-  document.getElementById('tasks-empty').textContent = t('noTasksFound');
+  const ttEl = document.getElementById('tasks-title'); if (ttEl) ttEl.textContent = t('taskManagement');
+  const tdEl = document.getElementById('tasks-desc'); if (tdEl) tdEl.textContent = t('manageTasks');
+  const taEl = document.getElementById('tasks-add-btn'); if (taEl) taEl.textContent = t('addTask');
+  const fsEl = document.getElementById('filter-search'); if (fsEl) fsEl.placeholder = t('searchTasks');
+  const teEl = document.getElementById('tasks-empty'); if (teEl) teEl.textContent = t('noTasksFound');
   // Translate status filter options
   const statusSel = document.getElementById('filter-status');
-  const stVal = statusSel.value;
-  statusSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Pending">${tStatus('Pending')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Completed">${tStatus('Completed')}</option><option value="Delayed">${tStatus('Delayed')}</option>`;
-  statusSel.value = stVal;
+  if (statusSel) {
+    const stVal = statusSel.value;
+    statusSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Pending">${tStatus('Pending')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Completed">${tStatus('Completed')}</option><option value="Delayed">${tStatus('Delayed')}</option>`;
+    statusSel.value = stVal;
+  }
   // Translate table headers
-  document.getElementById('tasks-thead').innerHTML = `<tr><th>${t('task')}</th><th>${t('phase')}</th><th>${t('assignee')}</th><th>${t('start')}</th><th>${t('end')}</th><th>${t('status')}</th><th>${t('priority')}</th><th class="text-right">${t('actions')}</th></tr>`;
+  const thEl = document.getElementById('tasks-thead'); if (thEl) thEl.innerHTML = `<tr><th>${t('task')}</th><th>${t('phase')}</th><th>${t('assignee')}</th><th>${t('start')}</th><th>${t('end')}</th><th>${t('status')}</th><th>${t('priority')}</th><th class="text-right">${t('actions')}</th></tr>`;
 
-  const phaseF = document.getElementById('filter-phase').value;
-  const statusF = document.getElementById('filter-status').value;
-  const assignF = document.getElementById('filter-assignee').value;
-  const searchF = document.getElementById('filter-search').value.toLowerCase();
+  const phaseF = document.getElementById('filter-phase')?.value || '';
+  const statusF = document.getElementById('filter-status')?.value || '';
+  const assignF = document.getElementById('filter-assignee')?.value || '';
+  const searchF = (document.getElementById('filter-search')?.value || '').toLowerCase();
 
   let filtered = data.tasks.filter(t => {
     if (phaseF !== '' && t.phase !== parseInt(phaseF)) return false;
@@ -3196,8 +3200,9 @@ function renderTasks() {
 
   const body = document.getElementById('tasks-body');
   const empty = document.getElementById('tasks-empty');
-  if (filtered.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
+  if (!body) return;
+  if (filtered.length === 0) { body.innerHTML = ''; if (empty) empty.classList.remove('hidden'); return; }
+  if (empty) empty.classList.add('hidden');
 
   body.innerHTML = filtered.map(t => `<tr>
     <td class="text-sm text-white font-medium">${t.name}</td>
@@ -3265,25 +3270,29 @@ function saveTask() {
 
 // ---- ISSUES ----
 function renderIssues() {
-  document.getElementById('issues-title').textContent = t('issuesTracker');
-  document.getElementById('issues-desc').textContent = t('trackIssues');
-  document.getElementById('issues-add-btn').textContent = t('reportIssue');
-  document.getElementById('issues-empty').textContent = t('noIssues');
+  const itEl = document.getElementById('issues-title'); if (itEl) itEl.textContent = t('issuesTracker');
+  const idEl = document.getElementById('issues-desc'); if (idEl) idEl.textContent = t('trackIssues');
+  const iaEl = document.getElementById('issues-add-btn'); if (iaEl) iaEl.textContent = t('reportIssue');
+  const ieEl = document.getElementById('issues-empty'); if (ieEl) ieEl.textContent = t('noIssues');
   // Translate severity filter
   const sevSel = document.getElementById('filter-issue-severity');
-  const svVal = sevSel.value;
-  sevSel.innerHTML = `<option value="">${t('allSeverity')}</option><option value="High">${tStatus('High')}</option><option value="Medium">${tStatus('Medium')}</option><option value="Low">${tStatus('Low')}</option>`;
-  sevSel.value = svVal;
+  if (sevSel) {
+    const svVal = sevSel.value;
+    sevSel.innerHTML = `<option value="">${t('allSeverity')}</option><option value="High">${tStatus('High')}</option><option value="Medium">${tStatus('Medium')}</option><option value="Low">${tStatus('Low')}</option>`;
+    sevSel.value = svVal;
+  }
   // Translate status filter
   const issSel = document.getElementById('filter-issue-status');
-  const isVal = issSel.value;
-  issSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Open">${tStatus('Open')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Resolved">${tStatus('Resolved')}</option>`;
-  issSel.value = isVal;
+  if (issSel) {
+    const isVal = issSel.value;
+    issSel.innerHTML = `<option value="">${t('allStatus')}</option><option value="Open">${tStatus('Open')}</option><option value="In Progress">${tStatus('In Progress')}</option><option value="Resolved">${tStatus('Resolved')}</option>`;
+    issSel.value = isVal;
+  }
   // Translate table headers
-  document.getElementById('issues-thead').innerHTML = `<tr><th>${t('issues')}</th><th>${t('phase')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('assignedTo')}</th><th>${t('reported')}</th><th class="text-right">${t('actions')}</th></tr>`;
+  const ihEl = document.getElementById('issues-thead'); if (ihEl) ihEl.innerHTML = `<tr><th>${t('issues')}</th><th>${t('phase')}</th><th>${t('severity')}</th><th>${t('status')}</th><th>${t('assignedTo')}</th><th>${t('reported')}</th><th class="text-right">${t('actions')}</th></tr>`;
 
-  const sevF = document.getElementById('filter-issue-severity').value;
-  const staF = document.getElementById('filter-issue-status').value;
+  const sevF = document.getElementById('filter-issue-severity')?.value || '';
+  const staF = document.getElementById('filter-issue-status')?.value || '';
   let filtered = data.issues.filter(i => {
     if (sevF && i.severity !== sevF) return false;
     if (staF && i.status !== staF) return false;
@@ -3291,8 +3300,9 @@ function renderIssues() {
   });
   const body = document.getElementById('issues-body');
   const empty = document.getElementById('issues-empty');
-  if (filtered.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
+  if (!body) return;
+  if (filtered.length === 0) { body.innerHTML = ''; if (empty) empty.classList.remove('hidden'); return; }
+  if (empty) empty.classList.add('hidden');
   body.innerHTML = filtered.map(i => `<tr>
     <td><p class="text-sm text-white font-medium">${i.title}</p><p class="text-xs text-slate-500 mt-0.5">${i.desc ? i.desc.substring(0,60) + (i.desc.length > 60 ? '...' : '') : ''}</p></td>
     <td class="text-xs text-slate-400">${phaseName(i.phase).split('&')[0] || '—'}</td>
