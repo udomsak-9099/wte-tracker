@@ -1721,36 +1721,104 @@ tailwind.config = {
 
   <!-- ===== TAB 1: MONITORING ===== -->
   <div id="env-section-monitoring">
-    <!-- Env Stats -->
-    <div class="grid grid-cols-4 gap-4 mb-6">
-      <div class="stat-card green"><p class="text-xs text-slate-400 mb-1" id="lbl-air-status">Air Quality</p><p class="text-lg font-bold text-white" id="env-air">Compliant</p></div>
-      <div class="stat-card blue"><p class="text-xs text-slate-400 mb-1" id="lbl-water-status">Water Quality</p><p class="text-lg font-bold text-white" id="env-water">Compliant</p></div>
-      <div class="stat-card amber"><p class="text-xs text-slate-400 mb-1" id="lbl-noise-status">Noise Level</p><p class="text-lg font-bold text-white" id="env-noise">Compliant</p></div>
-      <div class="stat-card red"><p class="text-xs text-slate-400 mb-1" id="lbl-waste-status">Waste Mgmt</p><p class="text-lg font-bold text-white" id="env-waste">Compliant</p></div>
-    </div>
-    <!-- CoP Compliance Areas -->
-    <div class="card p-5 mb-6">
-      <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="env-cop-title">CoP Compliance Areas</h3>
-      <div class="grid grid-cols-3 gap-2" id="env-cop-grid">
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ambient Air Quality</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Gaseous Emissions</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Noise Monitoring</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Drainage & Flood</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Water & Wastewater</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Solid Waste</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Ash Handling</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-xs text-white">Transportation</span></div>
-        <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.02]"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-xs text-white">Green Area</span></div>
+    <!-- KPI Row 1: Overall Status -->
+    <div class="grid grid-cols-6 gap-3 mb-4">
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-air-status">Stack Emissions</p><p class="text-lg font-bold text-emerald-400" id="env-air">Compliant</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">CEMS</p><p class="text-lg font-bold text-emerald-400" id="env-cems">Online</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-water-status">Water / ZLD</p><p class="text-lg font-bold text-blue-400" id="env-water">Compliant</p></div>
+      </div>
+      <div class="stat-card green relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-emerald-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-noise-status">Noise</p><p class="text-lg font-bold text-emerald-400" id="env-noise">Compliant</p></div>
+      </div>
+      <div class="stat-card amber relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-amber-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1" id="lbl-waste-status">Ash / Waste</p><p class="text-lg font-bold text-amber-400" id="env-waste">Compliant</p></div>
+      </div>
+      <div class="stat-card blue relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-16 h-16 rounded-full bg-blue-400/10"></div>
+        <div class="relative"><p class="text-[10px] text-slate-400 uppercase tracking-wider font-medium mb-1">Total Records</p><p class="text-lg font-bold text-blue-400" id="env-total-records">0</p></div>
       </div>
     </div>
-    <!-- Env Records Table -->
-    <div class="card overflow-hidden">
-      <table>
-        <thead id="env-thead"><tr><th>Date</th><th>Category</th><th>Parameter</th><th>Value</th><th>Limit</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
-        <tbody id="env-body"></tbody>
-      </table>
-      <div id="env-empty" class="hidden p-12 text-center text-slate-500 text-sm">No environmental records yet.</div>
+
+    <!-- Latest Readings Dashboard -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <!-- Stack Emissions Card -->
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500/20 to-orange-500/20 flex items-center justify-center">
+            <svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
+          </div>
+          <h3 class="text-xs font-bold text-white uppercase tracking-wider">Stack Emissions</h3>
+        </div>
+        <div id="env-stack-readings" class="space-y-1.5">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">TSP</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">SO2</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">NOx</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">HCl</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">CO</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Dioxin/Furan</span><span class="text-emerald-400">—</span></div>
+        </div>
+      </div>
+      <!-- Water Quality Card -->
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+          </div>
+          <h3 class="text-xs font-bold text-white uppercase tracking-wider">Water Quality</h3>
+        </div>
+        <div id="env-water-readings" class="space-y-1.5">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">pH</span><span class="text-blue-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">BOD</span><span class="text-blue-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">COD</span><span class="text-blue-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">SS</span><span class="text-blue-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">ZLD System</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Temperature</span><span class="text-blue-400">—</span></div>
+        </div>
+      </div>
+      <!-- Ambient & Noise Card -->
+      <div class="card p-4">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-xs font-bold text-white uppercase tracking-wider">Ambient & Noise</h3>
+        </div>
+        <div id="env-ambient-readings" class="space-y-1.5">
+          <div class="flex justify-between text-xs"><span class="text-slate-400">PM10</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">PM2.5</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">SO2 (ambient)</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">NO2 (ambient)</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Noise (Day)</span><span class="text-emerald-400">—</span></div>
+          <div class="flex justify-between text-xs"><span class="text-slate-400">Noise (Night)</span><span class="text-emerald-400">—</span></div>
+        </div>
+      </div>
     </div>
+
+    <!-- Category Filter -->
+    <div class="flex gap-2 mb-5 flex-wrap">
+      <button onclick="filterEnvCat('all')" id="env-filter-all" class="px-4 py-2 rounded-xl text-xs font-medium transition-all bg-emerald-600 text-white">All</button>
+      <button onclick="filterEnvCat('Stack Emissions')" id="env-filter-stack" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Stack Emissions</button>
+      <button onclick="filterEnvCat('CEMS')" id="env-filter-cems" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">CEMS</button>
+      <button onclick="filterEnvCat('Ambient Air')" id="env-filter-ambient" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Ambient Air</button>
+      <button onclick="filterEnvCat('Water Quality')" id="env-filter-water" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Water Quality</button>
+      <button onclick="filterEnvCat('Noise')" id="env-filter-noise" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Noise</button>
+      <button onclick="filterEnvCat('Ash / Waste')" id="env-filter-ash" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Ash / Waste</button>
+      <button onclick="filterEnvCat('Odor')" id="env-filter-odor" class="px-4 py-2 rounded-xl text-xs font-medium transition-all text-slate-400 hover:text-white">Odor</button>
+    </div>
+
+    <!-- Env Records List -->
+    <div id="env-records-list" class="space-y-3"></div>
+    <div id="env-empty" class="hidden card p-12 text-center text-slate-500 text-sm">No environmental records yet.</div>
   </div>
 
   <!-- ===== TAB 2: CoP / ESA ===== -->
@@ -1798,25 +1866,37 @@ tailwind.config = {
 <!-- Env Record Modal -->
 <div id="env-modal" class="fixed inset-0 z-50 hidden">
   <div class="modal-overlay absolute inset-0" onclick="closeEnvModal()"></div>
-  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg glass rounded-2xl p-6 z-10">
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-2xl glass rounded-2xl p-6 z-10 max-h-[90vh] overflow-y-auto">
     <h3 class="text-lg font-bold text-white mb-5" id="env-modal-title">Add Environmental Record</h3>
     <input type="hidden" id="env-edit-id">
     <div class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div><label class="text-xs text-slate-400 block mb-1">Date</label><input type="date" id="env-date" class="w-full"></div>
-        <div><label class="text-xs text-slate-400 block mb-1">Category</label>
-          <select id="env-category" class="w-full"><option>Air Quality</option><option>Water Quality</option><option>Noise</option><option>Waste Management</option><option>Emissions</option><option>Dust</option><option>Wastewater</option></select>
+        <div><label class="text-xs text-slate-400 block mb-1">Category *</label>
+          <select id="env-category" class="w-full">
+            <option>Stack Emissions</option>
+            <option>CEMS</option>
+            <option>Ambient Air</option>
+            <option>Water Quality</option>
+            <option>Noise</option>
+            <option>Ash / Waste</option>
+            <option>Odor</option>
+          </select>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-slate-400 block mb-1">Parameter</label><input type="text" id="env-param" class="w-full" placeholder="e.g. PM2.5, BOD, dB(A)"></div>
-        <div><label class="text-xs text-slate-400 block mb-1">Measured Value</label><input type="text" id="env-value" class="w-full" placeholder="e.g. 45 ug/m3"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Parameter *</label><input type="text" id="env-param" class="w-full" placeholder="e.g. TSP, SO2, BOD, dB(A)"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Measured Value *</label><input type="text" id="env-value" class="w-full" placeholder="e.g. 85 mg/Nm³"></div>
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div><label class="text-xs text-slate-400 block mb-1">Standard Limit</label><input type="text" id="env-limit" class="w-full" placeholder="e.g. 50 ug/m3"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Standard / Limit</label><input type="text" id="env-limit" class="w-full" placeholder="e.g. 120 mg/Nm³"></div>
         <div><label class="text-xs text-slate-400 block mb-1">Status</label>
           <select id="env-status" class="w-full"><option>Compliant</option><option>Warning</option><option>Exceeded</option></select>
         </div>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="text-xs text-slate-400 block mb-1">Monitoring Point / Location</label><input type="text" id="env-location" class="w-full" placeholder="e.g. Stack #1, Boundary N, ZLD outlet"></div>
+        <div><label class="text-xs text-slate-400 block mb-1">Method / Standard</label><input type="text" id="env-method" class="w-full" placeholder="e.g. US EPA Method 5, CEMS"></div>
       </div>
       <div><label class="text-xs text-slate-400 block mb-1">Notes</label><textarea id="env-notes" class="w-full" rows="2"></textarea></div>
     </div>
@@ -5495,7 +5575,57 @@ function saveCopRecord() {
 }
 
 // ---- ENVIRONMENT ----
-function getEnvRecords() { return JSON.parse(localStorage.getItem('wte_env') || '[]'); }
+const DEFAULT_ENV_RECORDS = [
+  // Stack Emissions - ค่ามลพิษจากปล่อง (ประกาศกระทรวงอุตสาหกรรม)
+  { id: 1, date: '2026-04-08', category: 'Stack Emissions', param: 'TSP (Total Suspended Particulates)', value: '85 mg/Nm³', limit: '120 mg/Nm³ (ประกาศ กกพ.)', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 5', notes: 'Semi-annual stack test by accredited lab' },
+  { id: 2, date: '2026-04-08', category: 'Stack Emissions', param: 'SO2 (Sulfur Dioxide)', value: '32 ppm', limit: '60 ppm (ประกาศ กกพ.)', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 6C', notes: '' },
+  { id: 3, date: '2026-04-08', category: 'Stack Emissions', param: 'NOx (Nitrogen Oxides)', value: '145 ppm', limit: '200 ppm (ประกาศ กกพ.)', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 7E', notes: 'SNCR system operational' },
+  { id: 4, date: '2026-04-08', category: 'Stack Emissions', param: 'HCl (Hydrogen Chloride)', value: '18 ppm', limit: '30 ppm (ประกาศ กกพ.)', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 26A', notes: 'Dry scrubber + activated carbon injection' },
+  { id: 5, date: '2026-04-08', category: 'Stack Emissions', param: 'CO (Carbon Monoxide)', value: '45 ppm', limit: '100 ppm', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 10', notes: '' },
+  { id: 6, date: '2026-04-08', category: 'Stack Emissions', param: 'Dioxin/Furan (PCDD/PCDF)', value: '0.05 ng-TEQ/Nm³', limit: '0.1 ng-TEQ/Nm³ (EU standard)', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 23', notes: 'Annual test - combustion temp >850°C maintained' },
+  { id: 7, date: '2026-04-08', category: 'Stack Emissions', param: 'Mercury (Hg)', value: '0.02 mg/Nm³', limit: '0.05 mg/Nm³', status: 'Compliant', location: 'Stack #1', method: 'US EPA Method 29', notes: 'Activated carbon adsorption' },
+
+  // CEMS - ระบบตรวจวัดอย่างต่อเนื่อง
+  { id: 8, date: '2026-04-10', category: 'CEMS', param: 'TSP (Real-time)', value: '78 mg/Nm³', limit: '120 mg/Nm³', status: 'Compliant', location: 'Stack #1 CEMS', method: 'Continuous', notes: '24-hr average. CEMS calibrated Mar 2026.' },
+  { id: 9, date: '2026-04-10', category: 'CEMS', param: 'SO2 (Real-time)', value: '28 ppm', limit: '60 ppm', status: 'Compliant', location: 'Stack #1 CEMS', method: 'Continuous', notes: '24-hr average' },
+  { id: 10, date: '2026-04-10', category: 'CEMS', param: 'NOx (Real-time)', value: '138 ppm', limit: '200 ppm', status: 'Compliant', location: 'Stack #1 CEMS', method: 'Continuous', notes: '24-hr average' },
+  { id: 11, date: '2026-04-10', category: 'CEMS', param: 'CO (Real-time)', value: '42 ppm', limit: '100 ppm', status: 'Compliant', location: 'Stack #1 CEMS', method: 'Continuous', notes: '24-hr average' },
+  { id: 12, date: '2026-04-10', category: 'CEMS', param: 'HCl (Real-time)', value: '15 ppm', limit: '30 ppm', status: 'Compliant', location: 'Stack #1 CEMS', method: 'Continuous', notes: '24-hr average' },
+  { id: 13, date: '2026-04-10', category: 'CEMS', param: 'Combustion Temperature', value: '920°C', limit: '>850°C (min)', status: 'Compliant', location: 'Furnace', method: 'Continuous', notes: 'Must maintain >850°C for dioxin destruction' },
+
+  // Ambient Air - คุณภาพอากาศในบรรยากาศ (ค่ามาตรฐาน กรมควบคุมมลพิษ)
+  { id: 14, date: '2026-04-09', category: 'Ambient Air', param: 'PM10', value: '65 µg/m³', limit: '120 µg/m³ (24-hr avg, PCD)', status: 'Compliant', location: 'Boundary North', method: 'Gravimetric Hi-Vol', notes: 'Quarterly ambient monitoring' },
+  { id: 15, date: '2026-04-09', category: 'Ambient Air', param: 'PM2.5', value: '28 µg/m³', limit: '50 µg/m³ (24-hr avg, PCD)', status: 'Compliant', location: 'Boundary North', method: 'Gravimetric', notes: '' },
+  { id: 16, date: '2026-04-09', category: 'Ambient Air', param: 'SO2 (Ambient)', value: '0.015 ppm', limit: '0.12 ppm (24-hr avg)', status: 'Compliant', location: 'Boundary East', method: 'UV Fluorescence', notes: '' },
+  { id: 17, date: '2026-04-09', category: 'Ambient Air', param: 'NO2 (Ambient)', value: '0.022 ppm', limit: '0.17 ppm (1-hr avg)', status: 'Compliant', location: 'Boundary East', method: 'Chemiluminescence', notes: '' },
+
+  // Water Quality - คุณภาพน้ำ (มาตรฐานน้ำทิ้ง กรมโรงงานอุตสาหกรรม)
+  { id: 18, date: '2026-04-07', category: 'Water Quality', param: 'pH', value: '7.2', limit: '5.5 - 9.0', status: 'Compliant', location: 'ZLD Outlet', method: 'pH Meter', notes: 'Zero Liquid Discharge system' },
+  { id: 19, date: '2026-04-07', category: 'Water Quality', param: 'BOD', value: '12 mg/L', limit: '20 mg/L (DIW std)', status: 'Compliant', location: 'ZLD Outlet', method: 'Standard Method', notes: '' },
+  { id: 20, date: '2026-04-07', category: 'Water Quality', param: 'COD', value: '85 mg/L', limit: '120 mg/L (DIW std)', status: 'Compliant', location: 'ZLD Outlet', method: 'Standard Method', notes: '' },
+  { id: 21, date: '2026-04-07', category: 'Water Quality', param: 'SS (Suspended Solids)', value: '22 mg/L', limit: '50 mg/L', status: 'Compliant', location: 'ZLD Outlet', method: 'Gravimetric', notes: '' },
+  { id: 22, date: '2026-04-07', category: 'Water Quality', param: 'Temperature', value: '32°C', limit: '40°C (max)', status: 'Compliant', location: 'Cooling Water Outlet', method: 'Thermometer', notes: 'Cooling tower operating normally' },
+  { id: 23, date: '2026-04-07', category: 'Water Quality', param: 'Heavy Metals (Pb)', value: '0.008 mg/L', limit: '0.2 mg/L', status: 'Compliant', location: 'ZLD Outlet', method: 'AAS', notes: '' },
+
+  // Noise - เสียง (ประกาศคณะกรรมการสิ่งแวดล้อมแห่งชาติ)
+  { id: 24, date: '2026-04-09', category: 'Noise', param: 'Leq 24hr (Daytime)', value: '68.5 dB(A)', limit: '75 dB(A) (boundary, day)', status: 'Compliant', location: 'Boundary North (nearest receptor)', method: 'Sound Level Meter Type 1', notes: 'Main noise sources: turbine hall, cooling tower' },
+  { id: 25, date: '2026-04-09', category: 'Noise', param: 'Leq 24hr (Nighttime)', value: '62.3 dB(A)', limit: '70 dB(A) (boundary, night)', status: 'Compliant', location: 'Boundary North (nearest receptor)', method: 'Sound Level Meter Type 1', notes: '' },
+
+  // Ash / Waste - เถ้าและกากของเสีย (กรมโรงงานอุตสาหกรรม)
+  { id: 26, date: '2026-04-10', category: 'Ash / Waste', param: 'Bottom Ash Generated', value: '45 tons/day', limit: 'N/A (tracking)', status: 'Compliant', location: 'Ash Pit', method: 'Weighbridge', notes: 'Sent to cement plant for reuse (100% utilization)' },
+  { id: 27, date: '2026-04-10', category: 'Ash / Waste', param: 'Fly Ash Generated', value: '12 tons/day', limit: 'N/A (tracking)', status: 'Warning', location: 'Baghouse', method: 'Weighbridge', notes: 'TCLP test: non-hazardous. Stored in enclosed silo. Disposal via licensed contractor.' },
+  { id: 28, date: '2026-04-05', category: 'Ash / Waste', param: 'Fly Ash TCLP (Lead)', value: '2.8 mg/L', limit: '5.0 mg/L (TCLP limit)', status: 'Compliant', location: 'Lab Analysis', method: 'US EPA 1311', notes: 'Quarterly TCLP testing - classified as non-hazardous waste' },
+
+  // Odor - กลิ่น
+  { id: 29, date: '2026-04-09', category: 'Odor', param: 'H2S (Hydrogen Sulfide)', value: '0.02 ppm', limit: '0.06 ppm (boundary)', status: 'Compliant', location: 'Boundary South (community side)', method: 'Jerome Meter', notes: 'Waste bunker under negative pressure' },
+  { id: 30, date: '2026-04-09', category: 'Odor', param: 'NH3 (Ammonia)', value: '0.5 ppm', limit: '2.0 ppm (boundary)', status: 'Compliant', location: 'Boundary South', method: 'Detection Tube', notes: 'SNCR ammonia slip monitoring' },
+];
+
+function getEnvRecords() {
+  const stored = localStorage.getItem('wte_env');
+  if (!stored || stored === '[]') { localStorage.setItem('wte_env', JSON.stringify(DEFAULT_ENV_RECORDS)); return [...DEFAULT_ENV_RECORDS]; }
+  return JSON.parse(stored);
+}
 function saveEnvRecords(list) { localStorage.setItem('wte_env', JSON.stringify(list)); }
 
 let activeEnvTab = 'monitoring';
@@ -5528,60 +5658,130 @@ function switchEnvTab(tab) {
   }
 }
 
+let envActiveFilter = 'all';
+
+function filterEnvCat(cat) {
+  envActiveFilter = cat;
+  document.querySelectorAll('[id^="env-filter-"]').forEach(btn => {
+    btn.classList.remove('bg-emerald-600', 'text-white');
+    btn.classList.add('text-slate-400');
+  });
+  const mapping = { 'all':'all', 'Stack Emissions':'stack', 'CEMS':'cems', 'Ambient Air':'ambient', 'Water Quality':'water', 'Noise':'noise', 'Ash / Waste':'ash', 'Odor':'odor' };
+  const activeBtn = document.getElementById('env-filter-' + (mapping[cat] || 'all'));
+  if (activeBtn) { activeBtn.classList.add('bg-emerald-600', 'text-white'); activeBtn.classList.remove('text-slate-400'); }
+  renderEnvRecordsList();
+}
+
 function renderEnvironment() {
   document.getElementById('env-title').textContent = t('envTitle');
   document.getElementById('env-desc').textContent = t('envDesc');
-  document.getElementById('env-add-btn').textContent = t('envAddRecord');
-  document.getElementById('env-empty').textContent = t('envEmpty');
   // Tab labels
   const monText = document.getElementById('env-tab-monitoring-text');
   const copText = document.getElementById('env-tab-cop-text');
   if (monText) monText.textContent = t('envMonitoring') || 'Monitoring';
   if (copText) copText.textContent = t('envCopEsa') || 'CoP / ESA';
-  // Render active tab
   if (activeEnvTab === 'cop') { switchEnvTab('cop'); }
-  document.getElementById('env-cop-title').textContent = t('envCopTitle');
-  document.getElementById('lbl-air-status').textContent = t('envAir');
-  document.getElementById('lbl-water-status').textContent = t('envWater');
-  document.getElementById('lbl-noise-status').textContent = t('envNoise');
-  document.getElementById('lbl-waste-status').textContent = t('envWasteMgmt');
-  document.getElementById('env-thead').innerHTML = `<tr><th>${t('safetyDate')}</th><th>${t('envCategory')}</th><th>${t('envParameter')}</th><th>${t('envValue')}</th><th>${t('envLimit')}</th><th>${t('status')}</th><th class="text-right">${t('actions')}</th></tr>`;
 
   const records = getEnvRecords();
-  // Update stat cards based on latest records
-  const categories = ['Air Quality', 'Water Quality', 'Noise', 'Waste Management'];
-  const statIds = ['env-air', 'env-water', 'env-noise', 'env-waste'];
-  categories.forEach((cat, idx) => {
-    const latest = records.filter(r => r.category === cat).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-    const el = document.getElementById(statIds[idx]);
-    if (latest) {
-      el.textContent = latest.status === 'Compliant' ? t('envCompliant') : latest.status === 'Warning' ? t('envWarning') : t('envExceeded');
-      el.className = 'text-lg font-bold ' + (latest.status === 'Compliant' ? 'text-emerald-400' : latest.status === 'Warning' ? 'text-amber-400' : 'text-red-400');
-    } else {
-      el.textContent = t('envCompliant');
-      el.className = 'text-lg font-bold text-white';
-    }
+  document.getElementById('env-total-records').textContent = records.length;
+
+  // Status per category
+  const catStatusMap = { 'Stack Emissions': 'env-air', 'CEMS': 'env-cems', 'Water Quality': 'env-water', 'Noise': 'env-noise', 'Ash / Waste': 'env-waste' };
+  Object.entries(catStatusMap).forEach(([cat, elId]) => {
+    const catRecords = records.filter(r => r.category === cat);
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const hasExceeded = catRecords.some(r => r.status === 'Exceeded');
+    const hasWarning = catRecords.some(r => r.status === 'Warning');
+    if (hasExceeded) { el.textContent = 'Exceeded'; el.className = 'text-lg font-bold text-red-400'; }
+    else if (hasWarning) { el.textContent = 'Warning'; el.className = 'text-lg font-bold text-amber-400'; }
+    else if (catRecords.length > 0) { el.textContent = cat === 'CEMS' ? 'Online' : 'Compliant'; el.className = 'text-lg font-bold text-emerald-400'; }
+    else { el.textContent = '—'; el.className = 'text-lg font-bold text-slate-500'; }
   });
 
-  const body = document.getElementById('env-body');
+  // Latest readings dashboard
+  updateEnvDashboard(records);
+
+  // Records list
+  renderEnvRecordsList();
+}
+
+function updateEnvDashboard(records) {
+  // Stack readings
+  const stackParams = ['TSP', 'SO2', 'NOx', 'HCl', 'CO', 'Dioxin/Furan'];
+  const stackEl = document.getElementById('env-stack-readings');
+  if (stackEl) {
+    stackEl.innerHTML = stackParams.map(p => {
+      const rec = records.filter(r => r.category === 'Stack Emissions' && r.param.includes(p)).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      const color = rec ? (rec.status === 'Compliant' ? 'text-emerald-400' : rec.status === 'Warning' ? 'text-amber-400' : 'text-red-400') : 'text-slate-500';
+      return `<div class="flex justify-between text-xs"><span class="text-slate-400">${p}</span><span class="${color}">${rec ? rec.value : '—'}</span></div>`;
+    }).join('');
+  }
+  // Water readings
+  const waterParams = ['pH', 'BOD', 'COD', 'SS', 'ZLD', 'Temperature'];
+  const waterEl = document.getElementById('env-water-readings');
+  if (waterEl) {
+    waterEl.innerHTML = waterParams.map(p => {
+      const rec = records.filter(r => r.category === 'Water Quality' && r.param.includes(p)).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      const color = rec ? (rec.status === 'Compliant' ? 'text-blue-400' : rec.status === 'Warning' ? 'text-amber-400' : 'text-red-400') : 'text-slate-500';
+      return `<div class="flex justify-between text-xs"><span class="text-slate-400">${p}</span><span class="${color}">${rec ? rec.value : '—'}</span></div>`;
+    }).join('');
+  }
+  // Ambient & Noise readings
+  const ambientParams = [{ label: 'PM10', cat: 'Ambient Air' }, { label: 'PM2.5', cat: 'Ambient Air' }, { label: 'SO2 (ambient)', cat: 'Ambient Air' }, { label: 'NO2 (ambient)', cat: 'Ambient Air' }, { label: 'Noise (Day)', cat: 'Noise', match: 'Daytime' }, { label: 'Noise (Night)', cat: 'Noise', match: 'Nighttime' }];
+  const ambientEl = document.getElementById('env-ambient-readings');
+  if (ambientEl) {
+    ambientEl.innerHTML = ambientParams.map(p => {
+      const rec = records.filter(r => r.category === p.cat && r.param.includes(p.match || p.label)).sort((a, b) => new Date(b.date) - new Date(a.date))[0];
+      const color = rec ? (rec.status === 'Compliant' ? 'text-emerald-400' : rec.status === 'Warning' ? 'text-amber-400' : 'text-red-400') : 'text-slate-500';
+      return `<div class="flex justify-between text-xs"><span class="text-slate-400">${p.label}</span><span class="${color}">${rec ? rec.value : '—'}</span></div>`;
+    }).join('');
+  }
+}
+
+function renderEnvRecordsList() {
+  const records = getEnvRecords();
+  const filtered = envActiveFilter === 'all' ? records : records.filter(r => r.category === envActiveFilter);
+  const list = document.getElementById('env-records-list');
   const empty = document.getElementById('env-empty');
-  if (records.length === 0) { body.innerHTML = ''; empty.classList.remove('hidden'); return; }
+  if (filtered.length === 0) { list.innerHTML = ''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
 
-  body.innerHTML = records.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
-    const stClass = r.status === 'Compliant' ? 'badge-green' : r.status === 'Warning' ? 'badge-amber' : 'badge-red';
-    return `<tr>
-      <td class="text-xs text-slate-400">${fmtDate(r.date)}</td>
-      <td class="text-sm text-white">${r.category}</td>
-      <td class="text-sm">${r.param || '—'}</td>
-      <td class="text-sm font-medium text-white">${r.value || '—'}</td>
-      <td class="text-xs text-slate-400">${r.limit || '—'}</td>
-      <td><span class="badge ${stClass}">${r.status}</span></td>
-      <td class="text-right">
-        <button onclick="editEnvRecord(${r.id})" class="text-slate-400 hover:text-blue-400 transition mr-2"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
-        <button onclick="deleteEnvRecord(${r.id})" class="text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-      </td>
-    </tr>`;
+  const catColors = {
+    'Stack Emissions': 'from-red-500 to-orange-500', 'CEMS': 'from-cyan-500 to-blue-500',
+    'Ambient Air': 'from-emerald-500 to-teal-500', 'Water Quality': 'from-blue-500 to-indigo-500',
+    'Noise': 'from-amber-500 to-yellow-500', 'Ash / Waste': 'from-gray-500 to-slate-500', 'Odor': 'from-purple-500 to-pink-500'
+  };
+
+  list.innerHTML = filtered.sort((a, b) => new Date(b.date) - new Date(a.date)).map(r => {
+    const stBadge = r.status === 'Compliant' ? 'badge-green' : r.status === 'Warning' ? 'badge-amber' : 'badge-red';
+    const gradient = catColors[r.category] || 'from-gray-500 to-gray-600';
+    return `<div class="card p-4 hover:bg-white/[0.03] transition">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 mt-0.5">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs text-slate-500">${fmtDate(r.date)}</span>
+            <span class="badge ${stBadge}">${r.status}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.05] text-slate-400">${r.category}</span>
+          </div>
+          <h4 class="text-sm font-semibold text-white mb-1">${r.param}</h4>
+          <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-400">
+            <span>Value: <span class="text-white font-medium">${r.value}</span></span>
+            <span>Limit: <span class="text-slate-300">${r.limit || '—'}</span></span>
+            ${r.location ? `<span>Point: <span class="text-slate-300">${r.location}</span></span>` : ''}
+            ${r.method ? `<span>Method: <span class="text-slate-300">${r.method}</span></span>` : ''}
+          </div>
+          ${r.notes ? `<p class="text-xs text-slate-500 mt-1">${r.notes}</p>` : ''}
+        </div>
+        <div class="flex gap-1 flex-shrink-0">
+          <button onclick="editEnvRecord(${r.id})" class="text-slate-400 hover:text-blue-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>
+          <button onclick="deleteEnvRecord(${r.id})" class="text-slate-400 hover:text-red-400 transition p-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
+        </div>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -5589,11 +5789,13 @@ function openEnvModal(rec) {
   document.getElementById('env-modal-title').textContent = rec ? t('envEditRecord') : t('envAddRecord');
   document.getElementById('env-edit-id').value = rec ? rec.id : '';
   document.getElementById('env-date').value = rec ? rec.date : new Date().toISOString().slice(0, 10);
-  document.getElementById('env-category').value = rec ? rec.category : 'Air Quality';
+  document.getElementById('env-category').value = rec ? rec.category : 'Stack Emissions';
   document.getElementById('env-param').value = rec ? rec.param : '';
   document.getElementById('env-value').value = rec ? rec.value : '';
   document.getElementById('env-limit').value = rec ? rec.limit : '';
   document.getElementById('env-status').value = rec ? rec.status : 'Compliant';
+  document.getElementById('env-location').value = rec ? (rec.location || '') : '';
+  document.getElementById('env-method').value = rec ? (rec.method || '') : '';
   document.getElementById('env-notes').value = rec ? rec.notes : '';
   document.getElementById('env-modal').classList.remove('hidden');
 }
@@ -5615,6 +5817,8 @@ function saveEnvRecord() {
     value: document.getElementById('env-value').value.trim(),
     limit: document.getElementById('env-limit').value.trim(),
     status: document.getElementById('env-status').value,
+    location: document.getElementById('env-location').value.trim(),
+    method: document.getElementById('env-method').value.trim(),
     notes: document.getElementById('env-notes').value.trim()
   };
   const list = getEnvRecords();
