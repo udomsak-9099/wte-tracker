@@ -3520,7 +3520,7 @@ function renderSCurve() {
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: window.innerWidth < 640 ? 1.4 : 2.5,
-      layout: { padding: { top: 30, bottom: 8, left: 4, right: 4 } },
+      layout: { padding: { top: 44, bottom: 8, left: 4, right: 4 } },
       interaction: { mode: 'index', intersect: false },
       plugins: {
         legend: { display: false },
@@ -3556,89 +3556,53 @@ function renderSCurve() {
         var dpr = window.devicePixelRatio || 1;
         c.save();
 
-        // ── Draw a single vertical annotation with a floating badge ──
-        function drawLine(idx, color, opacity) {
+        // ── Draw vertical line + label ABOVE the chart area ──
+        function drawAnnotation(idx, color, label, sub) {
           var px = xAxis.getPixelForValue(idx);
+
+          // Vertical dashed line — full height
           c.strokeStyle = color;
-          c.globalAlpha = opacity || 0.35;
+          c.globalAlpha = 0.25;
           c.lineWidth = 1;
-          c.setLineDash([3, 3]);
+          c.setLineDash([3, 4]);
           c.beginPath();
           c.moveTo(px, yAxis.top);
           c.lineTo(px, yAxis.bottom);
           c.stroke();
           c.setLineDash([]);
           c.globalAlpha = 1;
-        }
 
-        function drawBadge(idx, color, label, sub, yPct) {
-          var px = xAxis.getPixelForValue(idx);
-          var chartH = yAxis.bottom - yAxis.top;
-          var by = yAxis.top + chartH * yPct;
-
-          var f1 = 'bold 8px Inter,system-ui,sans-serif';
-          var f2 = '7px Inter,system-ui,sans-serif';
-          c.font = f1; var tw1 = c.measureText(label).width;
-          c.font = f2; var tw2 = c.measureText(sub).width;
-          var bw = Math.max(tw1, tw2) + 12;
-          var bh = 26;
-
-          // Position badge: prefer right of line, flip if near right edge
-          var lx = (px + bw + 8 > xAxis.right) ? px - bw - 6 : px + 6;
-          var ly = by - bh / 2;
-          // Clamp vertically
-          if (ly < yAxis.top) ly = yAxis.top + 2;
-          if (ly + bh > yAxis.bottom) ly = yAxis.bottom - bh - 2;
-
-          // Rounded rect background
-          var r = 4;
+          // Small triangle pointer at top of line
           c.fillStyle = color;
-          c.globalAlpha = 0.1;
+          c.globalAlpha = 0.5;
           c.beginPath();
-          c.moveTo(lx+r, ly); c.lineTo(lx+bw-r, ly); c.quadraticCurveTo(lx+bw, ly, lx+bw, ly+r);
-          c.lineTo(lx+bw, ly+bh-r); c.quadraticCurveTo(lx+bw, ly+bh, lx+bw-r, ly+bh);
-          c.lineTo(lx+r, ly+bh); c.quadraticCurveTo(lx, ly+bh, lx, ly+bh-r);
-          c.lineTo(lx, ly+r); c.quadraticCurveTo(lx, ly, lx+r, ly);
+          c.moveTo(px, yAxis.top);
+          c.lineTo(px - 3, yAxis.top - 5);
+          c.lineTo(px + 3, yAxis.top - 5);
+          c.closePath();
           c.fill();
-          // Thin border
-          c.globalAlpha = 0.25;
-          c.strokeStyle = color;
-          c.lineWidth = 0.5;
-          c.stroke();
           c.globalAlpha = 1;
 
-          // Small connector line from badge to vertical line
-          c.strokeStyle = color;
-          c.globalAlpha = 0.3;
-          c.lineWidth = 0.5;
-          c.beginPath();
-          var cx = (px + bw + 8 > xAxis.right) ? lx + bw : lx;
-          c.moveTo(px, by);
-          c.lineTo(cx, by);
-          c.stroke();
-          c.globalAlpha = 1;
+          // Label above chart — positioned at line's x, in padding area
+          var labelY = yAxis.top - 22;
+          var nearRight = px > xAxis.right - 70;
+          var nearLeft = px < xAxis.left + 10;
+          c.textAlign = nearRight ? 'right' : (nearLeft ? 'left' : 'center');
+          var lx = nearRight ? px - 2 : (nearLeft ? px + 2 : px);
 
-          // Text
-          c.textAlign = 'left';
-          c.font = f1;
+          c.font = 'bold 9px Inter,system-ui,sans-serif';
           c.fillStyle = color;
-          c.fillText(label, lx + 6, ly + 11);
-          c.font = f2;
-          c.globalAlpha = 0.6;
-          c.fillStyle = '#cbd5e1';
-          c.fillText(sub, lx + 6, ly + 21);
+          c.fillText(label, lx, labelY);
+          c.font = '8px Inter,system-ui,sans-serif';
+          c.globalAlpha = 0.5;
+          c.fillStyle = '#94a3b8';
+          c.fillText(sub, lx, labelY + 12);
           c.globalAlpha = 1;
         }
 
-        // 3 annotations at staggered vertical positions to avoid overlap
-        drawLine(11, '#38bdf8', 0.3);
-        drawBadge(11, '#38bdf8', 'LC Received', 'Dec 2025', 0.55);
-
-        drawLine(todayMonthIdx, '#fbbf24', 0.4);
-        drawBadge(todayMonthIdx, '#fbbf24', '● Today', todayDateStr, 0.15);
-
-        drawLine(22, '#f43f5e', 0.35);
-        drawBadge(22, '#f43f5e', 'SCOD Target', 'Nov 2026', 0.05);
+        drawAnnotation(11, '#38bdf8', 'LC Received', 'Dec 2025');
+        drawAnnotation(todayMonthIdx, '#fbbf24', 'Today', todayDateStr);
+        drawAnnotation(22, '#f43f5e', 'SCOD', 'Nov 2026');
 
         c.restore();
       }
