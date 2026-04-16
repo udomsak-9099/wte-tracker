@@ -334,9 +334,9 @@ tailwind.config = {
   </div>
 
   <!-- Site Weather (compact for dashboard) -->
-  <div class="card p-4 mb-8 cursor-pointer" onclick="document.querySelector('[data-page=weather]').click()">
+  <div class="card p-4 mb-8">
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="document.querySelector('[data-page=weather]').click()">
         <p class="text-3xl" id="weather-icon-dash">🌤️</p>
         <div>
           <p class="text-xs text-slate-400" id="weather-title-dash">Site Weather — Phun Phin</p>
@@ -351,72 +351,10 @@ tailwind.config = {
       <div class="flex items-center gap-1" id="weather-mini-forecast"></div>
       <div class="text-right">
         <p class="text-[10px] text-slate-500" id="rain-impact-dash">--</p>
-        <p class="text-[10px] text-blue-400 mt-0.5">View details →</p>
+        <p class="text-[10px] text-blue-400 mt-0.5 cursor-pointer hover:text-blue-300 transition-colors" id="rain-toggle-btn" onclick="event.stopPropagation(); toggleRainAlerts()"></p>
       </div>
     </div>
     <div id="dash-rain-alerts" class="hidden mt-3 pt-3 border-t border-white/5 space-y-1"></div>
-  </div>
-
-  <!-- Project Info + Budget -->
-  <div class="grid grid-cols-2 gap-5 mb-8">
-    <div class="card p-5 relative overflow-hidden">
-      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-blue-500/10 to-cyan-500/10 -translate-y-1/2 translate-x-1/2"></div>
-      <div class="relative">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold text-sm shrink-0">GP4</div>
-          <div>
-            <h3 class="text-sm font-bold text-white">Green Power 4 Co., Ltd.</h3>
-            <p class="text-[10px] text-slate-400">Waste-to-Energy Power Plant</p>
-          </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">📍</span>
-            <div><p class="text-[10px] text-slate-500">Location</p><p class="text-xs text-white font-medium">Phun Phin, Surat Thani</p></div>
-          </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">⚡</span>
-            <div><p class="text-[10px] text-slate-500">Capacity</p><p class="text-xs text-white font-medium">6.6 MW <span class="text-slate-400">(PPA 5.0)</span></p></div>
-          </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">🏗️</span>
-            <div><p class="text-[10px] text-slate-500">EPC Contractor</p><p class="text-xs text-white font-medium">KK Green Co., Ltd.</p></div>
-          </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">♻️</span>
-            <div><p class="text-[10px] text-slate-500">Fuel (MSW)</p><p class="text-xs text-white font-medium">~470 ton/day</p></div>
-          </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">📄</span>
-            <div><p class="text-[10px] text-slate-500">PPA Term</p><p class="text-xs text-white font-medium">20 years, FiT (PEA)</p></div>
-          </div>
-          <div class="flex items-center gap-2 p-2 rounded-lg bg-white/[0.03]">
-            <span class="text-lg">🔍</span>
-            <div><p class="text-[10px] text-slate-500">LTA</p><p class="text-xs text-white font-medium">AFRY (Thailand)</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="card p-5">
-      <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="dash-budget-title">Budget</h3>
-      <div class="flex items-end gap-4 mb-3">
-        <div>
-          <p class="text-2xl font-bold text-white" id="budget-spent">207</p>
-          <p class="text-[10px] text-slate-500" id="budget-spent-label">Million THB spent</p>
-        </div>
-        <p class="text-sm text-slate-400 mb-1">/ <span class="text-white font-semibold" id="budget-total-val">815</span> <span id="budget-total-label">Million THB (Quotation)</span></p>
-      </div>
-      <div class="progress-bar mb-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" style="width:25.37%"></div></div>
-      <div class="flex justify-between text-xs text-slate-500">
-        <span id="budget-pct">25.37% disbursed</span>
-        <span id="budget-date">As of Mar 2026</span>
-      </div>
-      <div class="mt-3 pt-3 border-t border-white/5 grid grid-cols-3 gap-2 text-center">
-        <div><p class="text-xs text-slate-500" id="lbl-orig-budget">Original Budget</p><p class="text-sm font-semibold text-white">606M</p><p class="text-[10px] text-slate-500">Base Budget</p></div>
-        <div><p class="text-xs text-slate-500" id="lbl-q4-spend">Over Budget</p><p class="text-sm font-semibold text-red-400">+209M</p><p class="text-[10px] text-slate-500">Quotation vs Budget</p></div>
-        <div><p class="text-xs text-slate-500" id="lbl-remaining">Remaining</p><p class="text-sm font-semibold text-amber-400">608M</p><p class="text-[10px] text-slate-500">74.63%</p></div>
-      </div>
-    </div>
   </div>
 
   <!-- Key Milestones -->
@@ -519,26 +457,30 @@ tailwind.config = {
 
   <!-- Individual S-Curves by Group -->
   <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-group-title">S-Curve by Phase Group</h3>
-  <div class="grid grid-cols-2 gap-5 mb-8">
+  <div class="grid grid-cols-1 gap-5 mb-8">
     <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-cyan-500 to-teal-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-perm-title">Permits & Licensing</h4></div>
-      <canvas id="chart-sc-permits" height="160"></canvas>
+      <canvas id="chart-sc-permits" height="120"></canvas>
     </div>
     <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-indigo-500 to-blue-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-eng-title">Engineering</h4></div>
-      <canvas id="chart-sc-engineering" height="160"></canvas>
+      <canvas id="chart-sc-engineering" height="120"></canvas>
     </div>
     <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-amber-500 to-orange-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-proc-title">Procurement</h4></div>
-      <canvas id="chart-sc-procurement" height="160"></canvas>
+      <canvas id="chart-sc-procurement" height="120"></canvas>
+    </div>
+    <div class="card p-5">
+      <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-red-500 to-orange-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-fab-title">Fabrication</h4></div>
+      <canvas id="chart-sc-fabrication" height="120"></canvas>
     </div>
     <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-emerald-500 to-green-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-const-title">Construction</h4></div>
-      <canvas id="chart-sc-construction" height="160"></canvas>
+      <canvas id="chart-sc-construction" height="120"></canvas>
     </div>
     <div class="card p-5">
       <div class="flex items-center gap-2 mb-3"><div class="h-1 w-6 rounded bg-gradient-to-r from-purple-500 to-pink-500"></div><h4 class="text-xs font-bold text-white uppercase tracking-wider" id="sc-comm-title">Commissioning</h4></div>
-      <canvas id="chart-sc-commissioning" height="160"></canvas>
+      <canvas id="chart-sc-commissioning" height="120"></canvas>
     </div>
   </div>
 
@@ -2774,7 +2716,7 @@ const LANG = {
     // Phase names
     phaseName0: 'Engineering', phaseName1: 'Permits & Licensing', phaseName2: 'Procurement',
     phaseName3: 'Fabrication', phaseName4: 'Erection', phaseName5: 'Commissioning',
-    groupPermits: 'Permits & Licensing', groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
+    groupPermits: 'Permits & Licensing', groupEngineering: 'Engineering', groupProcurement: 'Procurement', groupFabrication: 'Fabrication', groupConstruction: 'Construction', groupCommissioning: 'Commissioning',
     // Settings
     settings: 'Settings', settingsTitle: 'Settings & Administration', settingsDesc: 'System settings, user management & data administration',
     settingsUsers: 'Users', settingsData: 'Data', settingsProject: 'Project',
@@ -2896,7 +2838,7 @@ const LANG = {
     phaseUpdated: 'อัปเดตเฟสแล้ว',
     phaseName0: 'วิศวกรรม', phaseName1: 'ใบอนุญาต', phaseName2: 'จัดซื้อจัดหา',
     phaseName3: 'การผลิตชิ้นส่วน', phaseName4: 'งานติดตั้ง', phaseName5: 'ทดสอบระบบ',
-    groupPermits: 'ใบอนุญาต', groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
+    groupPermits: 'ใบอนุญาต', groupEngineering: 'วิศวกรรม', groupProcurement: 'จัดซื้อจัดหา', groupFabrication: 'การผลิต', groupConstruction: 'ก่อสร้าง', groupCommissioning: 'ทดสอบระบบ',
     // Settings
     settings: 'ตั้งค่า', settingsTitle: 'ตั้งค่าและบริหารระบบ', settingsDesc: 'ตั้งค่าระบบ จัดการผู้ใช้ และบริหารข้อมูล',
     settingsUsers: 'ผู้ใช้', settingsData: 'ข้อมูล', settingsProject: 'โครงการ',
@@ -2993,10 +2935,10 @@ const DEFAULT_PHASES = [
   { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-06-30', progress: 90, status: 'In Progress', notes: 'OE Mar 2026: A.1 Construction Permit 100% in force. CoP 100% (awaiting authority comments). ESA 100% submitted. BOI 100% (board approved 18 Feb). Ror.Ngor.4 in progress — entering DIW system. Fire-fighting pipeline concept design not commenced.' },
   // Procurement — Mar 2026 OE: 94.63% actual vs 100.00% plan
   { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 95, status: 'In Progress', notes: 'OE Mar 2026: 94.63% actual vs 100.00% plan (–5.37pp). Late-stage close-out. Remaining: final vendor documentation, residual expediting, outstanding deliveries.' },
-  // Fabrication — Mar 2026 OE: 53.21% actual vs 95.53% plan (DELAYED)
-  { name: 'Fabrication', icon: '⚙️', group: 'procurement', start: '2025-06-01', end: '2026-08-31', progress: 53, status: 'Delayed', notes: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Materially behind baseline. Leading indicator for downstream delay.' },
-  // Erection — Mar 2026 OE: 6.28% actual vs 27.28% plan
-  { name: 'Erection', icon: '🏗️', group: 'construction', start: '2025-07-01', end: '2026-10-31', progress: 6, status: 'Delayed', notes: 'OE Mar 2026: 6.28% actual vs 27.28% plan (–21.00pp). Combustion column 60%, fuel tower column 30%. Most downstream packages at 0%.' },
+  // Fabrication — Mar 2026 OE: 53.21% actual vs 97.33% plan (DELAYED)
+  { name: 'Fabrication', icon: '⚙️', group: 'fabrication', start: '2025-06-01', end: '2026-08-31', progress: 53, status: 'Delayed', notes: 'OE Mar 2026: 53.21% actual vs 97.33% plan (–44.12pp). Materially behind baseline. Leading indicator for downstream delay.' },
+  // Erection — Mar 2026 OE: 6.28% actual vs 29.63% plan
+  { name: 'Erection', icon: '🏗️', group: 'construction', start: '2025-07-01', end: '2026-10-31', progress: 6, status: 'Delayed', notes: 'OE Mar 2026: 6.28% actual vs 29.63% plan (–23.35pp). Combustion column 60%, fuel tower column 30%. Most downstream packages at 0%.' },
   // Commissioning — Mar 2026: 0% as planned
   { name: 'Commissioning', icon: '🔬', group: 'commissioning', start: '2026-08-01', end: '2026-11-30', progress: 0, status: 'Not Started', notes: 'OE Mar 2026: 0% as planned. SCOD 30 Nov 2026.' },
 ];
@@ -3019,7 +2961,7 @@ const DEFAULT_TASKS = [
   { id: 12, name: 'Flue gas treatment system', phase: 2, assignee: 'Lawi/KK Green', start: '2025-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: SNCR, bag filter, CEMS. Long lead ordered per CM Q4.' },
   { id: 13, name: 'Step-up transformer (8.25 MVA, 6.6/33 kV)', phase: 2, assignee: 'KK Green', start: '2025-08-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: Per single line diagram review.' },
   // 3 - Fabrication (phase 3)
-  { id: 14, name: 'Mechanical & structural components fabrication', phase: 3, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Continuing shortfall — leading indicator for downstream delay.' },
+  { id: 14, name: 'Mechanical & structural components fabrication', phase: 3, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'OE Mar 2026: 53.21% actual vs 97.33% plan (–42.32pp). Continuing shortfall — leading indicator for downstream delay.' },
   // 4 - Erection (phase 4)
   { id: 15, name: 'Civil foundation and piling works', phase: 4, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Civil certified progress 23.58%. Active fronts: warehouse, stack foundation, clarifier tank, cooling tower, turbine hall, transformer yard, truck scale.' },
   { id: 17, name: 'Structural steel erection — Combustion', phase: 4, assignee: 'KK Green', start: '2026-02-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Column installation ~60%, base frame ~20%. Active steel unloading, elevation checks, column erection.' },
@@ -3238,9 +3180,11 @@ function renderDashboard() {
   // ── Schedule Variance Bars ──
   document.getElementById('dash-variance-title').textContent = th ? 'ส่วนต่างแผน vs จริง (OE มี.ค. 2569)' : 'Schedule Variance — Plan vs Actual (OE Mar 2026)';
   const varianceData = [
+    { label: th?'ภาพรวม':'Overall', actual: 51.45, plan: 76.26, icon: '📊', color: 'from-sky-500 to-blue-400' },
     { label: th?'วิศวกรรม':'Engineering', actual: 98.81, plan: 99.00, icon: '📐', color: 'from-indigo-500 to-blue-400' },
     { label: th?'จัดซื้อ':'Procurement', actual: 94.63, plan: 100.00, icon: '📦', color: 'from-amber-500 to-orange-400' },
     { label: th?'การผลิต':'Fabrication', actual: 53.21, plan: 97.33, icon: '⚙️', color: 'from-orange-500 to-red-400' },
+    { label: th?'งานโยธา':'Civil', actual: 23.58, plan: 35.00, icon: '🧱', color: 'from-stone-500 to-slate-400' },
     { label: th?'ติดตั้ง':'Erection', actual: 6.28, plan: 29.63, icon: '🏗️', color: 'from-emerald-500 to-green-400' },
     { label: th?'การจ่ายเงิน':'Payment', actual: 64.51, plan: 70.11, icon: '💰', color: 'from-blue-500 to-cyan-400' },
   ];
@@ -3266,8 +3210,8 @@ function renderDashboard() {
   document.getElementById('dash-action-title').textContent = th ? 'ต้องดำเนินการ — คำแนะนำ OE' : 'Action Required — OE Recommendations';
   const actionItems = [
     { icon: '🔴', text: th ? 'ท่อดับเพลิง: ยังไม่ได้เริ่มออกแบบ — OE แนะนำ design freeze เร่งด่วน เพื่อหลีกเลี่ยงผลกระทบงานใต้ดินและติดตั้งเครื่องกล' : 'Fire-fighting pipeline: concept design NOT commenced — OE recommends urgent design freeze to avoid downstream interference', system: 'fire', priority: 'critical' },
-    { icon: '🟠', text: th ? 'การผลิต: 53.21% จริง vs 95.53% แผน (-42.32pp) — OE แนะนำโปรแกรมกู้คืนเชื่อมโยง fab release กับลำดับ erection' : 'Fabrication: 53.21% actual vs 95.53% plan (-42.32pp) — OE recommends recovery programme linking fab release to erection sequences', system: null, priority: 'high' },
-    { icon: '🟠', text: th ? 'การติดตั้ง: 6.28% จริง vs 27.28% แผน (-21.00pp) — OE แนะนำ workfront-release matrix และแผนโลจิสติกส์/ยก' : 'Erection: 6.28% actual vs 27.28% plan (-21.00pp) — OE recommends workfront-release matrix and lifting coordination plan', system: null, priority: 'high' },
+    { icon: '🟠', text: th ? 'การผลิต: 53.21% จริง vs 95.53% แผน (-42.32pp) — OE แนะนำโปรแกรมกู้คืนเชื่อมโยง fab release กับลำดับ erection' : 'Fabrication: 53.21% actual vs 97.33% plan (-44.12pp) — OE recommends recovery programme linking fab release to erection sequences', system: null, priority: 'high' },
+    { icon: '🟠', text: th ? 'การติดตั้ง: 6.28% จริง vs 27.28% แผน (-21.00pp) — OE แนะนำ workfront-release matrix และแผนโลจิสติกส์/ยก' : 'Erection: 6.28% actual vs 29.63% plan (-23.35pp) — OE recommends workfront-release matrix and lifting coordination plan', system: null, priority: 'high' },
     { icon: '🟡', text: th ? 'รง.4: ก้าวหน้าแต่ยังไม่ปิด — กำลังเข้าข้อมูลระบบ DIW ออนไลน์ ต้องสอดคล้องกับ CoP/ESA/อุปกรณ์ที่อนุมัติ' : 'Ror.Ngor.4: advanced but not closed — entering DIW system, must remain consistent with CoP/ESA/approved machinery', system: null, priority: 'medium' },
   ];
   document.getElementById('dash-action-items').innerHTML = actionItems.map(a => {
@@ -3522,6 +3466,7 @@ function renderSCurve() {
         { label: t('groupPermits'), data: groupActual('permits'), borderColor: '#06b6d4', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupEngineering'), data: groupActual('engineering'), borderColor: '#6366f1', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupProcurement'), data: groupActual('procurement'), borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+        { label: t('groupFabrication'), data: groupActual('fabrication'), borderColor: '#ef4444', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupConstruction'), data: groupActual('construction'), borderColor: '#10b981', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
         { label: t('groupCommissioning'), data: groupActual('commissioning'), borderColor: '#a855f7', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
       ]
@@ -3539,9 +3484,9 @@ function renderSCurve() {
 
 function renderGroupSCurves() {
   const labels = scurveLabels();
-  const groupColors = { permits: '#06b6d4', engineering: '#6366f1', procurement: '#f59e0b', construction: '#10b981', commissioning: '#a855f7' };
-  const groupIds = { permits: 'chart-sc-permits', engineering: 'chart-sc-engineering', procurement: 'chart-sc-procurement', construction: 'chart-sc-construction', commissioning: 'chart-sc-commissioning' };
-  const groupTitleIds = { permits: 'sc-perm-title', engineering: 'sc-eng-title', procurement: 'sc-proc-title', construction: 'sc-const-title', commissioning: 'sc-comm-title' };
+  const groupColors = { permits: '#06b6d4', engineering: '#6366f1', procurement: '#f59e0b', fabrication: '#ef4444', construction: '#10b981', commissioning: '#a855f7' };
+  const groupIds = { permits: 'chart-sc-permits', engineering: 'chart-sc-engineering', procurement: 'chart-sc-procurement', fabrication: 'chart-sc-fabrication', construction: 'chart-sc-construction', commissioning: 'chart-sc-commissioning' };
+  const groupTitleIds = { permits: 'sc-perm-title', engineering: 'sc-eng-title', procurement: 'sc-proc-title', fabrication: 'sc-fab-title', construction: 'sc-const-title', commissioning: 'sc-comm-title' };
 
   // Update titles
   document.getElementById('dash-scurve-group-title').textContent = getLang() === 'th' ? 'S-Curve แยกตามกลุ่ม' : 'S-Curve by Phase Group';
@@ -3586,16 +3531,16 @@ function renderPhaseChart() {
     type: 'bar',
     data: {
       labels: data.phases.map((p, i) => phaseName(i).split(' ')[0]),
-      datasets: [{ label: 'Progress %', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 18 }]
+      datasets: [{ label: 'Progress %', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',fabrication:'#ef4444',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 18 }]
     },
     options: { responsive: true, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { max: 100, ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 10 } }, grid: { display: false } } } }
   });
 }
 
 // ---- PHASES PAGE ----
-const GROUP_LABELS = { permits: 'groupPermits', engineering: 'groupEngineering', procurement: 'groupProcurement', construction: 'groupConstruction', commissioning: 'groupCommissioning' };
-const GROUP_COLORS = { permits: 'from-cyan-500 to-teal-500', engineering: 'from-indigo-500 to-blue-500', procurement: 'from-amber-500 to-orange-500', construction: 'from-emerald-500 to-green-500', commissioning: 'from-purple-500 to-pink-500' };
-const GROUP_ORDER = ['permits', 'engineering', 'procurement', 'construction', 'commissioning'];
+const GROUP_LABELS = { permits: 'groupPermits', engineering: 'groupEngineering', procurement: 'groupProcurement', fabrication: 'groupFabrication', construction: 'groupConstruction', commissioning: 'groupCommissioning' };
+const GROUP_COLORS = { permits: 'from-cyan-500 to-teal-500', engineering: 'from-indigo-500 to-blue-500', procurement: 'from-amber-500 to-orange-500', fabrication: 'from-red-500 to-orange-500', construction: 'from-emerald-500 to-green-500', commissioning: 'from-purple-500 to-pink-500' };
+const GROUP_ORDER = ['permits', 'engineering', 'procurement', 'fabrication', 'construction', 'commissioning'];
 
 function renderPhaseCard(p, i) {
   const blinkClass = p.status === 'Delayed' ? ' blink-red border-red-500/30' : '';
@@ -4230,7 +4175,7 @@ function renderMonthlyReport() {
       labels: data.phases.map((p,i) => phaseName(i).split(' ')[0]),
       datasets: [
         { label: th ? 'แผน' : 'Plan', data: data.phases.map(p => GROUP_PLANS[p.group] ? GROUP_PLANS[p.group][Math.max(0,planIdx)] : 0), backgroundColor: 'rgba(59,130,246,0.3)', borderColor: '#3b82f6', borderWidth: 1, borderRadius: 4, barThickness: 14 },
-        { label: th ? 'จริง' : 'Actual', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 14 }
+        { label: th ? 'จริง' : 'Actual', data: data.phases.map(p => p.progress), backgroundColor: data.phases.map(p => ({permits:'#06b6d4',engineering:'#6366f1',procurement:'#f59e0b',fabrication:'#ef4444',construction:'#10b981',commissioning:'#a855f7'}[p.group] || '#64748b')), borderRadius: 4, barThickness: 14 }
       ]
     },
     options: { responsive: true, indexAxis: 'y', plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 } } } }, scales: { x: { max: 100, ticks: { color: chartTextColor(), font: { size: 9 }, callback: v => v + '%' }, grid: { color: chartGridColor() } }, y: { ticks: { color: chartTextColor(), font: { size: 9 } }, grid: { display: false } } } }
@@ -4651,7 +4596,7 @@ const DEFAULT_WP_REPORTS = [
     activities: 'OE Mar 2026 — Structural Erection Progress:\n• Combustion steel structure: Column installation ~60% complete\n• Combustion base frame / base support works ~20% complete\n• Active steel unloading, setting-out/elevation checks, column erection\n• Inspection of column deviation for main combustion structure\n• Combustion System Steel Structure arrived at site 10-11 Mar 2026 (from China)',
     issues: 'Most downstream systems at 0% — hopper & ash outlet, moving grate & grate bar, combustion & post-combustion casing, fuel dosing system, hydraulic system all pending behind structural workfront release.',
     photos: '',
-    remarks: 'March marked clear transition into vertical construction. Erection phase overall 6.28% actual vs 27.28% plan.'
+    remarks: 'March marked clear transition into vertical construction. Erection phase overall 6.28% actual vs 29.63% plan.'
   },
   {
     id: 1006,
@@ -5029,12 +4974,12 @@ const PERMIT_CATEGORIES = {
 function defaultPermits() {
   return [
     { id: 1, name: 'EIA / EHIA Approval', authority: 'ONEP', status: 'Obtained', progress: 100, issueDate: '2024-03-15', expiryDate: '', refNo: 'EIA-2024-0156', critical: true, category: 'environmental', assignee: 'GP4 Legal', dependsOn: [], checklist: [{name:'EIA Report',done:true},{name:'Public Hearing',done:true},{name:'Expert Review',done:true}], remarks: 'Environmental Impact Assessment approved. Conditions met.' },
-    { id: 2, name: 'Construction Permit (CoP)', authority: 'Local Municipality', status: 'In Progress', progress: 88, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Structural Drawing',done:true},{name:'Soil Report',done:true},{name:'Final Inspection',done:false}], remarks: 'CM Q4: 88% complete. Pending final structural inspection.' },
-    { id: 3, name: 'Factory License (Ror.Ngor.4)', authority: 'DIW', status: 'In Progress', progress: 50, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Legal', dependsOn: [2, 4], checklist: [{name:'CoP Certificate',done:false},{name:'ESA Certificate',done:false},{name:'Factory Plan',done:true},{name:'DIW Application',done:true}], remarks: 'Critical for machine installation. Pending CoP and ESA completion.' },
-    { id: 4, name: 'ESA Approval', authority: 'EGAT / PEA', status: 'In Progress', progress: 88, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'KK Green', dependsOn: [], checklist: [{name:'Single Line Diagram',done:true},{name:'Protection Study',done:true},{name:'Site Inspection',done:false}], remarks: 'Electrical Safety Assessment 88% complete.' },
+    { id: 2, name: 'Code of Practice (CoP)', authority: 'Local Municipality', status: 'Completed', progress: 100, issueDate: '2026-02-28', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Structural Drawing',done:true},{name:'Soil Report',done:true},{name:'CoP Report Submitted',done:true},{name:'Authority Comments',done:true}], remarks: 'OE Mar 2026: 100% complete. Full report submitted. Awaiting final authority administrative comments.' },
+    { id: 3, name: 'Factory License (Ror.Ngor.4)', authority: 'DIW', status: 'In Progress', progress: 60, issueDate: '', expiryDate: '', refNo: '', critical: true, category: 'regulatory', assignee: 'GP4 Legal', dependsOn: [2, 4], checklist: [{name:'Revised Machinery Data',done:true},{name:'Detailed Drawings',done:true},{name:'DIW Online System Entry',done:false},{name:'DIW Approval',done:false}], remarks: 'OE Mar 2026: Advancing — revised machinery data complete, detailed drawings prepared, entering DIW online system. Required before machine installation. Must be consistent with CoP, ESA, and approved equipment documents.' },
+    { id: 4, name: 'Environmental Site Assessment (ESA)', authority: 'ONEP / PEA', status: 'Completed', progress: 100, issueDate: '2026-02-15', expiryDate: '', refNo: '', critical: true, category: 'environmental', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Site Assessment Report',done:true},{name:'Environmental Monitoring Plan',done:true},{name:'Report Submitted',done:true}], remarks: 'OE Mar 2026: 100% complete. Full report submitted. Awaiting final authority comments.' },
     { id: 5, name: 'PPA (Power Purchase Agreement)', authority: 'PEA', status: 'Obtained', progress: 100, issueDate: '2024-06-20', expiryDate: '2044-06-19', refNo: 'PPA-GP4-2024', critical: true, category: 'commercial', assignee: 'GP4 Management', dependsOn: [], checklist: [{name:'PPA Application',done:true},{name:'Tariff Negotiation',done:true},{name:'PPA Signing',done:true}], remarks: 'FiT 20-year PPA signed with PEA.' },
     { id: 6, name: 'WCA (Waste Collection Agreement)', authority: 'Phun Phin Municipality', status: 'Obtained', progress: 100, issueDate: '2024-08-01', expiryDate: '2044-07-31', refNo: 'WCA-PP-2024', critical: false, category: 'commercial', assignee: 'GP4 Management', dependsOn: [], checklist: [{name:'Waste Survey',done:true},{name:'Agreement Draft',done:true},{name:'Signing',done:true}], remarks: 'MSW supply agreement ~470 ton/day.' },
-    { id: 7, name: 'BOI Promotion Certificate', authority: 'BOI', status: 'In Progress', progress: 80, issueDate: '', expiryDate: '', refNo: '', critical: false, category: 'commercial', assignee: 'GP4 Finance', dependsOn: [], checklist: [{name:'BOI Application',done:true},{name:'Project Plan',done:true},{name:'Board Approval',done:false}], remarks: 'Board of Investment promotion application 80% complete.' },
+    { id: 7, name: 'BOI Promotion Certificate', authority: 'BOI', status: 'Completed', progress: 100, issueDate: '2026-02-18', expiryDate: '', refNo: '', critical: false, category: 'commercial', assignee: 'GP4 Finance', dependsOn: [], checklist: [{name:'BOI Application',done:true},{name:'Project Plan',done:true},{name:'Board Approval',done:true}], remarks: 'OE Mar 2026: 100% — Board approved 18 Feb 2026. Final administrative issuance pending.' },
     { id: 8, name: 'Building Permit', authority: 'Local Authority', status: 'Obtained', progress: 100, issueDate: '2024-05-10', expiryDate: '2026-05-09', refNo: 'BP-2024-0312', critical: false, category: 'regulatory', assignee: 'GP4 Engineering', dependsOn: [], checklist: [{name:'Architectural Plan',done:true},{name:'Building Application',done:true}], remarks: 'Construction building permit obtained.' },
     { id: 9, name: 'Grid Connection Agreement', authority: 'PEA', status: 'Obtained', progress: 100, issueDate: '2024-09-15', expiryDate: '', refNo: 'GCA-GP4-2024', critical: true, category: 'commercial', assignee: 'GP4 Engineering', dependsOn: [5], checklist: [{name:'Grid Study',done:true},{name:'Connection Design',done:true},{name:'Agreement Signing',done:true}], remarks: '22kV connection to PEA substation approved.' },
     { id: 10, name: 'Water Supply Permit', authority: 'Royal Irrigation Dept.', status: 'Obtained', progress: 100, issueDate: '2024-04-22', expiryDate: '2029-04-21', refNo: 'WS-2024-089', critical: false, category: 'environmental', assignee: 'GP4 Engineering', dependsOn: [1], checklist: [{name:'Water Demand Study',done:true},{name:'Permit Application',done:true}], remarks: 'Cooling water supply permit.' },
@@ -5045,21 +4990,15 @@ function defaultPermits() {
   ];
 }
 
+const PERMITS_DATA_VERSION = 2; // Bump to force refresh — OE Mar 2026 alignment
 function initPermits() {
+  const storedVer = parseInt(localStorage.getItem('wte_permits_version') || '0');
+  if (storedVer < PERMITS_DATA_VERSION) {
+    localStorage.removeItem('wte_permits');
+    localStorage.setItem('wte_permits_version', String(PERMITS_DATA_VERSION));
+  }
   const existing = getPermitsData();
   if (!existing) { savePermitsData(defaultPermits()); }
-  else if (!existing[0]?.category) {
-    // Migrate old data: add new fields
-    const catMap = {1:'environmental',2:'regulatory',3:'regulatory',4:'regulatory',5:'commercial',6:'commercial',7:'commercial',8:'regulatory',9:'commercial',10:'environmental',11:'environmental',12:'environmental',13:'safety',14:'commercial'};
-    const updated = existing.map(p => ({
-      ...p,
-      category: p.category || catMap[p.id] || 'regulatory',
-      assignee: p.assignee || '',
-      dependsOn: p.dependsOn || [],
-      checklist: p.checklist || []
-    }));
-    savePermitsData(updated);
-  }
 }
 initPermits();
 
@@ -5505,7 +5444,7 @@ function exportPermitReport() {
 }
 
 // ---- EPC SYSTEMS TRACKING ----
-const EPC_DATA_VERSION = 3; // Bump to force refresh — delivery-centric restructure (Apr 2026)
+const EPC_DATA_VERSION = 4; // Bump to force refresh — Permits aligned to OE Mar 2026 + Fabrication group added (Apr 2026)
 function getEPCSystemsData() {
   const storedVer = parseInt(localStorage.getItem('wte_epc_version') || '0');
   if (storedVer < EPC_DATA_VERSION) { localStorage.removeItem('wte_epc_systems'); localStorage.setItem('wte_epc_version', String(EPC_DATA_VERSION)); }
@@ -7476,6 +7415,19 @@ const WMO_CODES = {
   99: ['Thunderstorm + heavy hail', 'พายุรุนแรง', '🌪️'],
 };
 
+function toggleRainAlerts() {
+  const el = document.getElementById('dash-rain-alerts');
+  const btn = document.getElementById('rain-toggle-btn');
+  const th = getLang() === 'th';
+  if (el.classList.contains('hidden')) {
+    el.classList.remove('hidden');
+    btn.textContent = th ? 'ซ่อน ▲' : 'Hide ▲';
+  } else {
+    el.classList.add('hidden');
+    btn.textContent = th ? 'ดูรายละเอียด ▼' : 'View details ▼';
+  }
+}
+
 function fetchSiteWeather() {
   const url = 'https://api.open-meteo.com/v1/forecast?latitude=9.1357&longitude=99.1712&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m,wind_direction_10m,pressure_msl,cloud_cover,precipitation,uv_index&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_sum,precipitation_probability_max,wind_speed_10m_max,sunrise,sunset&forecast_days=16&timezone=Asia/Bangkok';
   fetch(url).then(r => r.json()).then(d => {
@@ -7636,16 +7588,20 @@ function fetchSiteWeather() {
         }
       });
       const dashAlerts = document.getElementById('dash-rain-alerts');
+      const rainBtn = document.getElementById('rain-toggle-btn');
       if (criticalDays.length > 0) {
-        dashAlerts.classList.remove('hidden');
+        // Keep hidden — user toggles via button
         dashAlerts.innerHTML = criticalDays.map(r => `<div class="flex items-center gap-2 p-2 rounded-lg bg-red-500/10 border border-red-500/20 blink-red">
           <span class="text-sm">${r.icon}</span>
           <p class="text-xs text-red-400 flex-1"><span class="font-bold">${fmtDate(r.day)}</span> — ${r.impact}</p>
           <span class="text-xs font-bold text-red-400">💧${r.prob}% ${r.sum > 0 ? r.sum + 'mm' : ''}</span>
         </div>`).join('');
+        rainBtn.textContent = th ? `⚠️ ${criticalDays.length} วันเสี่ยงฝน ▼` : `⚠️ ${criticalDays.length} rain risk days ▼`;
+        rainBtn.style.display = '';
       } else {
         dashAlerts.classList.add('hidden');
         dashAlerts.innerHTML = '';
+        rainBtn.style.display = 'none';
       }
     }
   }).catch(() => {
@@ -7662,8 +7618,9 @@ const MILESTONES = [
   { name: 'WCA Signed', date: '2023-12-27', status: 'done' },
   { name: 'PPA Signed', date: '2024-06-28', status: 'done' },
   { name: 'Construction Permit', date: '2025-10-31', status: 'done' },
-  { name: 'Ror.Ngor.4 Permit', date: '2026-03-31', status: 'progress', note: '50%' },
-  { name: 'CoP & ESA', date: '2026-02-28', status: 'progress', note: '88%' },
+  { name: 'BOI Promotion', date: '2026-02-18', status: 'done', note: 'Board approved' },
+  { name: 'CoP & ESA', date: '2026-02-28', status: 'done', note: '100%' },
+  { name: 'Ror.Ngor.4 Permit', date: '2026-06-30', status: 'progress', note: '60% — entering DIW' },
   { name: 'Equipment Delivery', date: '2026-09-30', status: 'upcoming' },
   { name: 'Commissioning', date: '2026-10-31', status: 'upcoming' },
   { name: 'SCOD / COD', date: '2026-11-30', status: 'upcoming' },
