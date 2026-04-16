@@ -357,6 +357,12 @@ tailwind.config = {
     <div id="dash-rain-alerts" class="hidden mt-3 pt-3 border-t border-white/5 space-y-1"></div>
   </div>
 
+  <!-- S-Curve — Plan vs Actual (moved up after weather) -->
+  <div class="card p-6 mb-8">
+    <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
+    <canvas id="chart-scurve" height="280"></canvas>
+  </div>
+
   <!-- Key Milestones -->
   <div class="card p-5 mb-8">
     <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="dash-milestones-title">Key Milestones</h3>
@@ -443,16 +449,10 @@ tailwind.config = {
     <div id="dash-delivery-list" class="space-y-2"></div>
   </div>
 
-  <!-- Charts Row -->
-  <div class="grid grid-cols-2 gap-5 mb-8">
-    <div class="card p-6">
-      <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
-      <canvas id="chart-scurve" height="240"></canvas>
-    </div>
-    <div class="card p-6">
-      <h3 class="text-sm font-semibold text-white mb-4" id="dash-phase-chart-title">Progress by Phase</h3>
-      <canvas id="chart-phases" height="200"></canvas>
-    </div>
+  <!-- Phase Chart -->
+  <div class="card p-6 mb-8">
+    <h3 class="text-sm font-semibold text-white mb-4" id="dash-phase-chart-title">Progress by Phase</h3>
+    <canvas id="chart-phases" height="200"></canvas>
   </div>
 
   <!-- Individual S-Curves by Group -->
