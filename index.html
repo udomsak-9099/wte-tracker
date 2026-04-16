@@ -3480,14 +3480,55 @@ function renderSCurve() {
       }
     },
     plugins: [{
-      id: 'todayVerticalLine',
+      id: 'scurveAnnotations',
       afterDraw: function(chart) {
         var xAxis = chart.scales.x;
         var yAxis = chart.scales.y;
-        var xPos = xAxis.getPixelForValue(todayMonthIdx);
         var c = chart.ctx;
-        // Draw vertical dashed line
         c.save();
+
+        // ── LC Received line (Dec'25 = index 11) ──
+        var lcIdx = 11;
+        var lcX = xAxis.getPixelForValue(lcIdx);
+        c.strokeStyle = '#38bdf8';
+        c.lineWidth = 1.5;
+        c.setLineDash([4, 3]);
+        c.beginPath();
+        c.moveTo(lcX, yAxis.top);
+        c.lineTo(lcX, yAxis.bottom);
+        c.stroke();
+        c.setLineDash([]);
+        c.font = 'bold 9px sans-serif';
+        c.fillStyle = '#38bdf8';
+        c.textAlign = 'center';
+        c.fillText('LC Received', lcX, yAxis.top - 14);
+        c.font = '8px sans-serif';
+        c.fillStyle = '#7dd3fc';
+        c.fillText('Dec 2025', lcX, yAxis.top - 3);
+
+        // ── SCOD Target line (Nov'26 = index 22) ──
+        var scodIdx = 22;
+        var scodX = xAxis.getPixelForValue(scodIdx);
+        c.strokeStyle = '#f43f5e';
+        c.lineWidth = 2;
+        c.setLineDash([6, 3]);
+        c.beginPath();
+        c.moveTo(scodX, yAxis.top);
+        c.lineTo(scodX, yAxis.bottom);
+        c.stroke();
+        c.setLineDash([]);
+        var scodNearRight = scodX > xAxis.right - 70;
+        c.font = 'bold 9px sans-serif';
+        c.fillStyle = '#f43f5e';
+        c.textAlign = scodNearRight ? 'right' : 'center';
+        var scodLabelX = scodNearRight ? scodX - 6 : scodX;
+        c.fillText('🎯 SCOD', scodLabelX, yAxis.top - 14);
+        c.font = '8px sans-serif';
+        c.fillStyle = '#fb7185';
+        c.fillText('30 Nov 2026', scodLabelX, yAxis.top - 3);
+
+        // ── Today line ──
+        var xPos = xAxis.getPixelForValue(todayMonthIdx);
         c.strokeStyle = '#fbbf24';
         c.lineWidth = 2;
         c.setLineDash([6, 4]);
@@ -3495,19 +3536,17 @@ function renderSCurve() {
         c.moveTo(xPos, yAxis.top);
         c.lineTo(xPos, yAxis.bottom);
         c.stroke();
-        // Draw label — position left of line if near right edge
-        var txt1 = '▼ Today';
-        var txt2 = todayDateStr;
         c.setLineDash([]);
-        c.font = 'bold 10px sans-serif';
         var nearRight = xPos > xAxis.right - 80;
         c.fillStyle = '#fbbf24';
         c.textAlign = nearRight ? 'right' : 'center';
         var labelX = nearRight ? xPos - 8 : xPos;
-        c.fillText(txt1, labelX, yAxis.top - 14);
+        c.font = 'bold 10px sans-serif';
+        c.fillText('▼ Today', labelX, yAxis.top - 14);
         c.font = '9px sans-serif';
         c.fillStyle = '#fcd34d';
-        c.fillText(txt2, labelX, yAxis.top - 3);
+        c.fillText(todayDateStr, labelX, yAxis.top - 3);
+
         c.restore();
       }
     }]
