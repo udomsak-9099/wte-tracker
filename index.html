@@ -361,6 +361,14 @@ tailwind.config = {
   <div class="card p-6 mb-8">
     <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
     <canvas id="chart-scurve" height="280"></canvas>
+    <!-- Critical Path Items — below S-Curve -->
+    <div class="mt-5 pt-4 border-t border-white/10">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider" id="dash-critical-path-title">Critical Path — Must Complete On Time</h4>
+      </div>
+      <div id="dash-critical-path-items" class="space-y-2"></div>
+    </div>
   </div>
 
   <!-- Key Milestones -->
@@ -3385,6 +3393,7 @@ function renderDashboard() {
 
   renderMilestones();
   renderSCurve();
+  renderCriticalPath();
   renderGroupSCurves();
   renderPhaseChart();
 
@@ -3553,6 +3562,55 @@ function renderSCurve() {
       }
     }]
   });
+}
+
+function renderCriticalPath() {
+  const th = getLang() === 'th';
+  document.getElementById('dash-critical-path-title').textContent = th ? 'เส้นทางวิกฤต — ต้องทำให้ทันเวลา' : 'Critical Path — Must Complete On Time';
+
+  const now = new Date();
+  const criticalItems = [
+    { icon: '⚙️', title: th ? 'การผลิตชิ้นส่วน (Fabrication)' : 'Fabrication Recovery', detail: th ? '53.21% จริง vs 97.33% แผน (−44.12pp) — ต้องเร่งโปรแกรมกู้คืนเชื่อมโยง fab release กับลำดับ erection' : '53.21% actual vs 97.33% plan (−44.12pp) — Recovery programme must link fab release to erection sequences', deadline: '2026-08-31', severity: 'critical', system: null },
+    { icon: '🏗️', title: th ? 'งานติดตั้งเหล็ก (Erection)' : 'Steel Erection Acceleration', detail: th ? '6.28% จริง vs 29.63% แผน (−23.35pp) — ต้องวาง workfront-release matrix และแผนยกชิ้นส่วน' : '6.28% actual vs 29.63% plan (−23.35pp) — Workfront-release matrix and lifting plan required', deadline: '2026-10-31', severity: 'critical', system: null },
+    { icon: '🧯', title: th ? 'ท่อดับเพลิง — ยังไม่เริ่มออกแบบ' : 'Fire-Fighting Pipeline — Design NOT Started', detail: th ? 'OE แนะนำ design freeze เร่งด่วน เพื่อหลีกเลี่ยงผลกระทบงานใต้ดิน' : 'OE recommends urgent design freeze to avoid downstream interference with underground works', deadline: '2026-09-30', severity: 'critical', system: 'fire' },
+    { icon: '📋', title: th ? 'ใบอนุญาตโรงงาน (รง.4)' : 'Factory Permit (Ror.Ngor.4)', detail: th ? 'ก้าวหน้าแต่ยังไม่ปิด — กำลังเข้าระบบ DIW ออนไลน์ ต้องสอดคล้อง CoP/ESA' : 'Advanced but not closed — entering DIW system, must be consistent with CoP/ESA/approved machinery', deadline: '2026-06-30', severity: 'high', system: null },
+    { icon: '📦', title: th ? 'หม้อไอน้ำ ชุดที่ 2 — รอจัดส่ง' : 'Boiler 2nd Shipment — Pending Delivery', detail: th ? 'Membrane Wall & Superheater ผลิต ~20% — ต้องเสร็จก่อนส่งมอบ 22 ก.ค.' : 'Membrane Wall & Superheater fabrication ~20% — must complete before Jul 22 delivery', deadline: '2026-07-22', severity: 'high', system: 'boiler' },
+    { icon: '⚡', title: th ? 'กังหันไอน้ำ Shinko — รอผลิต' : 'Steam Turbine (Shinko) — Manufacturing', detail: th ? 'ผลิตที่ญี่ปุ่น 40% — L/C THB 38.09M ค้างจ่าย ส่งมอบ ก.ย. 2026' : 'Manufacturing in Japan 40% — L/C THB 38.09M pending, delivery Sep 2026', deadline: '2026-09-20', severity: 'high', system: 'turbine' },
+    { icon: '👷', title: th ? 'ทีม O&M ยังไม่ mobilize' : 'O&M Team Not Yet Mobilized', detail: th ? 'จำเป็นสำหรับเตรียม commissioning — OE แนะนำเริ่ม mobilize' : 'Required for commissioning preparation — OE recommends early mobilization', deadline: '2026-08-01', severity: 'medium', system: null },
+  ];
+
+  const container = document.getElementById('dash-critical-path-items');
+  container.innerHTML = criticalItems.map(item => {
+    const dl = new Date(item.deadline);
+    const daysLeft = Math.ceil((dl - now) / 86400000);
+    const urgencyColor = daysLeft < 60 ? 'text-red-400' : (daysLeft < 120 ? 'text-amber-400' : 'text-blue-400');
+    const urgencyBg = daysLeft < 60 ? 'border-red-500/20 bg-red-500/[0.03]' : (daysLeft < 120 ? 'border-amber-500/15 bg-amber-500/[0.02]' : 'border-blue-500/10 bg-blue-500/[0.02]');
+    const severityBadge = item.severity === 'critical'
+      ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-500/20 text-red-400 uppercase">${th?'วิกฤต':'Critical'}</span>`
+      : item.severity === 'high'
+      ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 uppercase">${th?'สำคัญ':'High'}</span>`
+      : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-400 uppercase">${th?'ปานกลาง':'Medium'}</span>`;
+    const clickAttr = item.system ? ` onclick="document.querySelector('[data-page=workprogress]').click(); setTimeout(()=>openEPCDetail('${item.system}'),300)" class="cursor-pointer hover:bg-white/[0.04]"` : '';
+    const daysText = daysLeft < 0
+      ? `<span class="text-red-400 font-bold">${th?'เลยกำหนด':'Overdue'} ${Math.abs(daysLeft)}d</span>`
+      : `<span class="${urgencyColor} font-semibold">${daysLeft} ${th?'วัน':'days'}</span>`;
+
+    return `<div${clickAttr} class="flex items-start gap-3 p-3 rounded-lg border ${urgencyBg} transition-colors">
+      <span class="text-lg mt-0.5 shrink-0">${item.icon}</span>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1 flex-wrap">
+          <span class="text-xs font-bold text-white">${item.title}</span>
+          ${severityBadge}
+        </div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">${item.detail}</p>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-[10px] text-slate-500">${th?'เหลือ':'Left'}</p>
+        <p class="text-xs">${daysText}</p>
+        <p class="text-[9px] text-slate-600 mt-0.5">${dl.toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short',year:'2-digit'})}</p>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderGroupSCurves() {
