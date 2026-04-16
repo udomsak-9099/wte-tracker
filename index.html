@@ -425,20 +425,27 @@ tailwind.config = {
     <div class="grid grid-cols-4 gap-3" id="milestones-grid"></div>
   </div>
 
-  <!-- Stat Cards -->
-  <div class="grid grid-cols-4 gap-5 mb-8">
+  <!-- KPI Cards — Real EPC Data -->
+  <div class="grid grid-cols-6 gap-4 mb-8">
     <div class="stat-card blue">
       <p class="text-xs text-slate-400 mb-1" id="label-overall">Overall Progress</p>
       <p class="text-3xl font-bold text-white" id="stat-overall">0%</p>
-      <div class="progress-bar mt-3"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" id="progress-overall" style="width:0%"></div></div>
+      <div class="progress-bar mt-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" id="progress-overall" style="width:0%"></div></div>
+      <p class="text-[10px] mt-1" id="stat-overall-var"></p>
     </div>
     <div class="stat-card green">
-      <p class="text-xs text-slate-400 mb-1" id="label-completed">Completed Tasks</p>
-      <p class="text-3xl font-bold text-white" id="stat-completed">0</p>
-      <p class="text-xs text-emerald-400 mt-2" id="stat-completed-pct">0% of total</p>
+      <p class="text-xs text-slate-400 mb-1" id="label-payment-prog">Payment Progress</p>
+      <p class="text-3xl font-bold text-white" id="stat-payment">0%</p>
+      <div class="progress-bar mt-2"><div class="progress-fill bg-gradient-to-r from-emerald-500 to-teal-400" id="progress-payment" style="width:0%"></div></div>
+      <p class="text-[10px] mt-1" id="stat-payment-var"></p>
+    </div>
+    <div class="stat-card cyan">
+      <p class="text-xs text-slate-400 mb-1" id="label-epc-systems">EPC Systems</p>
+      <p class="text-3xl font-bold text-white" id="stat-epc-active">0</p>
+      <p class="text-xs text-cyan-400 mt-2" id="stat-epc-detail"></p>
     </div>
     <div class="stat-card amber">
-      <p class="text-xs text-slate-400 mb-1" id="label-delayed">Delayed Tasks</p>
+      <p class="text-xs text-slate-400 mb-1" id="label-delayed">Delayed / At Risk</p>
       <p class="text-3xl font-bold text-white" id="stat-delayed">0</p>
       <p class="text-xs text-amber-400 mt-2" id="label-delayed-sub">Needs attention</p>
     </div>
@@ -447,6 +454,55 @@ tailwind.config = {
       <p class="text-3xl font-bold text-white" id="stat-issues">0</p>
       <p class="text-xs text-red-400 mt-2" id="stat-issues-high">0 high severity</p>
     </div>
+    <div class="stat-card purple">
+      <p class="text-xs text-slate-400 mb-1" id="label-completed">Completed Tasks</p>
+      <p class="text-3xl font-bold text-white" id="stat-completed">0</p>
+      <p class="text-xs text-purple-400 mt-2" id="stat-completed-pct">0% of total</p>
+    </div>
+  </div>
+
+  <!-- Schedule Variance — Plan vs Actual -->
+  <div class="card p-5 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider" id="dash-variance-title">Schedule Variance — Plan vs Actual (OE Mar 2026)</h3>
+    </div>
+    <div id="dash-variance-bars" class="space-y-3"></div>
+  </div>
+
+  <!-- OE Action Items / Critical Items -->
+  <div class="card p-5 mb-8 border border-red-500/20">
+    <div class="flex items-center gap-2 mb-4">
+      <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+      <h3 class="text-xs font-bold text-red-400 uppercase tracking-wider" id="dash-action-title">Action Required — OE Recommendations</h3>
+    </div>
+    <div id="dash-action-items" class="space-y-2"></div>
+  </div>
+
+  <!-- EPC Systems Quick Status — clickable to detail -->
+  <div class="card p-5 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider" id="dash-epc-title">EPC Systems Status</h3>
+      <span class="text-[10px] text-blue-400 cursor-pointer" onclick="document.querySelector('[data-page=workprogress]').click()">View all →</span>
+    </div>
+    <div id="dash-epc-systems" class="space-y-4"></div>
+  </div>
+
+  <!-- Contractor Payment Progress -->
+  <div class="card p-5 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider" id="dash-contractor-title">Contractor Payment Progress</h3>
+      <span class="text-[10px] text-slate-400" id="dash-contractor-sub">OE Certified & Disbursed</span>
+    </div>
+    <div id="dash-contractor-bars" class="space-y-3"></div>
+  </div>
+
+  <!-- Upcoming Deliveries with Countdown -->
+  <div class="card p-5 mb-8">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-xs font-bold text-white uppercase tracking-wider" id="dash-delivery-title">📦 Upcoming Deliveries</h3>
+      <span class="text-[10px] text-slate-400" id="dash-delivery-sub">Delivery Plan Rev. 10 Apr 2026</span>
+    </div>
+    <div id="dash-delivery-list" class="space-y-2"></div>
   </div>
 
   <!-- Charts Row -->
@@ -2976,14 +3032,49 @@ const DEFAULT_TASKS = [
 
 // Issues from CM Reports findings and LTA observations only
 const DEFAULT_ISSUES = [
-  { id: 1, title: 'Fabrication critically behind schedule', desc: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Gap widened from –41.64pp in Feb. Rate of output below recovery baseline.', phase: 3, severity: 'High', status: 'In Progress', assignee: 'Vendors / LAWI', date: '2026-03-31', resolution: 'OE recommends updated recovery programme linking fabrication release dates to erection and mechanical installation sequences.' },
-  { id: 2, title: 'Overall progress materially behind baseline', desc: 'OE Mar 2026: Master S-Curve 51.45% actual vs 74.96% plan (–23.51pp). Gap widened from –22.10pp in Feb. Project behind schedule.', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE recommends workfront-release matrix and detailed site logistics/lifting coordination plan.' },
+  { id: 1, title: 'Fabrication critically behind schedule', desc: 'OE Mar 2026: 53.21% actual vs 97.33% plan (–44.12pp). Gap widened from –41.64pp in Feb. Rate of output below recovery baseline.', phase: 3, severity: 'High', status: 'In Progress', assignee: 'Vendors / LAWI', date: '2026-03-31', resolution: 'OE recommends updated recovery programme linking fabrication release dates to erection and mechanical installation sequences.' },
+  { id: 2, title: 'Overall progress materially behind baseline', desc: 'OE Mar 2026: Master S-Curve 51.45% actual vs 76.26% plan (–24.81pp). Gap widened from –22.10pp in Feb. Project behind schedule.', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE recommends workfront-release matrix and detailed site logistics/lifting coordination plan.' },
   { id: 3, title: 'Ror.Ngor.4 factory permit not yet closed', desc: 'OE Mar 2026: Advanced but not closed. Revised machinery data complete, entering DIW system. Required before machine installation.', phase: 1, severity: 'High', status: 'In Progress', assignee: 'GP4', date: '2026-03-31', resolution: 'Project team entering finalized info into DIW online system. Consistency required across Ror.Ngor.4, CoP, ESA, and approved equipment docs.' },
-  { id: 4, title: 'Erection phase significantly behind plan', desc: 'OE Mar 2026: 6.28% actual vs 27.28% plan (–21.00pp). Variance widened from –15.18pp in Feb. Planned take-off not achieved.', phase: 4, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'Most downstream mechanical packages queued behind structural workfront release. OE recommends erection productivity improvement plan.' },
+  { id: 4, title: 'Erection phase significantly behind plan', desc: 'OE Mar 2026: 6.28% actual vs 29.63% plan (–23.35pp). Variance widened from –15.18pp in Feb. Planned take-off not achieved.', phase: 4, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'Most downstream mechanical packages queued behind structural workfront release. OE recommends erection productivity improvement plan.' },
   { id: 5, title: 'Fire-fighting pipeline not commenced', desc: 'OE Mar 2026: Fire-fighting pipeline system not commenced. Still at concept design finalization stage. Key HSE and sequencing interface item.', phase: 4, severity: 'High', status: 'Open', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE recommends firm design-freeze / procurement-close-out / interface deliverables schedule. Avoid downstream interference with underground works.' },
   { id: 6, title: 'Payment milestone behind plan', desc: 'OE Mar 2026: Payment S-Curve 64.51% actual vs 70.11% plan (–5.60pp). In-month actual +4.57% vs planned +7.50%.', phase: 0, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE maintaining separation between payment-milestone achievement and physical construction progress.' },
   { id: 7, title: 'O&M team not yet mobilized', desc: 'OE Mar 2026: O&M team has not been mobilized. Required for commissioning preparation.', phase: 5, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2026-06-30', resolution: '' },
   { id: 8, title: 'Procurement close-out remaining', desc: 'OE Mar 2026: 94.63% actual vs 100.00% plan (–5.37pp). Remaining: vendor documentation, residual expediting, outstanding deliveries.', phase: 2, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'Pending PO items: Ash Handling System (~4 months after PO), Crane (90 days from PO), 12.5 MVA Transformer (date TBC).' },
+];
+
+// Delivery Plan — from TH2401_TRC-Delivery plan_2026.04.10.xlsx (latest revision)
+const DELIVERY_PLAN = [
+  { equipment: 'J-Bolt for Warehouse Building', task: 'Delivery to site', date: '2026-02-03', country: 'China', system: 'civil', arrived: true, prereqs: '' },
+  { equipment: 'Turbine Building', task: 'Delivery to site', date: '2026-02-18', country: 'China', system: 'civil', arrived: true, prereqs: '' },
+  { equipment: 'Combustion System Steel Structure', task: 'Delivery to site', date: '2026-03-10', country: 'China', system: 'combustion', arrived: true, prereqs: '' },
+  { equipment: 'Control Building', task: 'Delivery to site', date: '2026-04-03', country: 'China', system: 'dcs', arrived: true, prereqs: '' },
+  { equipment: 'Combustion System — Ash Hopper', task: 'Delivery to site', date: '2026-04-15', country: 'China', system: 'combustion', arrived: false, prereqs: '' },
+  { equipment: 'Combustion System — Fuel Dosing, Moving Grate, Hydraulic', task: 'Delivery to site', date: '2026-04-15', country: 'China', system: 'combustion', arrived: false, prereqs: '' },
+  { equipment: 'Steam Boiler Shipment #0', task: 'Delivery to site', date: '2026-04-19', country: 'China', system: 'boiler', arrived: false, prereqs: 'Boiler steel structure, Deaerator steel structure, Steam air heater steel structure' },
+  { equipment: 'Steam Boiler Shipment 1st', task: 'Delivery to site', date: '2026-04-22', country: 'China', system: 'boiler', arrived: false, prereqs: 'Foundation finished Mar 30 / Laydown area ready Apr 20' },
+  { equipment: 'Warehouse Building 1st', task: 'Delivery to site', date: '2026-04-30', country: 'China', system: 'civil', arrived: false, prereqs: 'Foundation finished Mar 30 / Laydown area' },
+  { equipment: 'Water Treatment System', task: 'Delivery to site', date: '2026-03-31', country: 'China', system: 'water_prod', arrived: false, prereqs: 'Water Treatment building Foundation at Mar 15 / Waiting FAT' },
+  { equipment: 'Warehouse Building 2nd', task: 'Delivery to site', date: '2026-05-04', country: 'China', system: 'civil', arrived: false, prereqs: '' },
+  { equipment: 'Water Tank #1', task: 'Delivery to site', date: '2026-05-10', country: 'China', system: 'water_prod', arrived: false, prereqs: 'Foundation finished Mar 15 / 3 sets DIA / Laydown area' },
+  { equipment: 'Combustion System — Instrument', task: 'Delivery to site', date: '2026-05-14', country: 'Germany', system: 'combustion', arrived: false, prereqs: 'Storage area ready Apr 10' },
+  { equipment: 'Warehouse Building 3rd', task: 'Delivery to site', date: '2026-05-15', country: 'China', system: 'civil', arrived: false, prereqs: '' },
+  { equipment: 'Combustion System — Platform', task: 'Delivery to site', date: '2026-05-15', country: 'China', system: 'combustion', arrived: false, prereqs: '' },
+  { equipment: 'Steam Boiler Shipment #1.5', task: 'Delivery to site', date: '2026-05-20', country: 'China', system: 'boiler', arrived: false, prereqs: 'Pumps, Steam air heaters, Internal flue gas ducts' },
+  { equipment: '2,500 kVA Transformer', task: 'Delivery to site', date: '2026-05-20', country: 'Thailand', system: 'power_dist', arrived: false, prereqs: 'Foundation finished Feb 15' },
+  { equipment: 'Flue Gas Cleaning System 1st', task: 'Delivery to site', date: '2026-05-22', country: 'China', system: 'fgt', arrived: false, prereqs: 'Foundation finished Apr 5 / Laydown area' },
+  { equipment: '400V Panel', task: 'Delivery to site', date: '2026-05-30', country: 'Thailand', system: 'lv_elec', arrived: false, prereqs: 'Storage area ready May 10' },
+  { equipment: 'DCS System', task: 'Delivery to site', date: '2026-06-02', country: 'Thailand', system: 'dcs', arrived: false, prereqs: 'Storage area ready May 10' },
+  { equipment: 'Combustion System — Fan & Rotary', task: 'Delivery to site', date: '2026-07-01', country: 'China', system: 'combustion', arrived: false, prereqs: 'Fan foundation finished Mar 15 / Storage area' },
+  { equipment: 'Condenser', task: 'Delivery to site', date: '2026-07-20', country: 'Japan', system: 'turbine_gen', arrived: false, prereqs: 'Foundation finished May 30 / Storage area' },
+  { equipment: '3,500 kVA Transformer', task: 'Delivery to site', date: '2026-07-20', country: 'Thailand', system: 'power_dist', arrived: false, prereqs: 'Foundation finished Feb 20' },
+  { equipment: 'Steam Boiler Shipment 2nd', task: 'Delivery to site', date: '2026-07-22', country: 'China', system: 'boiler', arrived: false, prereqs: 'Laydown area ready Jul 10 — Water wall, Superheater' },
+  { equipment: '33kV Panel', task: 'Delivery to site', date: '2026-07-24', country: 'Thailand', system: 'power_dist', arrived: false, prereqs: 'Storage area ready Jun 20' },
+  { equipment: '12.5 MVA Transformer', task: 'Delivery to site', date: '2026-08-15', country: 'Thailand', system: 'power_dist', arrived: false, prereqs: '' },
+  { equipment: 'Flue Gas Cleaning System 2nd', task: 'Delivery to site', date: '2026-08-22', country: 'China', system: 'fgt', arrived: false, prereqs: 'Foundation finished Apr 8 / Laydown area' },
+  { equipment: 'BMH Shredder', task: 'Delivery to site', date: '2026-08-25', country: 'Finland', system: 'fuel', arrived: false, prereqs: 'Foundation finished Jul 10' },
+  { equipment: 'Turbine', task: 'Delivery to site', date: '2026-09-20', country: 'Japan', system: 'turbine_gen', arrived: false, prereqs: 'Foundation finished May 30 / Laydown area (Storage)' },
+  { equipment: 'Ash Handling System', task: '4 months after PO', date: null, country: 'China', system: 'ash', arrived: false, prereqs: '' },
+  { equipment: 'Crane', task: '90 days from PO', date: null, country: 'China', system: 'civil', arrived: false, prereqs: '' },
 ];
 
 function loadData() {
@@ -3080,38 +3171,242 @@ function populateAssigneeFilter() {
 
 // ---- DASHBOARD ----
 function renderDashboard() {
-  const locale = getLang() === 'th' ? 'th-TH' : 'en-US';
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
   document.getElementById('current-date').textContent = new Date().toLocaleDateString(locale, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   // Update static text
   document.getElementById('dash-title').textContent = t('dashboard');
   document.getElementById('dash-subtitle').textContent = t('projectTitle');
   document.getElementById('label-overall').textContent = t('overallProgress');
-  document.getElementById('label-completed').textContent = t('completedTasks');
-  document.getElementById('label-delayed').textContent = t('delayedTasks');
+  document.getElementById('label-completed').textContent = th ? 'งานเสร็จ' : 'Completed Tasks';
+  document.getElementById('label-delayed').textContent = th ? 'ล่าช้า / เสี่ยง' : 'Delayed / At Risk';
   document.getElementById('label-issues').textContent = t('openIssues');
   document.getElementById('dash-scurve-title').textContent = t('sCurve');
   document.getElementById('dash-phase-chart-title').textContent = t('progressByPhase');
   document.getElementById('dash-phase-progress-title').textContent = t('phaseProgress');
   document.getElementById('dash-alerts-title').textContent = t('recentAlerts');
 
+  // ── KPI Cards with real EPC data ──
+  const epcSystems = getEPCSystemsData();
   const totalProgress = data.phases.reduce((s, p) => s + p.progress, 0) / data.phases.length;
   document.getElementById('stat-overall').textContent = Math.round(totalProgress) + '%';
   document.getElementById('progress-overall').style.width = totalProgress + '%';
+  // OE variance
+  const now = new Date();
+  const ci = Math.min((now.getFullYear() - 2025) * 12 + now.getMonth(), 23);
+  const planNow = GROUP_PLANS.overall[ci];
+  const overallVar = Math.round(totalProgress - planNow);
+  document.getElementById('stat-overall-var').textContent = (overallVar >= 0 ? '+' : '') + overallVar + 'pp vs plan';
+  document.getElementById('stat-overall-var').className = 'text-[10px] mt-1 ' + (overallVar >= 0 ? 'text-emerald-400' : 'text-red-400');
 
-  const completed = data.tasks.filter(t => t.status === 'Completed').length;
-  const delayed = data.tasks.filter(t => t.status === 'Delayed').length;
+  // Payment progress
+  document.getElementById('label-payment-prog').textContent = th ? 'ความก้าวหน้าการจ่ายเงิน' : 'Payment Progress';
+  const paymentActual = 64.51, paymentPlan = 70.11;
+  document.getElementById('stat-payment').textContent = paymentActual + '%';
+  document.getElementById('progress-payment').style.width = paymentActual + '%';
+  const payVar = (paymentActual - paymentPlan).toFixed(1);
+  document.getElementById('stat-payment-var').textContent = payVar + 'pp vs plan';
+  document.getElementById('stat-payment-var').className = 'text-[10px] mt-1 ' + (payVar >= 0 ? 'text-emerald-400' : 'text-red-400');
+
+  // EPC Systems count
+  document.getElementById('label-epc-systems').textContent = th ? 'ระบบ EPC' : 'EPC Systems';
+  const epcActive = epcSystems.filter(s => s.status === 'In Progress').length;
+  const epcDelayed = epcSystems.filter(s => s.status === 'Delayed').length;
+  const epcNotStarted = epcSystems.filter(s => s.status === 'Not Started').length;
+  document.getElementById('stat-epc-active').textContent = epcActive;
+  document.getElementById('stat-epc-detail').textContent = `${epcDelayed} ${th?'ล่าช้า':'delayed'}, ${epcNotStarted} ${th?'ยังไม่เริ่ม':'pending'}`;
+
+  // Delayed/At Risk
+  const delayedSystems = epcSystems.filter(s => s.status === 'Delayed' || s.status === 'Suspended');
+  const overdueItems = epcSystems.filter(s => { const dl = s.deadline ? new Date(s.deadline) : null; return dl && dl < now && s.status !== 'Completed'; });
+  const atRiskCount = new Set([...delayedSystems.map(s=>s.key), ...overdueItems.map(s=>s.key)]).size;
+  document.getElementById('stat-delayed').textContent = atRiskCount;
+  document.getElementById('label-delayed-sub').textContent = t('needsAttention');
+
+  // Issues
   const openIssues = data.issues.filter(i => i.status !== 'Resolved').length;
   const highIssues = data.issues.filter(i => i.severity === 'High' && i.status !== 'Resolved').length;
-
-  document.getElementById('stat-completed').textContent = completed;
-  document.getElementById('stat-completed-pct').textContent = data.tasks.length ? Math.round(completed / data.tasks.length * 100) + '% ' + t('ofTotal') : '0% ' + t('ofTotal');
-  document.getElementById('stat-delayed').textContent = delayed;
-  document.getElementById('label-delayed-sub').textContent = t('needsAttention');
   document.getElementById('stat-issues').textContent = openIssues;
   document.getElementById('stat-issues-high').textContent = highIssues + ' ' + t('highSeverity');
 
-  // Phase cards grouped by E/P/C/Comm
+  // Completed
+  const completed = data.tasks.filter(t => t.status === 'Completed').length;
+  document.getElementById('stat-completed').textContent = completed;
+  document.getElementById('stat-completed-pct').textContent = data.tasks.length ? Math.round(completed / data.tasks.length * 100) + '% ' + t('ofTotal') : '0%';
+
+  // ── Schedule Variance Bars ──
+  document.getElementById('dash-variance-title').textContent = th ? 'ส่วนต่างแผน vs จริง (OE มี.ค. 2569)' : 'Schedule Variance — Plan vs Actual (OE Mar 2026)';
+  const varianceData = [
+    { label: th?'วิศวกรรม':'Engineering', actual: 98.81, plan: 99.00, icon: '📐', color: 'from-indigo-500 to-blue-400' },
+    { label: th?'จัดซื้อ':'Procurement', actual: 94.63, plan: 100.00, icon: '📦', color: 'from-amber-500 to-orange-400' },
+    { label: th?'การผลิต':'Fabrication', actual: 53.21, plan: 97.33, icon: '⚙️', color: 'from-orange-500 to-red-400' },
+    { label: th?'ติดตั้ง':'Erection', actual: 6.28, plan: 29.63, icon: '🏗️', color: 'from-emerald-500 to-green-400' },
+    { label: th?'การจ่ายเงิน':'Payment', actual: 64.51, plan: 70.11, icon: '💰', color: 'from-blue-500 to-cyan-400' },
+  ];
+  document.getElementById('dash-variance-bars').innerHTML = varianceData.map(v => {
+    const diff = (v.actual - v.plan).toFixed(2);
+    const diffColor = diff >= 0 ? 'text-emerald-400' : (diff < -20 ? 'text-red-400 font-bold' : 'text-amber-400');
+    return `<div class="flex items-center gap-3">
+      <span class="text-sm w-5 text-center">${v.icon}</span>
+      <span class="text-xs text-slate-300 w-24 truncate">${v.label}</span>
+      <div class="flex-1 relative">
+        <div class="h-4 rounded-full bg-white/5 overflow-hidden relative">
+          <div class="absolute inset-0 h-full rounded-full bg-white/[0.08]" style="width:${v.plan}%"></div>
+          <div class="absolute inset-0 h-full rounded-full bg-gradient-to-r ${v.color}" style="width:${v.actual}%"></div>
+        </div>
+        <div class="absolute top-0 h-4 border-r-2 border-white/30" style="left:${v.plan}%" title="Plan: ${v.plan}%"></div>
+      </div>
+      <span class="text-xs text-white w-14 text-right">${v.actual}%</span>
+      <span class="text-xs ${diffColor} w-16 text-right">${diff >= 0 ? '+' : ''}${diff}pp</span>
+    </div>`;
+  }).join('');
+
+  // ── OE Action Items ──
+  document.getElementById('dash-action-title').textContent = th ? 'ต้องดำเนินการ — คำแนะนำ OE' : 'Action Required — OE Recommendations';
+  const actionItems = [
+    { icon: '🔴', text: th ? 'ท่อดับเพลิง: ยังไม่ได้เริ่มออกแบบ — OE แนะนำ design freeze เร่งด่วน เพื่อหลีกเลี่ยงผลกระทบงานใต้ดินและติดตั้งเครื่องกล' : 'Fire-fighting pipeline: concept design NOT commenced — OE recommends urgent design freeze to avoid downstream interference', system: 'fire', priority: 'critical' },
+    { icon: '🟠', text: th ? 'การผลิต: 53.21% จริง vs 95.53% แผน (-42.32pp) — OE แนะนำโปรแกรมกู้คืนเชื่อมโยง fab release กับลำดับ erection' : 'Fabrication: 53.21% actual vs 95.53% plan (-42.32pp) — OE recommends recovery programme linking fab release to erection sequences', system: null, priority: 'high' },
+    { icon: '🟠', text: th ? 'การติดตั้ง: 6.28% จริง vs 27.28% แผน (-21.00pp) — OE แนะนำ workfront-release matrix และแผนโลจิสติกส์/ยก' : 'Erection: 6.28% actual vs 27.28% plan (-21.00pp) — OE recommends workfront-release matrix and lifting coordination plan', system: null, priority: 'high' },
+    { icon: '🟡', text: th ? 'รง.4: ก้าวหน้าแต่ยังไม่ปิด — กำลังเข้าข้อมูลระบบ DIW ออนไลน์ ต้องสอดคล้องกับ CoP/ESA/อุปกรณ์ที่อนุมัติ' : 'Ror.Ngor.4: advanced but not closed — entering DIW system, must remain consistent with CoP/ESA/approved machinery', system: null, priority: 'medium' },
+  ];
+  document.getElementById('dash-action-items').innerHTML = actionItems.map(a => {
+    const clickAttr = a.system ? `onclick="document.querySelector('[data-page=workprogress]').click(); setTimeout(()=>openEPCDetail('${a.system}'),300)" class="cursor-pointer hover:bg-white/[0.04]"` : '';
+    return `<div ${clickAttr} class="flex items-start gap-3 p-3 rounded-lg bg-white/[0.02] ${a.priority==='critical'?'border border-red-500/20':''}">
+      <span class="text-sm mt-0.5">${a.icon}</span>
+      <span class="text-xs text-slate-300 flex-1 leading-relaxed">${a.text}</span>
+      ${a.system ? `<span class="text-[10px] text-blue-400 mt-0.5 shrink-0">${th?'ดูรายละเอียด →':'View →'}</span>` : ''}
+    </div>`;
+  }).join('');
+
+  // ── EPC Systems Quick Status (grouped by category) ──
+  document.getElementById('dash-epc-title').textContent = th ? 'สถานะระบบ EPC' : 'EPC Systems Status';
+  const sysColors = { civil:'from-stone-500 to-stone-400', fuel:'from-green-500 to-emerald-400', ash:'from-gray-500 to-gray-400', combustion:'from-red-500 to-orange-400', boiler:'from-cyan-500 to-blue-400', fgt:'from-indigo-500 to-violet-400', turbine_gen:'from-purple-500 to-pink-400', cooling:'from-sky-500 to-cyan-400', water_prod:'from-blue-500 to-sky-400', wastewater:'from-teal-500 to-emerald-400', dcs:'from-violet-500 to-purple-400', power_dist:'from-yellow-500 to-amber-400', lv_elec:'from-orange-500 to-amber-400', fire:'from-red-600 to-red-400', instruments:'from-pink-500 to-rose-400', compressed_air:'from-sky-600 to-sky-400', deodorize:'from-lime-500 to-green-400', utility:'from-amber-500 to-yellow-400', pm_services:'from-blue-600 to-indigo-400' };
+  let epcHtml = '';
+  WP_SYSTEM_GROUPS.forEach(group => {
+    const groupSystems = epcSystems.filter(sys => {
+      const wpDef = WP_SYSTEMS.find(w => w.key === sys.key);
+      return wpDef && wpDef.category === group.id;
+    });
+    if (groupSystems.length === 0) return;
+    const groupAvg = Math.round(groupSystems.reduce((s, sys) => s + sys.progress, 0) / groupSystems.length);
+    const groupDelayed = groupSystems.filter(s => s.status === 'Delayed').length;
+    epcHtml += `<div>
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-[11px] font-bold text-white/80">${th ? group.th : group.en}</span>
+        <div class="flex items-center gap-2">
+          ${groupDelayed > 0 ? `<span class="text-[9px] text-red-400">${groupDelayed} ${th?'ล่าช้า':'delayed'}</span>` : ''}
+          <span class="text-xs font-bold ${groupAvg >= 50 ? 'text-blue-400' : 'text-slate-400'}">${groupAvg}%</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-5 gap-2">`;
+    groupSystems.forEach(sys => {
+      const statusDot = sys.status === 'Delayed' ? 'bg-red-500 animate-pulse' : sys.status === 'In Progress' ? 'bg-blue-500' : sys.status === 'Completed' ? 'bg-emerald-500' : 'bg-slate-600';
+      const borderCls = sys.status === 'Delayed' ? 'ring-1 ring-red-500/30' : '';
+      epcHtml += `<div class="cursor-pointer rounded-lg p-2 bg-white/[0.03] hover:bg-white/[0.08] transition-all ${borderCls}" onclick="document.querySelector('[data-page=workprogress]').click(); setTimeout(()=>openEPCDetail('${sys.key}'),300)">
+        <div class="flex items-center gap-1.5 mb-1">
+          <div class="w-5 h-5 rounded bg-gradient-to-br ${sysColors[sys.key] || 'from-slate-500 to-slate-400'} flex items-center justify-center text-[10px]">${sys.icon}</div>
+          <span class="text-[9px] text-white truncate flex-1">${th ? sys.name_th : sys.name_en}</span>
+        </div>
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full ${statusDot}"></span>
+          <div class="flex-1 h-1 rounded-full bg-white/5 overflow-hidden"><div class="h-full rounded-full bg-gradient-to-r ${sysColors[sys.key] || 'from-slate-500 to-slate-400'}" style="width:${sys.progress}%"></div></div>
+          <span class="text-[9px] font-bold ${sys.progress >= 50 ? 'text-blue-400' : 'text-slate-400'}">${sys.progress}%</span>
+        </div>
+      </div>`;
+    });
+    epcHtml += `</div></div>`;
+  });
+  document.getElementById('dash-epc-systems').innerHTML = epcHtml;
+
+  // ── Contractor Payment Progress ──
+  document.getElementById('dash-contractor-title').textContent = th ? 'ความก้าวหน้าการจ่ายเงินรายผู้รับเหมา' : 'Contractor Payment Progress';
+  document.getElementById('dash-contractor-sub').textContent = th ? 'OE รับรอง & เบิกจ่าย' : 'OE Certified & Disbursed';
+  const contractors = [
+    { name: 'KK Green (KKG)', value: 301.5, pct: 51.96, paid: 156.6, color: 'from-blue-500 to-cyan-400' },
+    { name: 'Green Parawood (GPW)', value: 272.1, pct: 79.20, paid: 215.5, color: 'from-green-500 to-emerald-400' },
+    { name: 'LAWI Eng. Thailand', value: 6.0, pct: 100, paid: 6.0, color: 'from-emerald-500 to-teal-400' },
+    { name: 'LAWI Eng. (M) Sdn Bhd', value: 477.8, pct: 77.48, paid: 370.2, color: 'from-purple-500 to-violet-400' },
+    { name: 'LAWI Eng. GmbH', value: 79.9, pct: 25.00, paid: 20.0, color: 'from-indigo-500 to-blue-400' },
+    { name: 'SLB (Shandong Longsheng)', value: 108.4, pct: 45.00, paid: 48.8, color: 'from-amber-500 to-orange-400' },
+    { name: 'Shinko Ind. Ltd.', value: 69.3, pct: 45.00, paid: 31.2, color: 'from-pink-500 to-rose-400' },
+  ];
+  document.getElementById('dash-contractor-bars').innerHTML = contractors.map(c => `<div class="flex items-center gap-3">
+    <span class="text-[10px] text-slate-300 w-36 truncate">${c.name}</span>
+    <div class="flex-1 h-3 rounded-full bg-white/5 overflow-hidden">
+      <div class="h-full rounded-full bg-gradient-to-r ${c.color} transition-all" style="width:${c.pct}%"></div>
+    </div>
+    <span class="text-xs font-bold text-white w-12 text-right">${c.pct}%</span>
+    <span class="text-[10px] text-slate-400 w-20 text-right">${c.paid.toFixed(0)}/${c.value.toFixed(0)}M</span>
+  </div>`).join('');
+
+  // ── Upcoming Deliveries with Countdown ──
+  document.getElementById('dash-delivery-title').textContent = th ? '📦 กำหนดการส่งอุปกรณ์' : '📦 Upcoming Deliveries';
+  document.getElementById('dash-delivery-sub').textContent = th ? 'Delivery Plan ฉบับ 10 เม.ย. 2569' : 'Delivery Plan Rev. 10 Apr 2026';
+  const nowDel = new Date();
+  const upcomingDel = DELIVERY_PLAN.filter(d => !d.arrived && d.date).sort((a,b) => new Date(a.date) - new Date(b.date));
+  const arrivedDel = DELIVERY_PLAN.filter(d => d.arrived);
+  const countryFlag = c => ({China:'🇨🇳',Japan:'🇯🇵',Germany:'🇩🇪',Finland:'🇫🇮',Thailand:'🇹🇭'}[c]||'🌐');
+  const sysIcon = key => { const s = WP_SYSTEMS.find(w=>w.key===key); return s ? s.icon : '📦'; };
+
+  let delHtml = '';
+  // Arrived summary
+  if (arrivedDel.length > 0) {
+    delHtml += `<div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 mb-2">
+      <span class="text-emerald-400 text-sm">✓</span>
+      <span class="text-[11px] text-emerald-400 font-medium">${arrivedDel.length} ${th?'รายการถึงหน้างานแล้ว':'items arrived on site'}</span>
+      <span class="text-[9px] text-slate-500 ml-auto">${arrivedDel.map(d => d.equipment.split(' ')[0]).join(', ')}</span>
+    </div>`;
+  }
+  // Upcoming items with countdown
+  upcomingDel.forEach(d => {
+    const delDate = new Date(d.date);
+    const diffMs = delDate - nowDel;
+    const daysLeft = Math.ceil(diffMs / 86400000);
+    const hoursLeft = Math.max(0, Math.floor((diffMs % 86400000) / 3600000));
+
+    let countdownColor, countdownBg, countdownText;
+    if (daysLeft < 0) {
+      countdownColor = 'text-red-400'; countdownBg = 'bg-red-500/10 border-red-500/20';
+      countdownText = (th?'เกินกำหนด ':'Overdue ') + Math.abs(daysLeft) + (th?' วัน':'d');
+    } else if (daysLeft <= 7) {
+      countdownColor = 'text-amber-400'; countdownBg = 'bg-amber-500/10 border-amber-500/20';
+      countdownText = daysLeft + (th?' วัน ':' d ') + hoursLeft + (th?' ชม.':'h');
+    } else if (daysLeft <= 30) {
+      countdownColor = 'text-yellow-400'; countdownBg = 'bg-yellow-500/5 border-yellow-500/15';
+      countdownText = daysLeft + (th?' วัน':'d');
+    } else {
+      countdownColor = 'text-cyan-400'; countdownBg = 'bg-white/[0.02] border-white/5';
+      countdownText = daysLeft + (th?' วัน':'d');
+    }
+    const dateStr = delDate.toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'2-digit'});
+    delHtml += `<div class="flex items-center gap-3 px-3 py-2 rounded-lg border ${countdownBg} cursor-pointer hover:bg-white/[0.04] transition-colors" onclick="openEPCDetail('${d.system}')">
+      <span class="text-sm">${sysIcon(d.system)}</span>
+      <div class="flex-1 min-w-0">
+        <p class="text-[11px] text-white font-medium truncate">${d.equipment}</p>
+        <div class="flex items-center gap-2">
+          <span class="text-[9px] text-slate-500">${countryFlag(d.country)} ${d.country}</span>
+          <span class="text-[9px] text-slate-500">→ ${dateStr}</span>
+          ${d.prereqs ? `<span class="text-[9px] text-amber-500/70 truncate max-w-[150px]" title="${d.prereqs}">⚠ ${d.prereqs.substring(0,30)}…</span>` : ''}
+        </div>
+      </div>
+      <div class="text-right shrink-0">
+        <p class="text-xs font-bold tabular-nums ${countdownColor}">${countdownText}</p>
+        <p class="text-[9px] text-slate-500">${th?'นับถอยหลัง':'countdown'}</p>
+      </div>
+    </div>`;
+  });
+  // PO-pending items
+  const poPending = DELIVERY_PLAN.filter(d => !d.arrived && !d.date);
+  if (poPending.length > 0) {
+    delHtml += `<div class="mt-2 px-3 py-2 rounded-lg bg-white/[0.02] border border-white/5">
+      <span class="text-[10px] text-slate-400">⏳ ${th?'รอ PO':'Pending PO'}: </span>
+      ${poPending.map(d => `<span class="text-[10px] text-slate-500">${sysIcon(d.system)} ${d.equipment} (${d.task})</span>`).join(' · ')}
+    </div>`;
+  }
+  document.getElementById('dash-delivery-list').innerHTML = delHtml;
+
+  // ── Phase Progress Cards ──
   const container = document.getElementById('phase-cards');
   let phaseHtml = '';
   GROUP_ORDER.forEach(group => {
@@ -3135,7 +3430,7 @@ function renderDashboard() {
   container.innerHTML = phaseHtml;
 
   // Dashboard alerts
-  const alerts = getAlerts().slice(0, 5);
+  const alerts = getAlerts().slice(0, 8);
   document.getElementById('dashboard-alerts').innerHTML = alerts.length ? alerts.map(a => `
     <div class="flex items-center gap-3 p-3 rounded-lg bg-white/[0.02]">
       <span class="w-2 h-2 rounded-full ${a.type === 'danger' ? 'bg-red-500' : a.type === 'warning' ? 'bg-amber-500' : 'bg-blue-500'}"></span>
@@ -3178,45 +3473,44 @@ function scurveLabels() {
 // Planned S-curves per group (% within each group scope, 24 months Jan25-Dec26)
 // Plan curves based on OE Mar 2026 Extension Baseline S-Curve
 // Key reference points from OE report: Feb Plan 71.06%, Mar Plan 76.26%, Apr Plan 80.36%
+// Fabrication: Feb 90.12%, Mar 97.33% | Erection: Feb 20.24%, Mar 29.63%
 const GROUP_PLANS = {
   overall:       [2,5,8,12,17,22,28,35,42,48,55,62, 67,71,76,80,84,88,91,94,96,98,99,100],
   permits:       [5,10,15,22,30,38,45,52,58,65,72,78, 82,86,90,94,97,99,100,100,100,100,100,100],
   engineering:   [15,25,38,50,62,72,80,87,93,95,97,99, 99,99,99,100,100,100,100,100,100,100,100,100],
-  procurement:   [1,3,8,15,25,38,50,62,72,82,90,95, 97,98,100,100,100,100,100,100,100,100,100,100],
-  fabrication:   [0,0,0,0,0,2,5,12,22,35,50,65, 78,85,90,95,97,99,100,100,100,100,100,100],
+  procurement:   [1,3,8,15,25,38,50,62,72,82,90,95, 97,100,100,100,100,100,100,100,100,100,100,100],
+  fabrication:   [0,0,0,0,0,2,5,12,22,35,50,65, 78,90,97,99,100,100,100,100,100,100,100,100],
   construction:  [0,0,0,0,0,0,1,2,3,5,8,12, 16,20,30,40,52,65,78,88,95,98,99,100],
   commissioning: [0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,5,20,50,80,100],
 };
 
+// Actual S-curves per group — OE report verified data points
+// Known data: Nov'25=40.33%, Dec'25≈43%, Feb'26=48.96%, Mar'26=51.45%
+// Phase actuals from OE: Eng 98.81%, Proc 94.63%, Fab 53.21%, Erect 6.28%, Comm 0%
+// Earlier months estimated from OE trajectory (project started ~Jan 2025)
+const GROUP_ACTUALS = {
+  overall:       [2,5,8,11,15,19,23,27,32,37,40,43, 46,49,51,null,null,null,null,null,null,null,null,null],
+  permits:       [5,10,15,22,30,38,45,52,58,65,72,78, 82,86,90,null,null,null,null,null,null,null,null,null],
+  engineering:   [15,25,38,50,62,72,78,84,89,93,96,98, 99,99,99,null,null,null,null,null,null,null,null,null],
+  procurement:   [1,3,8,15,25,38,50,60,70,80,88,92, 93,93,95,null,null,null,null,null,null,null,null,null],
+  fabrication:   [0,0,0,0,0,1,3,6,10,16,22,30, 38,48,53,null,null,null,null,null,null,null,null,null],
+  construction:  [0,0,0,0,0,0,0,0,1,2,3,3, 4,5,6,null,null,null,null,null,null,null,null,null],
+  commissioning: [0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,null,null,null,null,null,null,null,null,null],
+};
+
 function groupActual(group) {
-  const phases = data.phases.filter(p => p.group === group);
-  if (phases.length === 0) return Array(24).fill(null);
-  const avgProgress = phases.reduce((s, p) => s + p.progress, 0) / phases.length;
-  const plan = GROUP_PLANS[group];
-  const now = new Date();
-  const ci = (now.getFullYear() - 2025) * 12 + now.getMonth();
-  const result = [];
-  for (let i = 0; i < 24; i++) {
-    if (i > ci) { result.push(null); continue; }
-    const planAtCurrent = plan[Math.min(ci, 23)];
-    result.push(planAtCurrent > 0 ? Math.round(avgProgress * plan[i] / planAtCurrent) : 0);
-  }
-  return result;
+  // Use OE-verified actual data instead of dynamic calculation
+  const actuals = GROUP_ACTUALS[group];
+  if (!actuals) return Array(24).fill(null);
+  return [...actuals];
 }
 
 function renderSCurve() {
   const ctx = document.getElementById('chart-scurve').getContext('2d');
   if (scurveChart) scurveChart.destroy();
   const labels = scurveLabels();
-  const totalP = data.phases.reduce((s,p) => s+p.progress,0) / data.phases.length;
-  const now = new Date();
-  const ci = (now.getFullYear() - 2025) * 12 + now.getMonth();
-  const overallActual = [];
-  for (let i = 0; i < 24; i++) {
-    if (i > ci) { overallActual.push(null); continue; }
-    const pc = GROUP_PLANS.overall[Math.min(ci, 23)];
-    overallActual.push(pc > 0 ? Math.round(totalP * GROUP_PLANS.overall[i] / pc) : 0);
-  }
+  // Use OE-verified actual data
+  const overallActual = [...GROUP_ACTUALS.overall];
 
   scurveChart = new Chart(ctx, {
     type: 'line',
@@ -3856,15 +4150,8 @@ function renderMonthlyReport() {
   const ctx1 = document.getElementById('chart-rpt-scurve').getContext('2d');
   if (rptScurveChart) rptScurveChart.destroy();
   const labels = scurveLabels();
-  const totalP = data.phases.reduce((s,p) => s+p.progress,0) / data.phases.length;
-  const nowD = new Date();
-  const ci = (nowD.getFullYear() - 2025) * 12 + nowD.getMonth();
-  const overallActual = [];
-  for (let i = 0; i < 24; i++) {
-    if (i > ci) { overallActual.push(null); continue; }
-    const pc = GROUP_PLANS.overall[Math.min(ci, 23)];
-    overallActual.push(pc > 0 ? Math.round(totalP * GROUP_PLANS.overall[i] / pc) : 0);
-  }
+  // Use OE-verified actual data
+  const overallActual = [...GROUP_ACTUALS.overall];
   rptScurveChart = new Chart(ctx1, {
     type: 'line',
     data: { labels, datasets: [
@@ -4474,6 +4761,25 @@ function renderWorkProgress() {
             ${daysLeft !== null ? `<span class="text-[8px] ${daysLeft < 0 ? 'text-red-400 font-bold' : daysLeft < 30 ? 'text-amber-400' : 'text-slate-500'}">${daysLeft < 0 ? (th?'เกิน':'overdue') + ' ' + Math.abs(daysLeft) + 'd' : daysLeft + 'd'}</span>` : ''}
           </div>
         </div>
+        ${(() => {
+          const sysDeliveries = DELIVERY_PLAN.filter(d => d.system === sys.key);
+          if (sysDeliveries.length === 0) return '';
+          const upcoming = sysDeliveries.filter(d => !d.arrived && d.date);
+          const arrivedCount = sysDeliveries.filter(d => d.arrived).length;
+          const nextDel = upcoming.sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+          if (!nextDel && arrivedCount === sysDeliveries.length) return `<div class="mt-1 pt-1 border-t border-white/5"><span class="text-[8px] text-emerald-400">📦 ${arrivedCount} ${th?'รายการถึงแล้ว':'delivered'}</span></div>`;
+          let delHtml = `<div class="mt-1 pt-1 border-t border-white/5">`;
+          if (arrivedCount > 0) delHtml += `<span class="text-[8px] text-emerald-400 mr-1">✓${arrivedCount}</span>`;
+          if (nextDel) {
+            const dd = Math.ceil((new Date(nextDel.date) - new Date())/(86400000));
+            const ddColor = dd < 0 ? 'text-red-400 font-bold' : dd <= 14 ? 'text-amber-400' : 'text-cyan-400';
+            const ddText = dd < 0 ? (th?'เกิน':'overdue')+' '+Math.abs(dd)+'d' : dd+'d';
+            delHtml += `<span class="text-[8px] ${ddColor}">📦 ${nextDel.equipment.length > 18 ? nextDel.equipment.substring(0,18)+'…' : nextDel.equipment} — ${ddText}</span>`;
+          }
+          if (upcoming.length > 1) delHtml += `<span class="text-[8px] text-slate-500 ml-1">+${upcoming.length-1}</span>`;
+          delHtml += `</div>`;
+          return delHtml;
+        })()}
       </div>`;
     });
 
@@ -4786,12 +5092,8 @@ function renderPermits() {
     const planData = GROUP_PLANS.permits;
     const nowDate = new Date();
     const currentIdx = (nowDate.getFullYear() - 2025) * 12 + nowDate.getMonth();
-    const actualData = [];
-    const planAtCurrent = planData[Math.min(currentIdx, 23)];
-    for (let i = 0; i < 24; i++) {
-      if (i > currentIdx) { actualData.push(null); continue; }
-      actualData.push(planAtCurrent > 0 ? Math.round(overallPct * planData[i] / planAtCurrent) : 0);
-    }
+    // Use OE-verified actual data for permits
+    const actualData = [...GROUP_ACTUALS.permits];
     permitScurveChart = new Chart(ctx1, {
       type: 'line',
       data: { labels, datasets: [
@@ -5144,7 +5446,7 @@ function exportPermitReport() {
 }
 
 // ---- EPC SYSTEMS TRACKING ----
-const EPC_DATA_VERSION = 2; // Bump to force refresh when defaults are updated (OE Mar 2026)
+const EPC_DATA_VERSION = 3; // Bump to force refresh — delivery-centric restructure (Apr 2026)
 function getEPCSystemsData() {
   const storedVer = parseInt(localStorage.getItem('wte_epc_version') || '0');
   if (storedVer < EPC_DATA_VERSION) { localStorage.removeItem('wte_epc_systems'); localStorage.setItem('wte_epc_version', String(EPC_DATA_VERSION)); }
@@ -5170,162 +5472,195 @@ function defaultEPCSystems() {
   return WP_SYSTEMS.map(s => {
     const defaults = {
       civil:       { progress: 24, status: 'In Progress', assignee: 'KK Green / GPW', deadline: '2026-08-31', checklist: [{name:'Piling',done:true},{name:'Pile Head Cutting',done:true},{name:'Foundation & Ground Beam',done:true},{name:'Steel Structure Erection',done:false},{name:'Building Envelope',done:false}], workItems: [
-        {id:1,name:'Structural Design & Drawing',category:'engineering',status:'In Progress',progress:50,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Engineering drawings & calculation sheets at 50% overall progress. Fire-fighting pipeline concept design not yet commenced.'},
+        // === PRE-DELIVERY ===
+        {id:1,name:'Structural Design & Drawing',category:'engineering',status:'In Progress',progress:50,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Engineering drawings at 50%. Fire-fighting pipeline concept design not yet commenced.'},
         {id:2,name:'Soil Investigation & Geotechnical Report',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-05-15',remarks:'Soil test completed, piling design confirmed'},
         {id:3,name:'Steel Structure Material Procurement',category:'procurement',status:'Completed',progress:100,assignee:'GPW',deadline:'2025-08-31',remarks:'GPW 79.20% payment milestone. All structural steel procured.'},
         {id:4,name:'Concrete, Rebar & Formwork Supply',category:'procurement',status:'In Progress',progress:80,assignee:'KK Green',deadline:'2026-06-30',remarks:'Ongoing delivery for multiple work fronts'},
         {id:5,name:'Cladding & Envelope Material',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'After steel structure design finalized'},
-        {id:6,name:'Steel Fabrication — Main Plant & Boiler',category:'fabrication',status:'In Progress',progress:55,assignee:'GPW',deadline:'2026-05-31',remarks:'OE Mar 2026: Fabrication 53.21% actual vs 95.53% plan (-42.32pp). GPW fabrication behind recovery baseline.'},
+        {id:6,name:'Steel Fabrication — Main Plant & Boiler',category:'fabrication',status:'In Progress',progress:55,assignee:'GPW',deadline:'2026-05-31',remarks:'OE Mar 2026: Fabrication 53.21% vs 97.33% plan. GPW behind recovery baseline.'},
         {id:7,name:'Steel Fabrication — Turbine Hall & Auxiliary',category:'fabrication',status:'In Progress',progress:40,assignee:'GPW',deadline:'2026-05-31',remarks:'Turbine building steel columns fabricated, beam fabrication ongoing'},
-        {id:18,name:'Steel Structure Delivery — Batch 1 (Columns)',category:'delivery',status:'Completed',progress:100,assignee:'GPW',deadline:'2026-02-28',remarks:'Main columns & beams delivered to site'},
-        {id:19,name:'Steel Structure Delivery — Batch 2 (Boiler/TG)',category:'delivery',status:'In Progress',progress:50,assignee:'GPW',deadline:'2026-05-15',remarks:'Boiler house & turbine hall steel delivery ongoing'},
-        {id:20,name:'Steel Structure Delivery — Batch 3 (Auxiliary)',category:'delivery',status:'Not Started',progress:0,assignee:'GPW',deadline:'2026-06-30',remarks:'Fuel tower, FGT area steel'},
-        {id:8,name:'Piling & Pile Head Cutting',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2026-02-28',remarks:'OE: Piling completed in all main process areas (Stacks, ID Fan, FGT, Boilers, Combustion). Warehouse area pile head cutting ongoing Mar 2026.'},
-        {id:9,name:'Foundation & Ground Beam — Main Plant',category:'construction',status:'In Progress',progress:70,assignee:'KK Green',deadline:'2026-05-31',remarks:'OE Mar 2026: Stack foundation rebar & formwork works (wt. 0.247%). Foundation verification for erection continuity.'},
-        {id:10,name:'Cooling Tower Concrete Structure',category:'construction',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Cooling water tower lean concrete / formwork works (wt. 1.036%)'},
-        {id:11,name:'Turbine Hall & Control/Switchgear Room',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-07-31',remarks:'OE Mar 2026: Steel column erection for TG building (wt. 1.884%). Structural alignment checks ongoing.'},
-        {id:12,name:'Transformer Foundation & Yard',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Grading in transformer/DG areas (wt. 0.060%)'},
-        {id:13,name:'Warehouse & Dumping Pit Area',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Pile head cutting in warehouse/dumping-pit area (wt. 0.992%)'},
-        {id:14,name:'Water Treatment — Clarifier Tank Foundation',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Clarifier tank foundation 70 cu/hr concrete (wt. 0.143%). Jet clarifier/water tank assembly.'},
-        {id:15,name:'Weighing Scale Building & Truck Scale',category:'construction',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Weighing scale building works (wt. 0.070%)'},
-        {id:21,name:'Biogas Pond Excavation',category:'construction',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Biogas pond excavation continuing'},
-        {id:16,name:'Road, Drainage & Site Finishing',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
-        {id:17,name:'Underground Piping & Utilities',category:'system',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-07-31',remarks:'Drainage piping started. Fire-fighting pipeline NOT yet commenced — key interface item per OE.'}
+        {id:8,name:'Piling & Pile Head Cutting',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2026-02-28',remarks:'Piling completed in all main areas. Warehouse pile head cutting ongoing Mar 2026.'},
+        {id:9,name:'Foundation & Ground Beam — Main Plant',category:'construction',status:'In Progress',progress:70,assignee:'KK Green',deadline:'2026-04-15',remarks:'[PRE-DELIVERY: before Warehouse 1st Apr 30] Stack foundation rebar & formwork works.'},
+        {id:10,name:'Warehouse Foundation & Laydown Area',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-04-15',remarks:'[PRE-DELIVERY: Warehouse 1st arrives Apr 30] Foundation finished by Mar 30 per delivery plan.'},
+        // === DELIVERIES ===
+        {id:18,name:'📦 J-Bolt for Warehouse — Arrived',category:'delivery',status:'Completed',progress:100,assignee:'GPW',deadline:'2026-02-03',remarks:'✅ Arrived to site 3 Feb 2026 (China)'},
+        {id:19,name:'📦 Turbine Building Steel — Arrived',category:'delivery',status:'Completed',progress:100,assignee:'GPW',deadline:'2026-02-18',remarks:'✅ Arrived to site 18-19 Feb 2026 (China)'},
+        {id:22,name:'📦 Warehouse Building 1st Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'GPW',deadline:'2026-04-30',remarks:'🚚 Est. 30 Apr 2026 (China). Prereq: Foundation finished Mar 30'},
+        {id:23,name:'📦 Warehouse Building 2nd Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'GPW',deadline:'2026-05-04',remarks:'🚚 Est. 4 May 2026 (China)'},
+        {id:24,name:'📦 Warehouse Building 3rd Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'GPW',deadline:'2026-05-15',remarks:'🚚 Est. 15 May 2026 (China)'},
+        {id:25,name:'📦 Crane (Pending PO)',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:'🚚 90 days from PO (China). PO not yet issued.'},
+        // === POST-DELIVERY → COD ===
+        {id:11,name:'Turbine Hall Steel Erection',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-06-30',remarks:'[POST-DELIVERY: Turbine Building arrived Feb 18] Steel column erection (wt. 1.884%).'},
+        {id:12,name:'Warehouse Building Erection & Envelope',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'[POST-DELIVERY: 3 shipments Apr-May] Full warehouse assembly after all 3 shipments arrive.'},
+        {id:13,name:'Transformer Foundation & Yard',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: 2500kVA Transformer May 20] Grading in transformer/DG areas.'},
+        {id:14,name:'Water Treatment Tank Foundation',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-05-05',remarks:'[PRE-DELIVERY: Water Tank #1 May 10] Clarifier tank foundation.'},
+        {id:15,name:'Cooling Tower Concrete Structure',category:'construction',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-06-30',remarks:'Cooling water tower lean concrete / formwork works (wt. 1.036%)'},
+        {id:16,name:'Road, Drainage & Site Finishing',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY: after all major deliveries] Must complete before COD.'},
+        {id:17,name:'Underground Piping & Utilities',category:'system',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-08-31',remarks:'Fire-fighting pipeline NOT yet commenced. Must complete before COD Nov 30.'}
       ] },
-      fuel:        { progress: 8, status: 'In Progress', assignee: 'KK Green / GPW', deadline: '2026-09-30', checklist: [{name:'Design Review',done:true},{name:'Equipment Procurement',done:false},{name:'Steel Fabrication',done:false},{name:'Steel Erection',done:false},{name:'Equipment Installation',done:false}], workItems: [
+      fuel:        { progress: 8, status: 'In Progress', assignee: 'KK Green / GPW', deadline: '2026-10-31', checklist: [{name:'Design Review',done:true},{name:'Equipment Procurement',done:false},{name:'Steel Fabrication',done:false},{name:'Steel Erection',done:false},{name:'Equipment Installation',done:false}], workItems: [
+        // === PRE-DELIVERY ===
         {id:101,name:'Fuel Handling P&ID & Layout Design',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-08-31',remarks:'P&ID and layout drawings approved'},
         {id:102,name:'Crane & Conveyor Detail Design',category:'engineering',status:'In Progress',progress:70,assignee:'KK Green',deadline:'2026-04-30',remarks:'Layout rev.2 under review. Interface with combustion system.'},
         {id:103,name:'Overhead Crane Procurement',category:'procurement',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-06-30',remarks:'Quotation received, PO pending'},
-        {id:104,name:'Conveyor Belt System',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Spec finalized, vendor selection pending'},
-        {id:105,name:'Shredder Machine',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Vendor shortlisted'},
-        {id:109,name:'Fuel Tower Steel Fabrication',category:'fabrication',status:'In Progress',progress:50,assignee:'GPW',deadline:'2026-04-30',remarks:'OE Mar 2026: Fuel tower steel structure fabrication at GPW workshop'},
-        {id:110,name:'Fuel Tower Steel Delivery',category:'delivery',status:'In Progress',progress:30,assignee:'GPW',deadline:'2026-05-15',remarks:'Partial delivery to site for erection'},
-        {id:111,name:'Fuel Tower Steel Erection',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Fuel tower steel structure erection commenced as one of the principal work fronts'},
-        {id:106,name:'Fuel Pit & Bunker Construction',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'After foundation and steel structure complete'},
-        {id:107,name:'Conveyor Support & Chute Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'After equipment delivery'},
-        {id:108,name:'Fuel System Controls & Wiring',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'DCS integration after equipment install'}
+        {id:104,name:'Conveyor Belt System & Shredder Procurement',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: BMH Shredder Aug 25] Spec finalized, vendor selection pending'},
+        {id:109,name:'Fuel Tower Steel Fabrication',category:'fabrication',status:'In Progress',progress:50,assignee:'GPW',deadline:'2026-04-30',remarks:'OE Mar 2026: Fuel tower steel fabrication at GPW workshop'},
+        {id:112,name:'BMH Shredder Foundation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-10',remarks:'[PRE-DELIVERY: BMH Shredder Aug 25] Foundation must be finished by Jul 10'},
+        {id:111,name:'Fuel Tower Steel Erection',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: before equipment install] Steel structure erection commenced'},
+        {id:106,name:'Fuel Pit & Bunker Construction',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'[PRE-DELIVERY: before shredder] After foundation and steel structure complete'},
+        // === DELIVERY ===
+        {id:110,name:'📦 BMH Shredder Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-25',remarks:'🚚 Est. 25 Aug 2026 (Finland). Prereq: Foundation finished Jul 10'},
+        // === POST-DELIVERY → COD ===
+        {id:113,name:'Shredder Installation & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY: Shredder Aug 25] Install within 5 weeks after delivery'},
+        {id:107,name:'Conveyor Support & Chute Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY] After shredder install complete'},
+        {id:108,name:'Fuel System Controls, Wiring & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] DCS integration. Must complete before COD Nov 30.'}
       ] },
-      ash:         { progress: 3, status: 'In Progress', assignee: 'KK Green / LAWI MY', deadline: '2026-10-31', checklist: [{name:'Design',done:true},{name:'Procurement',done:false},{name:'Fabrication',done:false},{name:'Installation',done:false}], workItems: [
+      ash:         { progress: 3, status: 'In Progress', assignee: 'KK Green / LAWI MY', deadline: '2026-11-15', checklist: [{name:'Design',done:true},{name:'Procurement',done:false},{name:'Fabrication',done:false},{name:'Installation',done:false}], workItems: [
+        // === PRE-DELIVERY ===
         {id:201,name:'Ash Handling System Design & P&ID',category:'engineering',status:'Completed',progress:100,assignee:'LAWI',deadline:'2025-10-31',remarks:'Design approved. Bottom ash extractor & fly ash conveyor layout finalized.'},
         {id:208,name:'Ash Handling Detail Engineering',category:'engineering',status:'In Progress',progress:40,assignee:'LAWI MY',deadline:'2026-05-31',remarks:'Interface coordination with combustion grate and boiler systems'},
-        {id:202,name:'Bottom Ash Extractor & Conveyor',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Spec issued, within LAWI-MY scope of supply'},
-        {id:203,name:'Fly Ash Silo & Pneumatic Transport',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Part of LAWI-MY accessories package'},
-        {id:209,name:'Ash Quench System Components',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'Local procurement'},
-        {id:204,name:'Ash Handling Equipment Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-31',remarks:'Dependent on combustion system fabrication progress'},
-        {id:210,name:'Ash Equipment Delivery to Site',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-09-15',remarks:'After fabrication, coordinate with boiler equipment delivery'},
-        {id:205,name:'Ash Conveyor & Extractor Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'After boiler & combustion erection complete'},
-        {id:206,name:'Fly Ash Silo Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:''},
-        {id:207,name:'Ash System Controls & DCS Integration',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'Link to main DCS for automated ash removal'}
+        {id:202,name:'Bottom Ash Extractor & Conveyor',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'[PRE-DELIVERY] Spec issued, within LAWI-MY scope'},
+        {id:203,name:'Fly Ash Silo & Pneumatic Transport',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'[PRE-DELIVERY] Part of LAWI-MY accessories package'},
+        {id:204,name:'Ash Handling Equipment Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-31',remarks:'[PRE-DELIVERY] Dependent on combustion system progress'},
+        {id:209,name:'Ash Equipment Foundation & Prep',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'[PRE-DELIVERY] Foundation ready before equipment arrival'},
+        // === DELIVERY ===
+        {id:210,name:'📦 Ash Handling System Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-09-30',remarks:'🚚 4 months after PO (China). PO not yet issued. Coordinate with boiler delivery.'},
+        // === POST-DELIVERY → COD ===
+        {id:205,name:'Ash Conveyor & Extractor Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] After boiler & combustion erection complete'},
+        {id:206,name:'Fly Ash Silo Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] After ash equipment arrives'},
+        {id:207,name:'Ash System Controls, DCS & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Link to main DCS. Must complete before COD Nov 30.'}
       ] },
-      combustion:  { progress: 12, status: 'In Progress', assignee: 'LAWI MY / GPW / KK Green', deadline: '2026-10-31', checklist: [{name:'Pre-Engineering (LAWI)',done:true},{name:'Detail Design',done:false},{name:'Grate Fabrication',done:false},{name:'Steel Erection',done:false},{name:'Grate Installation',done:false}], workItems: [
-        {id:301,name:'Combustion Pre-Engineering (LAWI-TH)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-09-30',remarks:'OE: LAWI-TH pre-engineering for combustion, boiler & FGT completed. THB 6M paid (THB 4.02M + 1.98M).'},
-        {id:302,name:'Grate System Detail Design (LAWI MY)',category:'engineering',status:'In Progress',progress:75,assignee:'LAWI MY',deadline:'2026-04-30',remarks:'OE: Layout drawings, load data, BOMs for combustion accessories submitted under LAWI-MY 2nd payment milestone.'},
+      combustion:  { progress: 12, status: 'In Progress', assignee: 'LAWI MY / GPW / KK Green', deadline: '2026-11-15', checklist: [{name:'Pre-Engineering (LAWI)',done:true},{name:'Detail Design',done:false},{name:'Grate Fabrication',done:false},{name:'Steel Erection',done:false},{name:'Grate Installation',done:false}], workItems: [
+        // === PRE-DELIVERY ===
+        {id:301,name:'Combustion Pre-Engineering (LAWI-TH)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-09-30',remarks:'LAWI-TH pre-engineering completed. THB 6M paid.'},
+        {id:302,name:'Grate System Detail Design (LAWI MY)',category:'engineering',status:'In Progress',progress:75,assignee:'LAWI MY',deadline:'2026-04-30',remarks:'Layout drawings, load data, BOMs submitted under LAWI-MY 2nd payment.'},
         {id:311,name:'Combustion Steel Structure Design',category:'engineering',status:'Completed',progress:100,assignee:'GPW',deadline:'2025-12-31',remarks:'Combustion area structural steel design by GPW'},
-        {id:303,name:'Grate Bars, Segments & Accessories',category:'procurement',status:'In Progress',progress:40,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'OE: Confirmed POs for combustion accessories under LAWI-MY 3rd payment (THB 42.09M). Manufacturing commenced.'},
-        {id:304,name:'Primary & Secondary Air Fans',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'Within LAWI-MY scope of supply'},
-        {id:312,name:'Refractory Materials',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Refractory lining material for combustion chamber'},
-        {id:305,name:'Grate System Fabrication',category:'fabrication',status:'In Progress',progress:15,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'OE: LAWI-MY fabrication ongoing. Overall fabrication 53.21% vs 95.53% plan. Combustion parts in early production.'},
-        {id:306,name:'Refractory Lining Prefabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:'After grate delivery'},
+        {id:303,name:'Grate Bars, Segments & Accessories',category:'procurement',status:'In Progress',progress:40,assignee:'LAWI MY',deadline:'2026-04-10',remarks:'[PRE-DELIVERY: Ash Hopper & Grate Apr 15] POs confirmed under LAWI-MY 3rd payment.'},
+        {id:304,name:'Primary & Secondary Air Fans',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-06-15',remarks:'[PRE-DELIVERY: Fan & Rotary Jul 1] Within LAWI-MY scope'},
+        {id:312,name:'Refractory Materials',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: before grate install] Refractory lining material'},
         {id:313,name:'Combustion Steel Structure Fabrication',category:'fabrication',status:'In Progress',progress:60,assignee:'GPW',deadline:'2026-04-30',remarks:'GPW workshop fabrication'},
-        {id:314,name:'Combustion Steel Delivery to Site',category:'delivery',status:'In Progress',progress:40,assignee:'GPW',deadline:'2026-05-15',remarks:'Partial delivery ongoing'},
-        {id:310,name:'Grate System & Accessories Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-15',remarks:'From LAWI MY factory. Part of 4th payment L/C milestone (THB 96.7M shipment value).'},
-        {id:315,name:'Combustion Steel Structure Erection',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Combustion chamber column installation as one of principal erection work fronts. Alignment checks ongoing.'},
-        {id:307,name:'Grate Installation & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-09-30',remarks:'Critical path. After grate delivery and steel erection complete.'},
-        {id:308,name:'Combustion Air System Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'Primary & secondary air ducts and fans'},
-        {id:309,name:'Combustion Control & DCS Integration',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'Link to main DCS/SCADA system'}
+        {id:305,name:'Grate System Fabrication',category:'fabrication',status:'In Progress',progress:15,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'LAWI-MY fabrication ongoing. Combustion parts in early production.'},
+        {id:315,name:'Combustion Steel Structure Erection',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-05-31',remarks:'[PRE-DELIVERY: before equipment install] Column installation ongoing.'},
+        {id:316,name:'Storage Area Preparation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-04-10',remarks:'[PRE-DELIVERY: Combustion Instrument May 14] Storage area ready Apr 10'},
+        // === DELIVERIES ===
+        {id:314,name:'📦 Combustion Steel Structure — Arrived',category:'delivery',status:'Completed',progress:100,assignee:'GPW',deadline:'2026-03-10',remarks:'✅ Arrived to site 10-11 Mar 2026 (China)'},
+        {id:317,name:'📦 Ash Hopper Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-04-15',remarks:'🚚 Est. 10-20 Apr 2026 (China)'},
+        {id:318,name:'📦 Fuel Dosing, Moving Grate & Hydraulic',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-04-15',remarks:'🚚 Est. 10-20 Apr 2026 (China)'},
+        {id:319,name:'📦 Combustion Instrument',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI GER',deadline:'2026-05-14',remarks:'🚚 Est. 14 May 2026 (Germany). Prereq: Storage area ready Apr 10'},
+        {id:320,name:'📦 Combustion Platform',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'🚚 Est. 15 May 2026 (China)'},
+        {id:321,name:'📦 Combustion Fan & Rotary',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-01',remarks:'🚚 Est. 1 Jul 2026 (China). Prereq: Fan foundation finished Mar 15'},
+        // === POST-DELIVERY → COD ===
+        {id:307,name:'Grate Installation & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-08-31',remarks:'[POST-DELIVERY: Grate Apr 15 + Fan Jul 1] Critical path. After grate & steel erection.'},
+        {id:306,name:'Refractory Lining Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY → COD] After grate installation'},
+        {id:308,name:'Combustion Air System Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY: Fan Jul 1] Primary & secondary air ducts and fans'},
+        {id:309,name:'Combustion Control & DCS Integration',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Link to DCS/SCADA. Must complete before COD Nov 30.'}
       ] },
-      boiler:      { progress: 30, status: 'In Progress', assignee: 'SLB / LAWI / GPW / KK Green', deadline: '2026-10-31', checklist: [{name:'Thermal Design (LAWI)',done:true},{name:'GA Drawing (SLB)',done:true},{name:'Steel Structure Fab',done:true},{name:'APH & Economizer Fab',done:true},{name:'Membrane Wall Fab',done:false},{name:'Superheater Fab',done:false},{name:'Shipment to Site',done:false},{name:'Erection',done:false}], workItems: [
-        {id:401,name:'Boiler Thermal Design & PPSD (LAWI)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-12-31',remarks:'OE: PPSD recalculation completed. Pre-engineering for boiler completed under LAWI-TH scope.'},
-        {id:402,name:'Boiler GA Drawing Package (SLB)',category:'engineering',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-31',remarks:'OE: SLB GA/erection drawing package submitted. 2nd payment milestone (THB 21.67M L/C) certified Jan 2026.'},
-        {id:418,name:'Boiler Accessories Detail Design (LAWI MY)',category:'engineering',status:'In Progress',progress:70,assignee:'LAWI MY',deadline:'2026-05-31',remarks:'OE: BOMs for boiler accessories submitted under LAWI-MY 2nd payment. Interface with SLB.'},
+      boiler:      { progress: 30, status: 'In Progress', assignee: 'SLB / LAWI / GPW / KK Green', deadline: '2026-11-15', checklist: [{name:'Thermal Design (LAWI)',done:true},{name:'GA Drawing (SLB)',done:true},{name:'Steel Structure Fab',done:true},{name:'APH & Economizer Fab',done:true},{name:'Membrane Wall Fab',done:false},{name:'Superheater Fab',done:false},{name:'Shipment to Site',done:false},{name:'Erection',done:false}], workItems: [
+        // === PRE-DELIVERY ===
+        {id:401,name:'Boiler Thermal Design & PPSD (LAWI)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-12-31',remarks:'PPSD recalculation completed.'},
+        {id:402,name:'Boiler GA Drawing Package (SLB)',category:'engineering',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-31',remarks:'GA/erection drawings submitted. 2nd payment (THB 21.67M) certified Jan 2026.'},
+        {id:418,name:'Boiler Accessories Detail Design (LAWI MY)',category:'engineering',status:'In Progress',progress:70,assignee:'LAWI MY',deadline:'2026-04-15',remarks:'[PRE-DELIVERY: Boiler #0 Apr 19] BOMs submitted. Interface with SLB.'},
         {id:403,name:'Boiler Steel Structure Material',category:'procurement',status:'Completed',progress:100,assignee:'SLB',deadline:'2025-10-31',remarks:'All steel delivered to SLB workshop'},
         {id:404,name:'Superheater Tube TP347H Material',category:'procurement',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-02-28',remarks:'Material grade changed per LAWI recommendation'},
-        {id:419,name:'SLB Material Procurement Report',category:'procurement',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-02-28',remarks:'OE: 3rd payment milestone (THB 21.67M L/C) — material procurement report submitted & certified Feb 2026.'},
-        {id:420,name:'Boiler Accessories Parts (LAWI MY)',category:'procurement',status:'In Progress',progress:50,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'OE: POs confirmed under LAWI-MY 3rd payment milestone. Manufacturing commenced.'},
-        {id:405,name:'Boiler Steel Structure Fabrication',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-31',remarks:'OE: Ready for shipment from SLB workshop'},
-        {id:406,name:'Air Preheater (APH) Fabrication',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-15',remarks:'OE: 09CrCuSb material + enamel coating applied. Complete.'},
-        {id:407,name:'Economizer Fabrication (3 packages)',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-15',remarks:'OE: All 3 economizer packages fabrication complete at SLB'},
-        {id:408,name:'Membrane Wall Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'SLB',deadline:'2026-05-31',remarks:'OE Mar 2026: Membrane wall production ~20%. Critical path item.'},
-        {id:409,name:'Superheater Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'SLB',deadline:'2026-05-31',remarks:'OE Mar 2026: Superheater production ~20%. TP347H tubes.'},
-        {id:421,name:'Boiler Accessories Fabrication (LAWI MY)',category:'fabrication',status:'In Progress',progress:10,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'LAWI MY workshop — boiler accessories parts in early fabrication'},
-        {id:415,name:'Boiler Steel Structure Shipment (SLB)',category:'delivery',status:'In Progress',progress:50,assignee:'SLB',deadline:'2026-05-15',remarks:'OE: Steel structure ready for shipment. Transport planning from SLB to Surat Thani site.'},
-        {id:416,name:'Economizer & APH Shipment (SLB)',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-05-31',remarks:'From SLB workshop to site. Oversize cargo.'},
-        {id:417,name:'Membrane Wall & Superheater Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-06-30',remarks:'After fabrication complete. Heavy lift coordination required.'},
-        {id:422,name:'Boiler Accessories Delivery (LAWI MY)',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-15',remarks:'Part of LAWI-MY 4th payment L/C shipment milestone (THB 96.7M)'},
-        {id:410,name:'Boiler Steel Structure Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'After SLB shipment. Heavy crane mobilization required.'},
-        {id:411,name:'Membrane Wall & Steam Drum Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'Precision alignment required'},
-        {id:412,name:'Superheater & Economizer Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:'Sequential installation after membrane wall'},
-        {id:413,name:'Boiler Piping, Valves & Soot Blower',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'DN50 main, DN80 distribution. Soot blower system.'},
-        {id:414,name:'Boiler Hydrostatic Test & Commissioning Prep',category:'system',status:'Not Started',progress:0,assignee:'KK Green / LAWI',deadline:'2026-10-31',remarks:'Hydro test before insulation. Pre-commissioning checks.'}
+        {id:405,name:'Boiler Steel Structure Fabrication',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-31',remarks:'Ready for shipment from SLB'},
+        {id:406,name:'Air Preheater (APH) Fabrication',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-15',remarks:'09CrCuSb + enamel coating applied. Complete.'},
+        {id:407,name:'Economizer Fabrication (3 packages)',category:'fabrication',status:'Completed',progress:100,assignee:'SLB',deadline:'2026-01-15',remarks:'All 3 economizer packages complete at SLB'},
+        {id:408,name:'Membrane Wall Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'SLB',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: Boiler 2nd Jul 22] Membrane wall ~20%. Critical path.'},
+        {id:409,name:'Superheater Fabrication',category:'fabrication',status:'In Progress',progress:20,assignee:'SLB',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: Boiler 2nd Jul 22] Superheater ~20%. TP347H tubes.'},
+        {id:421,name:'Boiler Accessories Fabrication (LAWI MY)',category:'fabrication',status:'In Progress',progress:10,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'LAWI MY workshop — early fabrication'},
+        {id:423,name:'Boiler Foundation & Laydown Area Prep',category:'construction',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-04-15',remarks:'[PRE-DELIVERY: Boiler #0 Apr 19] Foundation finished Mar 30 per delivery plan. Laydown area ready Apr 20.'},
+        // === DELIVERIES ===
+        {id:415,name:'📦 Steam Boiler Shipment #0 (Steel Structure)',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-04-19',remarks:'🚚 Est. 19 Apr 2026 (China). Prereq: Boiler steel structure, Deaerator, Steam air heater'},
+        {id:424,name:'📦 Steam Boiler Shipment 1st',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-04-22',remarks:'🚚 Est. 22 Apr 2026 (China). Prereq: Foundation Mar 30 / Laydown area Apr 20'},
+        {id:425,name:'📦 Steam Boiler Shipment #1.5',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-05-20',remarks:'🚚 Est. 20 May 2026 (China). Includes: Pumps, Steam air heaters, Internal flue gas ducts'},
+        {id:417,name:'📦 Steam Boiler Shipment 2nd (Water Wall, SH)',category:'delivery',status:'Not Started',progress:0,assignee:'SLB',deadline:'2026-07-22',remarks:'🚚 Est. 22 Jul 2026 (China). Prereq: Laydown area ready Jul 10. Includes: Water wall, Superheater'},
+        // === POST-DELIVERY → COD ===
+        {id:410,name:'Boiler Steel Structure Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'[POST-DELIVERY: #0 Apr 19 + 1st Apr 22] Heavy crane mobilization required.'},
+        {id:411,name:'Membrane Wall & Steam Drum Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:'[POST-DELIVERY: 2nd Jul 22] Precision alignment required. After wall delivery.'},
+        {id:412,name:'Superheater & Economizer Install',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY → COD] Sequential installation after membrane wall'},
+        {id:413,name:'Boiler Piping, Valves & Soot Blower',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] DN50 main, DN80 distribution.'},
+        {id:414,name:'Boiler Hydrostatic Test & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green / LAWI',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Hydro test before insulation. Must complete before COD Nov 30.'}
       ] },
       fgt:         { progress: 5, status: 'In Progress', assignee: 'LAWI MY / Longking / KK Green', deadline: '2026-11-30', checklist: [{name:'Pre-Engineering (LAWI)',done:true},{name:'Detail Design',done:false},{name:'Equipment Procurement',done:false},{name:'Fabrication',done:false},{name:'Installation',done:false},{name:'CEMS',done:false}], workItems: [
-        {id:501,name:'FGT Pre-Engineering (LAWI-TH)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-09-30',remarks:'OE: Pre-engineering for FGT completed under LAWI-TH scope (THB 6M total for combustion+boiler+FGT)'},
-        {id:502,name:'FGT System Detail Design & P&ID',category:'engineering',status:'In Progress',progress:60,assignee:'LAWI MY',deadline:'2026-05-31',remarks:'OE: Stack dispersion modeling in progress. Gas duct material TQ-06 pending resolution.'},
+        // === PRE-DELIVERY ===
+        {id:501,name:'FGT Pre-Engineering (LAWI-TH)',category:'engineering',status:'Completed',progress:100,assignee:'LAWI TH',deadline:'2025-09-30',remarks:'Pre-engineering completed (THB 6M total)'},
+        {id:502,name:'FGT System Detail Design & P&ID',category:'engineering',status:'In Progress',progress:60,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: FGT 1st May 22] Stack dispersion modeling. TQ-06 pending.'},
         {id:512,name:'Stack Foundation Design',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2026-01-31',remarks:'Foundation design completed, piling done'},
-        {id:503,name:'Bag Filter House Equipment',category:'procurement',status:'In Progress',progress:15,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Within LAWI-MY scope. POs confirmed under 3rd payment milestone.'},
-        {id:504,name:'Semi-Dry Scrubber (Lime Injection)',category:'procurement',status:'In Progress',progress:10,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Part of LAWI-MY flue gas cleaning package'},
-        {id:505,name:'Activated Carbon Injection System',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'For dioxin/furan removal'},
-        {id:506,name:'SNCR Urea System (NOx Control)',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'3 rows of spray guns for NOx reduction'},
-        {id:513,name:'Longking FGT Components',category:'procurement',status:'In Progress',progress:20,assignee:'Longking',deadline:'2026-07-31',remarks:'Longking as sub-supplier within LAWI-MY scope'},
-        {id:507,name:'Gas Duct Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-31',remarks:'OE: SUS304 material — TQ-06 (Technical Query) still pending. Critical for duct corrosion resistance.'},
-        {id:514,name:'FGT Steel Structure Fabrication',category:'fabrication',status:'In Progress',progress:30,assignee:'GPW',deadline:'2026-05-31',remarks:'FGT area structural steel at GPW workshop'},
-        {id:515,name:'Stack Section Fabrication',category:'fabrication',status:'In Progress',progress:25,assignee:'GPW',deadline:'2026-05-31',remarks:'OE: Stack section fabrication confirmed in Nov 2025 progress report'},
-        {id:511,name:'FGT Equipment Delivery (LAWI MY)',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-09-15',remarks:'Large components — bag filter, scrubber. Part of 4th payment L/C shipment milestone.'},
-        {id:516,name:'Stack Foundation Rebar & Formwork',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-05-31',remarks:'OE Mar 2026: Stack foundation rebar & formwork works (wt. 0.247%)'},
-        {id:508,name:'FGT Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'After boiler erection and FGT equipment delivery'},
-        {id:509,name:'Stack Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'After stack section delivery from GPW'},
-        {id:510,name:'CEMS & Emission Monitoring System',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'Continuous Emission Monitoring System. Required for PCD compliance before COD.'}
+        {id:503,name:'Bag Filter & Scrubber Procurement',category:'procurement',status:'In Progress',progress:15,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: FGT 1st May 22] POs confirmed under 3rd payment.'},
+        {id:506,name:'SNCR & Activated Carbon Systems',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'[PRE-DELIVERY: FGT 2nd Aug 22] NOx & dioxin removal'},
+        {id:514,name:'FGT Steel Structure Fabrication',category:'fabrication',status:'In Progress',progress:30,assignee:'GPW',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: FGT 1st May 22] FGT area structural steel'},
+        {id:507,name:'Gas Duct Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-31',remarks:'[PRE-DELIVERY: FGT 2nd Aug 22] SUS304 material — TQ-06 pending'},
+        {id:516,name:'FGT Foundation & Laydown Area',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-04-05',remarks:'[PRE-DELIVERY: FGT 1st May 22] Foundation must finish Apr 5 per delivery plan'},
+        {id:517,name:'Stack Foundation Rebar & Formwork',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-05-31',remarks:'Stack foundation works (wt. 0.247%)'},
+        // === DELIVERIES ===
+        {id:511,name:'📦 Flue Gas Cleaning System 1st Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-05-22',remarks:'🚚 Est. 22 May 2026 (China). Prereq: Foundation finished Apr 5'},
+        {id:518,name:'📦 Flue Gas Cleaning System 2nd Shipment',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-22',remarks:'🚚 Est. 22 Aug 2026 (China). Prereq: Foundation finished Apr 8'},
+        // === POST-DELIVERY → COD ===
+        {id:508,name:'FGT Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY: 1st May 22 + 2nd Aug 22] After boiler erection and FGT delivery'},
+        {id:509,name:'Stack Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY → COD] After stack section delivery from GPW'},
+        {id:519,name:'FGT Piping, Ducts & Connections',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] Gas duct connections to boiler and stack'},
+        {id:510,name:'CEMS & Emission Monitoring Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'[POST-DELIVERY → COD] PCD compliance. Must complete by COD Nov 30.'}
       ] },
       turbine_gen: { progress: 22, status: 'In Progress', assignee: 'Shinko / KK Green / GPW', deadline: '2026-11-30', checklist: [{name:'Turbine PO (Shinko)',done:true},{name:'TG Building Steel Erection',done:false},{name:'Turbine Fabrication',done:false},{name:'Turbine Delivery',done:false},{name:'Installation',done:false},{name:'Commissioning',done:false}], workItems: [
-        {id:601,name:'Turbine Spec & Heat Balance Design',category:'engineering',status:'Completed',progress:100,assignee:'Shinko',deadline:'2025-08-31',remarks:'OE: 9.9 MWel design. Turbine engineering completed.'},
+        // === PRE-DELIVERY ===
+        {id:601,name:'Turbine Spec & Heat Balance Design',category:'engineering',status:'Completed',progress:100,assignee:'Shinko',deadline:'2025-08-31',remarks:'9.9 MWel design. Turbine engineering completed.'},
         {id:602,name:'TG Building Structural Design',category:'engineering',status:'Completed',progress:100,assignee:'GPW',deadline:'2025-11-30',remarks:'Turbine hall structural steel design by GPW'},
-        {id:603,name:'Steam Turbine PO (Shinko)',category:'procurement',status:'Completed',progress:100,assignee:'Shinko',deadline:'2025-06-30',remarks:'OE: PO placed. Down payment THB 6.93M (Jun 2025) + 25% THB 16.98M (Aug 2025) + 10% THB 6.67M (Oct 2025). Payment milestone 45%.'},
+        {id:603,name:'Steam Turbine PO (Shinko)',category:'procurement',status:'Completed',progress:100,assignee:'Shinko',deadline:'2025-06-30',remarks:'PO placed. Payment milestone 45%.'},
         {id:604,name:'Generator PO',category:'procurement',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'Generator procurement completed'},
-        {id:614,name:'Turbine Local Parts (GPW)',category:'procurement',status:'Completed',progress:100,assignee:'GPW',deadline:'2025-12-31',remarks:'OE: GPW 2nd payment — procurement of turbine local parts fabrication materials'},
-        {id:605,name:'Steam Turbine Manufacturing (Shinko)',category:'fabrication',status:'In Progress',progress:40,assignee:'Shinko',deadline:'2026-07-31',remarks:'OE: Manufacturing in Japan. Shinko payment milestone 45%. L/C THB 38.09M pending bank issuance.'},
-        {id:606,name:'TG Building Steel Fabrication (GPW)',category:'fabrication',status:'In Progress',progress:65,assignee:'GPW',deadline:'2026-04-30',remarks:'OE: GPW 3rd payment milestone — 30% fabrication for steel structure & turbine local parts achieved (THB 89M certified Aug 2025)'},
-        {id:615,name:'Turbine Auxiliary Equipment Fabrication',category:'fabrication',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'Lube oil system, control panels'},
-        {id:612,name:'Turbine Shipment from Japan (Shinko)',category:'delivery',status:'Not Started',progress:0,assignee:'Shinko',deadline:'2026-08-15',remarks:'OE: Sea freight Japan → Surat Thani. Oversize cargo, special transport. L/C milestone.'},
-        {id:613,name:'TG Building Steel Delivery',category:'delivery',status:'In Progress',progress:40,assignee:'GPW',deadline:'2026-05-15',remarks:'Partial delivery to site for erection'},
-        {id:616,name:'TG Building Steel Erection',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Steel column erection for Steam Turbine and Generator building — one of principal erection work fronts.'},
-        {id:607,name:'TG Foundation & Precision Baseplate',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-07-31',remarks:'OE Mar 2026: TG foundation work. Precision foundation required for turbine alignment.'},
-        {id:608,name:'Turbine & Generator Setting & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'Shinko / KK Green',deadline:'2026-09-30',remarks:'Supervised by Shinko engineer. After turbine delivery.'},
-        {id:609,name:'Main Steam & Extraction Piping',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'High-pressure steam piping from boiler to turbine'},
-        {id:610,name:'Lube Oil, Control Oil & Gland Steam',category:'system',status:'Not Started',progress:0,assignee:'Shinko / KK Green',deadline:'2026-10-31',remarks:'Auxiliary systems'},
-        {id:611,name:'Generator Excitation, Sync & Protection',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'Grid synchronization with PEA. G59 testing.'}
+        {id:605,name:'Steam Turbine Manufacturing (Shinko)',category:'fabrication',status:'In Progress',progress:40,assignee:'Shinko',deadline:'2026-08-31',remarks:'[PRE-DELIVERY: Turbine Sep 20] Manufacturing in Japan. L/C THB 38.09M pending.'},
+        {id:606,name:'TG Building Steel Fabrication (GPW)',category:'fabrication',status:'In Progress',progress:65,assignee:'GPW',deadline:'2026-04-30',remarks:'GPW 3rd payment milestone — 30% fabrication achieved'},
+        {id:615,name:'Turbine Auxiliary Equipment',category:'fabrication',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: Condenser Jul 20] Lube oil system, control panels'},
+        {id:616,name:'TG Building Steel Erection',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: Condenser Jul 20] Steel column erection. Principal work front.'},
+        {id:607,name:'TG Foundation & Precision Baseplate',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-05-30',remarks:'[PRE-DELIVERY: Condenser Jul 20 + Turbine Sep 20] Foundation must finish May 30 per delivery plan'},
+        {id:617,name:'Condenser & Turbine Laydown Area Prep',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-10',remarks:'[PRE-DELIVERY: Condenser Jul 20] Storage area preparation'},
+        // === DELIVERIES ===
+        {id:618,name:'📦 Condenser Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'Shinko',deadline:'2026-07-20',remarks:'🚚 Est. 20 Jul 2026 (Japan). Prereq: Foundation finished May 30 / Storage area'},
+        {id:612,name:'📦 Turbine Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'Shinko',deadline:'2026-09-20',remarks:'🚚 Est. 20 Sep 2026 (Japan). Prereq: Foundation finished May 30 / Laydown area. Oversize cargo.'},
+        // === POST-DELIVERY → COD ===
+        {id:619,name:'Condenser Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:'[POST-DELIVERY: Condenser Jul 20] Install within 8 weeks after delivery'},
+        {id:608,name:'Turbine & Generator Setting & Alignment',category:'construction',status:'Not Started',progress:0,assignee:'Shinko / KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY: Turbine Sep 20] Supervised by Shinko engineer. ~6 weeks.'},
+        {id:609,name:'Main Steam & Extraction Piping',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] High-pressure steam piping from boiler to turbine'},
+        {id:610,name:'Lube Oil, Control Oil & Gland Steam',category:'system',status:'Not Started',progress:0,assignee:'Shinko / KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Auxiliary systems'},
+        {id:611,name:'Generator Sync, Protection & Grid Connection',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'[POST-DELIVERY → COD] PEA G59 testing. Must complete by COD Nov 30.'}
       ] },
-      cooling:     { progress: 8, status: 'In Progress', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:true},{name:'Cooling Tower Procurement',done:false},{name:'Foundation',done:false},{name:'Piping',done:false},{name:'Commissioning',done:false}], workItems: [
+      cooling:     { progress: 8, status: 'In Progress', assignee: 'KK Green', deadline: '2026-11-15', checklist: [{name:'Design',done:true},{name:'Cooling Tower Procurement',done:false},{name:'Foundation',done:false},{name:'Piping',done:false},{name:'Commissioning',done:false}], workItems: [
+        // === PRE-DELIVERY (linked to Condenser delivery Jul 20) ===
         {id:701,name:'Cooling System P&ID & Layout',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-10-31',remarks:'P&ID and cooling water pipe sizing completed'},
-        {id:702,name:'Cooling Tower Specification',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-11-30',remarks:'Cooling tower thermal calculation and specification'},
-        {id:703,name:'Cooling Tower Equipment',category:'procurement',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-07-15',remarks:'OE: Cooling-tower equipment procurement ahead of baseline with POs in place'},
-        {id:704,name:'Cooling Water Pumps & Valves',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Spec finalized'},
-        {id:708,name:'Cooling Tower Concrete Structure',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-07-31',remarks:'OE Mar 2026: Cooling water tower lean concrete / formwork works (weighted 1.036% of civil)'},
-        {id:705,name:'Cooling Tower Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:'After concrete structure and equipment delivery'},
-        {id:706,name:'Cooling Water Piping Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'CW piping from condenser to cooling tower'},
-        {id:707,name:'Cooling System Controls & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'VFD drives, temperature control, DCS integration'}
+        {id:702,name:'Cooling Tower Specification',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-11-30',remarks:'Cooling tower thermal calculation completed'},
+        {id:703,name:'Cooling Tower Equipment Procurement',category:'procurement',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY: linked to Condenser Jul 20] POs in place. Ahead of baseline.'},
+        {id:704,name:'Cooling Water Pumps & Valves',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:'[PRE-DELIVERY] Spec finalized'},
+        {id:708,name:'Cooling Tower Concrete Structure',category:'construction',status:'In Progress',progress:25,assignee:'KK Green',deadline:'2026-07-15',remarks:'[PRE-DELIVERY: linked to Condenser Jul 20] Lean concrete / formwork (wt. 1.036%)'},
+        // === POST-DELIVERY (after Condenser Jul 20) → COD ===
+        {id:705,name:'Cooling Tower Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY → COD] After concrete structure and equipment delivery'},
+        {id:706,name:'Cooling Water Piping Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] CW piping from condenser to cooling tower'},
+        {id:707,name:'Cooling System Controls & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] VFD drives, DCS integration. Must complete before COD Nov 30.'}
       ] },
-      water_prod:  { progress: 8, status: 'In Progress', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:true},{name:'Equipment Procurement',done:false},{name:'Tank Erection',done:false},{name:'Piping',done:false},{name:'Commissioning',done:false}], workItems: [
+      water_prod:  { progress: 8, status: 'In Progress', assignee: 'KK Green', deadline: '2026-11-15', checklist: [{name:'Design',done:true},{name:'Equipment Procurement',done:false},{name:'Tank Erection',done:false},{name:'Piping',done:false},{name:'Commissioning',done:false}], workItems: [
+        // === PRE-DELIVERY ===
         {id:801,name:'Water Treatment System Design & P&ID',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-10-31',remarks:'Water treatment system design completed'},
         {id:808,name:'Clarifier & Water Tank Design',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'Jet clarifier design and water storage tank specifications'},
-        {id:802,name:'RO/Demin Membrane System',category:'procurement',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-07-15',remarks:'OE: Water-treatment equipment procurement ahead of baseline with POs in place'},
-        {id:803,name:'Raw Water & Demin Storage Tanks',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Tank material procurement'},
-        {id:804,name:'Chemical Dosing System',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
-        {id:809,name:'Clarifier Tank Foundation',category:'construction',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Water Treatment clarifier tank foundation 70 cu/hr concrete (weighted 0.143% of civil)'},
-        {id:810,name:'Jet Clarifier / Water Tank Assembly',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-07-31',remarks:'OE Mar 2026: Jet clarifier / water tank assembly work ongoing'},
-        {id:805,name:'Water Treatment Building & Tank Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
-        {id:806,name:'Water Treatment Piping & Equipment',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'RO skid, dosing pumps, piping'},
-        {id:807,name:'Water System Controls & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'PLC control, quality monitoring, DCS integration'}
+        {id:802,name:'RO/Demin & Chemical Dosing Procurement',category:'procurement',status:'In Progress',progress:10,assignee:'KK Green',deadline:'2026-03-15',remarks:'[PRE-DELIVERY: WT System Mar 31] POs in place. Ahead of baseline.'},
+        {id:809,name:'WT Building Foundation',category:'construction',status:'In Progress',progress:30,assignee:'KK Green',deadline:'2026-03-15',remarks:'[PRE-DELIVERY: WT System Mar 31] Foundation at Mar 15 per delivery plan. Waiting FAT.'},
+        {id:811,name:'Water Tank Foundation & Laydown',category:'construction',status:'In Progress',progress:20,assignee:'KK Green',deadline:'2026-05-05',remarks:'[PRE-DELIVERY: Water Tank May 10] Foundation finished Mar 15 per plan + DIA'},
+        // === DELIVERIES ===
+        {id:812,name:'📦 Water Treatment System Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-03-31',remarks:'🚚 Est. 31 Mar 2026 (China). Prereq: WT Building Foundation Mar 15 / Waiting FAT'},
+        {id:813,name:'📦 Water Tank #1 Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-10',remarks:'🚚 Est. 10 May 2026 (China). Prereq: Foundation Mar 15 / 3 sets DIA / Laydown area'},
+        // === POST-DELIVERY → COD ===
+        {id:810,name:'Jet Clarifier / Water Tank Assembly',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-07-31',remarks:'[POST-DELIVERY: WT Mar 31 + Tank May 10] Assembly work ongoing'},
+        {id:805,name:'Water Treatment Building & Tank Erection',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'[POST-DELIVERY → COD] After tank delivery and assembly'},
+        {id:806,name:'Water Treatment Piping & Equipment',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY → COD] RO skid, dosing pumps, piping'},
+        {id:807,name:'Water System Controls & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] PLC control, quality monitoring. Must complete before COD Nov 30.'}
       ] },
-      wastewater:  { progress: 6, status: 'In Progress', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:true},{name:'Treatment System Procurement',done:false},{name:'WWTP Civil Works',done:false},{name:'Equipment Installation',done:false},{name:'Commissioning',done:false}], workItems: [
+      wastewater:  { progress: 6, status: 'In Progress', assignee: 'KK Green', deadline: '2026-11-15', checklist: [{name:'Design',done:true},{name:'Treatment System Procurement',done:false},{name:'WWTP Civil Works',done:false},{name:'Equipment Installation',done:false},{name:'Commissioning',done:false}], workItems: [
         {id:901,name:'Wastewater Treatment Design & P&ID',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-10-31',remarks:'WWTP and leachate treatment system design completed'},
         {id:902,name:'Effluent Quality & PCD Compliance Model',category:'engineering',status:'In Progress',progress:50,assignee:'KK Green',deadline:'2026-05-31',remarks:'PCD standard compliance check. Discharge limits verification.'},
         {id:903,name:'Aeration & Clarifier Equipment',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Blowers, diffusers, clarifier mechanism'},
-        {id:904,name:'Sludge Dewatering Press',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Belt/screw press'},
-        {id:908,name:'Leachate Collection & Treatment Equipment',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'Leachate from fuel storage and ash areas'},
-        {id:909,name:'Biogas Pond Excavation & Lining',category:'construction',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-06-30',remarks:'OE Mar 2026: Biogas pond excavation continuing. Active work front.'},
+        {id:904,name:'Sludge Dewatering & Leachate Equipment',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'Belt/screw press, leachate collection'},
+        {id:909,name:'Biogas Pond Excavation & Lining',category:'construction',status:'In Progress',progress:40,assignee:'KK Green',deadline:'2026-06-30',remarks:'Biogas pond excavation continuing. Active work front.'},
         {id:905,name:'WWTP Tanks & Basins Civil Works',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'Equalization tank, aeration tank, settling tank'},
-        {id:906,name:'WWTP Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'After civil works and equipment delivery'},
-        {id:907,name:'WWTP Controls, Monitoring & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'Online monitoring for PCD. Effluent quality sensors.'}
+        {id:906,name:'WWTP Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'After civil works and equipment delivery. Before COD.'},
+        {id:907,name:'WWTP Controls, Monitoring & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'Online monitoring for PCD. Must complete before COD Nov 30.'}
       ] },
       instruments: { progress: 5, status: 'In Progress', assignee: 'KK Green / GP4', deadline: '2026-11-30', checklist: [{name:'Instrument Index',done:true},{name:'Scope Reallocation',done:true},{name:'Procurement',done:false},{name:'Installation',done:false},{name:'Calibration',done:false}], workItems: [
         {id:5001,name:'Instrument Index & Data Sheets',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'All instrument data sheets issued'},
@@ -5378,43 +5713,55 @@ function defaultEPCSystems() {
         {id:5405,name:'COD Preparation, Performance Test & Handover',category:'system',status:'Not Started',progress:0,assignee:'GP4',deadline:'2027-03-31',remarks:'Reliability run, performance guarantee test, PEA witness test, Taking-Over certificate'}
       ] },
       dcs:         { progress: 12, status: 'In Progress', assignee: 'LAWI MY / KK Green', deadline: '2026-11-30', checklist: [{name:'I/O List',done:true},{name:'Logic Design',done:false},{name:'Hardware Procurement',done:false},{name:'Programming & FAT',done:false},{name:'SAT & Commissioning',done:false}], workItems: [
-        {id:1101,name:'I/O List & Instrument Index',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-12-31',remarks:'OE: I/O count confirmed. I/O lists submitted under LAWI-MY 2nd payment milestone documentation.'},
-        {id:1102,name:'Control Logic & Sequence Design',category:'engineering',status:'In Progress',progress:35,assignee:'LAWI MY',deadline:'2026-06-30',remarks:'OE: Boiler control logic, combustion sequence, FGT interlock design in progress'},
-        {id:1103,name:'Network Architecture & SCADA Screen Design',category:'engineering',status:'In Progress',progress:25,assignee:'LAWI MY',deadline:'2026-05-31',remarks:'OE: SCADA screen designs submitted under LAWI-MY 2nd payment. Redundant Ethernet ring topology.'},
-        {id:1104,name:'DCS/PLC Controllers & I/O Modules',category:'procurement',status:'In Progress',progress:30,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'OE: DCS/SCADA hardware within LAWI-MY scope. POs confirmed under 3rd payment milestone.'},
-        {id:1105,name:'Operator Stations, Servers & HMI',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'SCADA units part of LAWI-MY supply scope'},
-        {id:1111,name:'DCS Cabinet Fabrication & Assembly',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-15',remarks:'OE: DCS control cabinets and SCADA units — part of LAWI-MY 4th payment shipment milestone'},
-        {id:1112,name:'DCS Cabinet & SCADA Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-09-15',remarks:'Part of LAWI-MY 4th payment L/C milestone (THB 96.7M shipment value)'},
-        {id:1107,name:'Control Room Fit-out & Console',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'OE Mar 2026: Turbine hall & control/switchgear room construction ongoing'},
-        {id:1108,name:'Cable Tray & Instrument Cable Laying',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'After control room and field equipment ready'},
-        {id:1109,name:'DCS/PLC Programming & FAT',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-10-31',remarks:'Factory Acceptance Test at LAWI workshop'},
-        {id:1110,name:'Loop Check, SAT & Pre-commissioning',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-11-30',remarks:'Site Acceptance Test. 100% loop check before commissioning.'}
+        // === PRE-DELIVERY ===
+        {id:1101,name:'I/O List & Instrument Index',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-12-31',remarks:'I/O count confirmed. Submitted under LAWI-MY 2nd payment.'},
+        {id:1102,name:'Control Logic & Sequence Design',category:'engineering',status:'In Progress',progress:35,assignee:'LAWI MY',deadline:'2026-05-30',remarks:'[PRE-DELIVERY: DCS Jun 2] Boiler control logic, combustion sequence, FGT interlock'},
+        {id:1103,name:'Network Architecture & SCADA Screens',category:'engineering',status:'In Progress',progress:25,assignee:'LAWI MY',deadline:'2026-05-30',remarks:'[PRE-DELIVERY: DCS Jun 2] SCADA screen designs. Redundant Ethernet ring topology.'},
+        {id:1104,name:'DCS/PLC Controllers & I/O Modules',category:'procurement',status:'In Progress',progress:30,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: DCS Jun 2] POs confirmed under 3rd payment.'},
+        {id:1105,name:'Operator Stations, Servers & HMI',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: DCS Jun 2] SCADA units within LAWI-MY scope'},
+        {id:1113,name:'Control Room & Storage Area Prep',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-10',remarks:'[PRE-DELIVERY: DCS Jun 2] Storage area ready May 10 per delivery plan'},
+        // === DELIVERIES ===
+        {id:1114,name:'📦 Control Building — Arrived',category:'delivery',status:'Completed',progress:100,assignee:'GPW',deadline:'2026-04-03',remarks:'✅ Arrived to site 3 Apr 2026 (China)'},
+        {id:1112,name:'📦 DCS System Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-06-02',remarks:'🚚 Est. 2 Jun 2026 (Thailand). Prereq: Storage area ready May 10'},
+        // === POST-DELIVERY → COD ===
+        {id:1107,name:'Control Room Fit-out & Console Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:'[POST-DELIVERY: Control Building Apr 3 + DCS Jun 2] Fit-out after both deliveries'},
+        {id:1108,name:'Cable Tray & Instrument Cable Laying',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY → COD] After control room fit-out and field equipment ready'},
+        {id:1109,name:'DCS/PLC Programming & FAT',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] Factory Acceptance Test at LAWI workshop'},
+        {id:1110,name:'Loop Check, SAT & Pre-commissioning',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-11-30',remarks:'[POST-DELIVERY → COD] 100% loop check. Must complete by COD Nov 30.'}
       ] },
       power_dist:  { progress: 12, status: 'In Progress', assignee: 'LAWI MY / KK Green', deadline: '2026-11-30', checklist: [{name:'SLD Design',done:true},{name:'MV Switchgear Procurement',done:false},{name:'Transformer',done:false},{name:'Cable Laying',done:false},{name:'Grid Sync',done:false}], workItems: [
-        {id:1201,name:'Single Line Diagram & Protection Design',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-10-31',remarks:'OE: 22kV connection to PEA. Electrical & Control engineering at 100% (Nov 2025 report).'},
-        {id:1202,name:'Protection Relay Coordination Study',category:'engineering',status:'In Progress',progress:50,assignee:'LAWI MY',deadline:'2026-05-31',remarks:'Protection schemes submitted under LAWI-MY 2nd payment documentation'},
-        {id:1210,name:'Electrical System Load Data',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-11-30',remarks:'OE: Load and protection data submitted under LAWI-MY 2nd payment milestone'},
-        {id:1203,name:'Main Transformer 22kV',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'OE: MV switchgear and transformers procurement within LAWI-MY scope. POs confirmed under 3rd payment.'},
-        {id:1204,name:'MV Switchgear 22kV',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Within LAWI-MY medium-voltage system scope'},
-        {id:1205,name:'HV Cable (22kV to PEA Substation)',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
-        {id:1211,name:'Internal MV Distribution (Poles & Lines)',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-11-30',remarks:'OE Nov 2025: Internal electrical poles, MV distribution lines installed'},
-        {id:1206,name:'Transformer Foundation & Yard',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-07-31',remarks:'OE Mar 2026: Transformer foundation & yard grading works (weighted 0.060% of civil)'},
-        {id:1207,name:'MV Cable Trench & Laying',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'After transformer and switchgear delivery'},
-        {id:1208,name:'MV Switchgear & Relay Commissioning',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-11-15',remarks:'Protection relay setting and testing'},
-        {id:1209,name:'Grid Synchronization & PEA G59 Test',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'PEA witness test required for grid connection approval'}
+        // === PRE-DELIVERY ===
+        {id:1201,name:'Single Line Diagram & Protection Design',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-10-31',remarks:'22kV connection to PEA. E&C engineering 100%.'},
+        {id:1202,name:'Protection Relay Coordination Study',category:'engineering',status:'In Progress',progress:50,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: 2500kVA May 20] Protection schemes submitted.'},
+        {id:1211,name:'Internal MV Distribution (Poles & Lines)',category:'construction',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-11-30',remarks:'Internal electrical poles, MV distribution lines installed'},
+        {id:1206,name:'2500kVA Transformer Foundation',category:'construction',status:'In Progress',progress:15,assignee:'KK Green',deadline:'2026-02-15',remarks:'[PRE-DELIVERY: 2500kVA May 20] Foundation finished Feb 15 per delivery plan'},
+        {id:1212,name:'3500kVA Transformer Foundation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-02-20',remarks:'[PRE-DELIVERY: 3500kVA Jul 20] Foundation finished Feb 20 per delivery plan'},
+        {id:1213,name:'33kV Panel Storage Area',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-20',remarks:'[PRE-DELIVERY: 33kV Panel Jul 24] Storage area ready Jun 20'},
+        // === DELIVERIES ===
+        {id:1214,name:'📦 2,500 kVA Transformer Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-20',remarks:'🚚 Est. 20 May 2026 (Thailand). Prereq: Foundation finished Feb 15'},
+        {id:1215,name:'📦 3,500 kVA Transformer Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-20',remarks:'🚚 Est. 20 Jul 2026 (Thailand). Prereq: Foundation finished Feb 20'},
+        {id:1216,name:'📦 33kV Panel Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-24',remarks:'🚚 Est. 24 Jul 2026 (Thailand). Prereq: Storage area ready Jun 20'},
+        {id:1217,name:'📦 12.5 MVA Transformer Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:'🚚 Est. 15 Aug 2026 (Thailand)'},
+        // === POST-DELIVERY → COD ===
+        {id:1218,name:'Transformer Installation & Testing',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'[POST-DELIVERY: 2500kVA May 20 + 3500kVA Jul 20 + 12.5MVA Aug 15] Install all transformers'},
+        {id:1207,name:'MV Cable Trench & Cable Laying',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'[POST-DELIVERY → COD] After transformer and switchgear delivery'},
+        {id:1208,name:'MV Switchgear & Relay Commissioning',category:'system',status:'Not Started',progress:0,assignee:'LAWI MY / KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Protection relay setting and testing'},
+        {id:1209,name:'Grid Synchronization & PEA G59 Test',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'[POST-DELIVERY → COD] PEA witness test. Must complete by COD Nov 30.'}
       ] },
       lv_elec:     { progress: 8, status: 'In Progress', assignee: 'LAWI MY / KK Green', deadline: '2026-11-30', checklist: [{name:'Design',done:true},{name:'MCC & Switchboard Procurement',done:false},{name:'Cable Laying',done:false},{name:'Testing',done:false}], workItems: [
-        {id:1301,name:'LV Distribution & Lighting Design',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-11-30',remarks:'OE: Electrical & Control engineering at 100%. LV system design completed.'},
+        // === PRE-DELIVERY ===
+        {id:1301,name:'LV Distribution & Lighting Design',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-11-30',remarks:'E&C engineering 100%. LV system design completed.'},
         {id:1302,name:'LV Load Schedule & Cable Sizing',category:'engineering',status:'Completed',progress:100,assignee:'LAWI MY',deadline:'2025-12-31',remarks:'Load calculation and cable sizing completed'},
-        {id:1303,name:'MCC & LV Switchgear Panels',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'OE: LV switchgear within LAWI-MY scope. MCC and control panels — POs confirmed under 3rd payment.'},
-        {id:1304,name:'UPS & DC Battery System',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-07-15',remarks:'Essential power supply for DCS and protection systems'},
-        {id:1305,name:'LV Cable & Containment Material',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-15',remarks:'Power and control cables'},
-        {id:1310,name:'MCC & LV Panel Fabrication',category:'fabrication',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-08-31',remarks:'Part of LAWI-MY 4th payment shipment milestone'},
-        {id:1311,name:'LV Equipment Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-09-15',remarks:'MCC, panels, UPS. Part of LAWI-MY 4th payment L/C milestone.'},
-        {id:1306,name:'Cable Tray & Containment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'After building structure complete'},
-        {id:1307,name:'Cable Pulling, Termination & Glanding',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:''},
-        {id:1308,name:'Insulation Resistance & Continuity Testing',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'Megger test, continuity, polarity checks'},
-        {id:1309,name:'LV System Energization & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'Lighting, power socket, motor commissioning'}
+        {id:1303,name:'MCC & LV Switchgear Panels',category:'procurement',status:'In Progress',progress:20,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: 400V Panel May 30] POs confirmed under 3rd payment.'},
+        {id:1304,name:'UPS & DC Battery System',category:'procurement',status:'Not Started',progress:0,assignee:'LAWI MY',deadline:'2026-05-15',remarks:'[PRE-DELIVERY: 400V Panel May 30] Essential power for DCS'},
+        {id:1312,name:'400V Panel Storage Area Prep',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-10',remarks:'[PRE-DELIVERY: 400V Panel May 30] Storage area ready May 10 per delivery plan'},
+        // === DELIVERY ===
+        {id:1311,name:'📦 400V Panel Delivery',category:'delivery',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-30',remarks:'🚚 Est. 30 May 2026 (Thailand). Prereq: Storage area ready May 10'},
+        // === POST-DELIVERY → COD ===
+        {id:1306,name:'Cable Tray & Containment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:'[POST-DELIVERY: 400V Panel May 30] After building structure complete'},
+        {id:1307,name:'Cable Pulling, Termination & Glanding',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-15',remarks:'[POST-DELIVERY → COD] After cable tray installation'},
+        {id:1308,name:'Insulation Resistance & Continuity Testing',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-15',remarks:'[POST-DELIVERY → COD] Megger test, continuity, polarity checks'},
+        {id:1309,name:'LV System Energization & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-11-30',remarks:'[POST-DELIVERY → COD] Must complete by COD Nov 30.'}
       ] },
       fire:        { progress: 0, status: 'Delayed', assignee: 'KK Green', deadline: '2026-11-30', checklist: [{name:'Concept Design',done:false},{name:'Detail Design',done:false},{name:'Fire Pump',done:false},{name:'Sprinkler/Hydrant',done:false},{name:'Alarm System',done:false},{name:'Inspection',done:false}], workItems: [
         {id:1401,name:'Fire-Fighting Pipeline Concept Design',category:'engineering',status:'Delayed',progress:0,assignee:'KK Green',deadline:'2026-04-30',remarks:'⚠️ OE Mar 2026 CRITICAL: Fire-fighting pipeline system has NOT commenced — remains at concept design stage. OE considers timely design freeze necessary to avoid downstream interference with underground works and mechanical installation.'},
@@ -5667,14 +6014,8 @@ function renderSystemSCurve(key, currentProgress) {
 
   const labels = scurveLabels();
   const plan = GROUP_PLANS.construction; // EPC systems follow construction plan curve
-  const nowDate = new Date();
-  const ci = (nowDate.getFullYear() - 2025) * 12 + nowDate.getMonth();
-  const actual = [];
-  const planAtCurrent = plan[Math.min(ci, 23)];
-  for (let i = 0; i < 24; i++) {
-    if (i > ci) { actual.push(null); continue; }
-    actual.push(planAtCurrent > 0 ? Math.round(currentProgress * plan[i] / planAtCurrent) : 0);
-  }
+  // Use OE-verified actual data for construction/EPC
+  const actual = [...GROUP_ACTUALS.construction];
 
   epcDetailSCurveChart = new Chart(ctx, {
     type: 'line',
