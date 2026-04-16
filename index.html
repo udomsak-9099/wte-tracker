@@ -3456,6 +3456,11 @@ function renderSCurve() {
   // Use OE-verified actual data
   const overallActual = [...GROUP_ACTUALS.overall];
 
+  // "Today" marker index
+  const now = new Date();
+  const todayMonthIdx = (now.getFullYear() - 2025) * 12 + now.getMonth();
+  const todayDateStr = now.toLocaleDateString(getLang() === 'th' ? 'th-TH' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+
   scurveChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -3467,12 +3472,45 @@ function renderSCurve() {
     },
     options: {
       responsive: true,
+      layout: { padding: { top: 28 } },
       plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 }, boxWidth: 14, padding: 10 } } },
       scales: {
         x: { ticks: { color: chartTextColor(), font: { size: 8 }, maxRotation: 45 }, grid: { color: chartGridColor() } },
         y: { ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 }
       }
-    }
+    },
+    plugins: [{
+      id: 'todayVerticalLine',
+      afterDraw: function(chart) {
+        var xAxis = chart.scales.x;
+        var yAxis = chart.scales.y;
+        var xPos = xAxis.getPixelForValue(todayMonthIdx);
+        var c = chart.ctx;
+        // Draw vertical dashed line
+        c.save();
+        c.strokeStyle = '#fbbf24';
+        c.lineWidth = 2;
+        c.setLineDash([6, 4]);
+        c.beginPath();
+        c.moveTo(xPos, yAxis.top);
+        c.lineTo(xPos, yAxis.bottom);
+        c.stroke();
+        // Draw label — position left of line if near right edge
+        var txt1 = '▼ Today';
+        var txt2 = todayDateStr;
+        c.setLineDash([]);
+        c.font = 'bold 10px sans-serif';
+        var nearRight = xPos > xAxis.right - 80;
+        c.fillStyle = '#fbbf24';
+        c.textAlign = nearRight ? 'right' : 'center';
+        var labelX = nearRight ? xPos - 8 : xPos;
+        c.fillText(txt1, labelX, yAxis.top - 14);
+        c.font = '9px sans-serif';
+        c.fillStyle = '#fcd34d';
+        c.fillText(txt2, labelX, yAxis.top - 3);
+        c.restore();
+      }
+    }]
   });
 }
 
