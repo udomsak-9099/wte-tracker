@@ -396,20 +396,20 @@ tailwind.config = {
       <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="dash-budget-title">Budget</h3>
       <div class="flex items-end gap-4 mb-3">
         <div>
-          <p class="text-2xl font-bold text-white" id="budget-spent">531</p>
+          <p class="text-2xl font-bold text-white" id="budget-spent">207</p>
           <p class="text-[10px] text-slate-500" id="budget-spent-label">Million THB spent</p>
         </div>
-        <p class="text-sm text-slate-400 mb-1">/ <span class="text-white font-semibold">1,315</span> <span id="budget-total-label">Million THB total</span></p>
+        <p class="text-sm text-slate-400 mb-1">/ <span class="text-white font-semibold" id="budget-total-val">815</span> <span id="budget-total-label">Million THB (Quotation)</span></p>
       </div>
-      <div class="progress-bar mb-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" style="width:40.38%"></div></div>
+      <div class="progress-bar mb-2"><div class="progress-fill bg-gradient-to-r from-blue-500 to-cyan-400" style="width:25.37%"></div></div>
       <div class="flex justify-between text-xs text-slate-500">
-        <span id="budget-pct">40.38% disbursed</span>
-        <span id="budget-date">As of Dec 2025</span>
+        <span id="budget-pct">25.37% disbursed</span>
+        <span id="budget-date">As of Mar 2026</span>
       </div>
       <div class="mt-3 pt-3 border-t border-white/5 grid grid-cols-3 gap-2 text-center">
-        <div><p class="text-xs text-slate-500" id="lbl-q3-spend">Q3/2025</p><p class="text-sm font-semibold text-white">314M</p><p class="text-[10px] text-slate-500">23.86%</p></div>
-        <div><p class="text-xs text-slate-500" id="lbl-q4-spend">Q4/2025</p><p class="text-sm font-semibold text-white">531M</p><p class="text-[10px] text-slate-500">40.38%</p></div>
-        <div><p class="text-xs text-slate-500" id="lbl-remaining">Remaining</p><p class="text-sm font-semibold text-amber-400">784M</p><p class="text-[10px] text-slate-500">59.62%</p></div>
+        <div><p class="text-xs text-slate-500" id="lbl-orig-budget">Original Budget</p><p class="text-sm font-semibold text-white">606M</p><p class="text-[10px] text-slate-500">Base Budget</p></div>
+        <div><p class="text-xs text-slate-500" id="lbl-q4-spend">Over Budget</p><p class="text-sm font-semibold text-red-400">+209M</p><p class="text-[10px] text-slate-500">Quotation vs Budget</p></div>
+        <div><p class="text-xs text-slate-500" id="lbl-remaining">Remaining</p><p class="text-sm font-semibold text-amber-400">608M</p><p class="text-[10px] text-slate-500">74.63%</p></div>
       </div>
     </div>
   </div>
@@ -720,6 +720,10 @@ tailwind.config = {
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
       <span id="rtab-monthly-text">Monthly Report</span>
     </button>
+    <button onclick="switchReportTab('finance')" id="rtab-finance" class="px-5 py-2.5 rounded-xl text-sm font-medium transition-all text-slate-400 hover:text-white flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span id="rtab-finance-text">Finance Report</span>
+    </button>
   </div>
 
   <!-- ===== DAILY REPORT ===== -->
@@ -918,6 +922,105 @@ tailwind.config = {
       <div class="card p-5">
         <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-m-next-title">Next Month Priorities</h4>
         <div id="rpt-m-next" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FINANCE REPORT ===== -->
+  <div id="report-finance" class="report-tab hidden">
+    <div class="card p-5 mb-5 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-emerald-500/10 to-teal-500/10 -translate-y-1/2 translate-x-1/2"></div>
+      <div class="relative flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center text-white font-bold text-lg">💰</div>
+          <div>
+            <h3 class="text-lg font-bold text-white" id="rpt-fin-header">Finance Report — Project Cost Summary</h3>
+            <p class="text-xs text-slate-400" id="rpt-fin-project">GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani</p>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-bold text-white" id="rpt-fin-date"></p>
+          <p class="text-[10px] text-slate-400" id="rpt-fin-source">Source: Overall Project Status Summary — 16 Apr 2026</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Finance KPI Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+      <div class="stat-card blue">
+        <p class="text-[10px] text-slate-400 mb-0.5" id="lbl-fin-budget">Original Budget</p>
+        <p class="text-2xl font-bold text-white" id="rpt-fin-budget">606M</p>
+        <p class="text-[10px] text-slate-500">฿605,770,500</p>
+      </div>
+      <div class="stat-card amber">
+        <p class="text-[10px] text-slate-400 mb-0.5" id="lbl-fin-quotation">Quotation Price</p>
+        <p class="text-2xl font-bold text-white" id="rpt-fin-quotation">815M</p>
+        <p class="text-[10px] text-slate-500">฿814,887,590</p>
+      </div>
+      <div class="stat-card green">
+        <p class="text-[10px] text-slate-400 mb-0.5" id="lbl-fin-spent">Actual Spent</p>
+        <p class="text-2xl font-bold text-white" id="rpt-fin-spent">207M</p>
+        <p class="text-[10px] text-slate-500">฿206,761,289</p>
+      </div>
+      <div class="stat-card red">
+        <p class="text-[10px] text-slate-400 mb-0.5" id="lbl-fin-overbudget">Over Budget</p>
+        <p class="text-2xl font-bold text-white" id="rpt-fin-overbudget">+209M</p>
+        <p class="text-[10px] text-slate-500">+฿209,117,090</p>
+      </div>
+    </div>
+
+    <!-- Secondary KPI Row -->
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      <div class="card p-4 text-center">
+        <p class="text-[10px] text-slate-400 mb-1" id="lbl-fin-remaining">Remaining (Quotation - Actual)</p>
+        <p class="text-xl font-bold text-emerald-400" id="rpt-fin-remaining">608M</p>
+      </div>
+      <div class="card p-4 text-center">
+        <p class="text-[10px] text-slate-400 mb-1" id="lbl-fin-pct-spent">% Spent (of Quotation)</p>
+        <p class="text-xl font-bold text-blue-400" id="rpt-fin-pct-spent">25.4%</p>
+      </div>
+      <div class="card p-4 text-center">
+        <p class="text-[10px] text-slate-400 mb-1" id="lbl-fin-overrun-pct">Budget Overrun %</p>
+        <p class="text-xl font-bold text-red-400" id="rpt-fin-overrun-pct">+34.5%</p>
+      </div>
+    </div>
+
+    <!-- Budget vs Quotation vs Actual Chart -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-chart-title">Budget vs Quotation vs Actual — by Work Package</h4>
+      <canvas id="chart-finance-comparison" height="300"></canvas>
+    </div>
+
+    <!-- Finance Detail Table -->
+    <div class="card p-5 mb-5 overflow-x-auto">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-table-title">Work Package Cost Breakdown (Unit: Million Baht)</h4>
+      <table class="w-full">
+        <thead id="rpt-fin-thead">
+          <tr>
+            <th class="text-left text-[10px]">#</th>
+            <th class="text-left text-[10px]">Work Package</th>
+            <th class="text-left text-[10px]">Contractors</th>
+            <th class="text-right text-[10px]">Budget</th>
+            <th class="text-right text-[10px]">Quotation</th>
+            <th class="text-right text-[10px]">Actual</th>
+            <th class="text-right text-[10px]">Under/Over</th>
+            <th class="text-right text-[10px]">% Spent</th>
+          </tr>
+        </thead>
+        <tbody id="rpt-fin-tbody"></tbody>
+        <tfoot id="rpt-fin-tfoot"></tfoot>
+      </table>
+    </div>
+
+    <!-- Contractor Summary -->
+    <div class="grid grid-cols-2 gap-5 mb-5">
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-pie-title">Cost Distribution by Work Package</h4>
+        <canvas id="chart-finance-pie" height="250"></canvas>
+      </div>
+      <div class="card p-5">
+        <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-overunder-title">Over/Under Budget Analysis</h4>
+        <canvas id="chart-finance-overunder" height="250"></canvas>
       </div>
     </div>
   </div>
@@ -2133,8 +2236,8 @@ tailwind.config = {
           <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-epc">EPC Contractor</label><input type="text" id="proj-epc" class="w-full" value="KK Green Co., Ltd."></div>
         </div>
         <div class="grid grid-cols-3 gap-4">
-          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-budget">Total Budget (M THB)</label><input type="number" id="proj-budget" class="w-full" value="1315"></div>
-          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-spent">Spent (M THB)</label><input type="number" id="proj-spent" class="w-full" value="531"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-budget">Quotation Total (M THB)</label><input type="number" id="proj-budget" class="w-full" value="815"></div>
+          <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-spent">Actual Spend (M THB)</label><input type="number" id="proj-spent" class="w-full" value="207"></div>
           <div><label class="text-xs text-slate-400 block mb-1" id="lbl-proj-cod">COD Date</label><input type="date" id="proj-cod" class="w-full" value="2026-11-30"></div>
         </div>
         <div class="grid grid-cols-2 gap-4">
@@ -3409,8 +3512,9 @@ function saveIssue() {
 function switchReportTab(tab) {
   document.querySelectorAll('.report-tab').forEach(el => el.classList.add('hidden'));
   document.getElementById('report-' + tab).classList.remove('hidden');
-  ['daily','threeweek','monthly'].forEach(t2 => {
+  ['daily','threeweek','monthly','finance'].forEach(t2 => {
     const btn = document.getElementById('rtab-' + t2);
+    if (!btn) return;
     btn.classList.toggle('bg-blue-600', t2 === tab);
     btn.classList.toggle('text-white', t2 === tab);
     btn.classList.toggle('text-slate-400', t2 !== tab);
@@ -3418,6 +3522,7 @@ function switchReportTab(tab) {
   if (tab === 'daily') renderDailyReport();
   if (tab === 'threeweek') renderThreeWeekReport();
   if (tab === 'monthly') renderMonthlyReport();
+  if (tab === 'finance') renderFinanceReport();
 }
 
 function printReport() { window.print(); }
@@ -3430,6 +3535,7 @@ function renderReports() {
   document.getElementById('rtab-daily-text').textContent = th ? 'รายงานประจำวัน' : 'Daily Report';
   document.getElementById('rtab-threeweek-text').textContent = th ? 'แผน 3 สัปดาห์' : '3-Week Look-Ahead';
   document.getElementById('rtab-monthly-text').textContent = th ? 'รายงานเดือน' : 'Monthly Report';
+  document.getElementById('rtab-finance-text').textContent = th ? 'รายงานการเงิน' : 'Finance Report';
 
   // Init date pickers
   if (!document.getElementById('rpt-date-picker').value) document.getElementById('rpt-date-picker').value = new Date().toISOString().slice(0, 10);
@@ -3441,6 +3547,7 @@ function renderReports() {
     if (activeTab.id === 'report-daily') renderDailyReport();
     else if (activeTab.id === 'report-threeweek') renderThreeWeekReport();
     else if (activeTab.id === 'report-monthly') renderMonthlyReport();
+    else if (activeTab.id === 'report-finance') renderFinanceReport();
   } else {
     renderDailyReport();
   }
@@ -3813,6 +3920,144 @@ function renderMonthlyReport() {
   </div>`).join('') : `<p class="text-xs text-slate-500">${th ? 'ไม่มีกิจกรรมเดือนหน้า' : 'No activities next month'}</p>`;
 }
 
+// ---- FINANCE REPORT ----
+let financeComparisonChart = null, financePieChart = null, financeOverUnderChart = null;
+
+function renderFinanceReport() {
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
+
+  // Header
+  document.getElementById('rpt-fin-header').textContent = th ? 'รายงานการเงิน — สรุปต้นทุนโครงการ' : 'Finance Report — Project Cost Summary';
+  document.getElementById('rpt-fin-project').textContent = 'GP4 6.6 MW WtE Power Plant — Phun Phin, Surat Thani';
+  document.getElementById('rpt-fin-date').textContent = new Date().toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
+  document.getElementById('rpt-fin-source').textContent = th ? 'ที่มา: สรุปสถานะโครงการรวม — 16 เม.ย. 2569' : 'Source: Overall Project Status Summary — 16 Apr 2026';
+
+  // KPI labels
+  document.getElementById('lbl-fin-budget').textContent = th ? 'งบประมาณเดิม' : 'Original Budget';
+  document.getElementById('lbl-fin-quotation').textContent = th ? 'ราคาเสนอ' : 'Quotation Price';
+  document.getElementById('lbl-fin-spent').textContent = th ? 'ใช้จ่ายจริง' : 'Actual Spent';
+  document.getElementById('lbl-fin-overbudget').textContent = th ? 'เกินงบ' : 'Over Budget';
+  document.getElementById('lbl-fin-remaining').textContent = th ? 'คงเหลือ (เสนอ - จริง)' : 'Remaining (Quotation - Actual)';
+  document.getElementById('lbl-fin-pct-spent').textContent = th ? '% ใช้จ่าย (ของราคาเสนอ)' : '% Spent (of Quotation)';
+  document.getElementById('lbl-fin-overrun-pct').textContent = th ? '% เกินงบ' : 'Budget Overrun %';
+
+  // Calculate totals from WP_SYSTEMS
+  const totalBudget = WP_SYSTEMS.reduce((s, w) => s + (w.budget || 0), 0);
+  const totalQuotation = WP_SYSTEMS.reduce((s, w) => s + (w.quotation || 0), 0);
+  const totalActual = WP_SYSTEMS.reduce((s, w) => s + (w.actual || 0), 0);
+  const overBudget = totalQuotation - totalBudget;
+  const remaining = totalQuotation - totalActual;
+  const pctSpent = totalQuotation > 0 ? (totalActual / totalQuotation * 100) : 0;
+  const overrunPct = totalBudget > 0 ? ((overBudget / totalBudget) * 100) : 0;
+
+  document.getElementById('rpt-fin-budget').textContent = (totalBudget).toFixed(0) + 'M';
+  document.getElementById('rpt-fin-quotation').textContent = (totalQuotation).toFixed(0) + 'M';
+  document.getElementById('rpt-fin-spent').textContent = (totalActual).toFixed(0) + 'M';
+  document.getElementById('rpt-fin-overbudget').textContent = (overBudget >= 0 ? '+' : '') + overBudget.toFixed(0) + 'M';
+  document.getElementById('rpt-fin-remaining').textContent = remaining.toFixed(0) + 'M';
+  document.getElementById('rpt-fin-pct-spent').textContent = pctSpent.toFixed(1) + '%';
+  document.getElementById('rpt-fin-overrun-pct').textContent = (overrunPct >= 0 ? '+' : '') + overrunPct.toFixed(1) + '%';
+
+  // Table labels
+  document.getElementById('rpt-fin-chart-title').textContent = th ? 'งบประมาณ vs ราคาเสนอ vs ใช้จ่ายจริง — ตามชุดงาน' : 'Budget vs Quotation vs Actual — by Work Package';
+  document.getElementById('rpt-fin-table-title').textContent = th ? 'รายละเอียดต้นทุนตามชุดงาน (หน่วย: ล้านบาท)' : 'Work Package Cost Breakdown (Unit: Million Baht)';
+  document.getElementById('rpt-fin-pie-title').textContent = th ? 'สัดส่วนต้นทุนตามชุดงาน' : 'Cost Distribution by Work Package';
+  document.getElementById('rpt-fin-overunder-title').textContent = th ? 'วิเคราะห์เกิน/ต่ำกว่างบ' : 'Over/Under Budget Analysis';
+
+  // Render table rows
+  const tbody = document.getElementById('rpt-fin-tbody');
+  tbody.innerHTML = WP_SYSTEMS.map((w, i) => {
+    const diff = w.quotation - w.budget;
+    const pct = w.quotation > 0 ? (w.actual / w.quotation * 100) : 0;
+    const diffClass = diff > 0 ? 'text-red-400' : diff < 0 ? 'text-emerald-400' : 'text-slate-400';
+    const diffSign = diff > 0 ? '+' : '';
+    const name = th ? w.th : w.en;
+    return `<tr class="hover:bg-white/[0.02]">
+      <td class="text-xs text-slate-400">${i + 1}</td>
+      <td class="text-xs text-white"><span class="mr-1">${w.icon}</span>${name}</td>
+      <td class="text-[10px] text-slate-400">${w.contractors || '-'}</td>
+      <td class="text-xs text-right text-blue-400 font-mono">${w.budget.toFixed(1)}</td>
+      <td class="text-xs text-right text-amber-400 font-mono">${w.quotation.toFixed(1)}</td>
+      <td class="text-xs text-right text-emerald-400 font-mono">${w.actual.toFixed(1)}</td>
+      <td class="text-xs text-right ${diffClass} font-mono">${diffSign}${diff.toFixed(1)}</td>
+      <td class="text-xs text-right text-slate-300 font-mono">${pct.toFixed(1)}%</td>
+    </tr>`;
+  }).join('');
+
+  // Footer totals
+  const totalDiff = totalQuotation - totalBudget;
+  document.getElementById('rpt-fin-tfoot').innerHTML = `<tr class="border-t border-slate-600">
+    <td colspan="3" class="text-xs font-bold text-white py-2">${th ? 'รวมทั้งหมด' : 'TOTAL'}</td>
+    <td class="text-xs text-right text-blue-400 font-bold font-mono">${totalBudget.toFixed(1)}</td>
+    <td class="text-xs text-right text-amber-400 font-bold font-mono">${totalQuotation.toFixed(1)}</td>
+    <td class="text-xs text-right text-emerald-400 font-bold font-mono">${totalActual.toFixed(1)}</td>
+    <td class="text-xs text-right ${totalDiff > 0 ? 'text-red-400' : 'text-emerald-400'} font-bold font-mono">${totalDiff > 0 ? '+' : ''}${totalDiff.toFixed(1)}</td>
+    <td class="text-xs text-right text-white font-bold font-mono">${pctSpent.toFixed(1)}%</td>
+  </tr>`;
+
+  // ---- Charts ----
+  const labels = WP_SYSTEMS.map(w => th ? w.th.substring(0, 15) : w.en.substring(0, 15));
+  const txtColor = chartTextColor();
+
+  // Bar chart: Budget vs Quotation vs Actual
+  const ctx1 = document.getElementById('chart-finance-comparison').getContext('2d');
+  if (financeComparisonChart) financeComparisonChart.destroy();
+  financeComparisonChart = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: th ? 'งบประมาณ' : 'Budget', data: WP_SYSTEMS.map(w => w.budget), backgroundColor: 'rgba(59,130,246,0.7)', borderRadius: 3 },
+        { label: th ? 'ราคาเสนอ' : 'Quotation', data: WP_SYSTEMS.map(w => w.quotation), backgroundColor: 'rgba(245,158,11,0.7)', borderRadius: 3 },
+        { label: th ? 'ใช้จ่ายจริง' : 'Actual', data: WP_SYSTEMS.map(w => w.actual), backgroundColor: 'rgba(16,185,129,0.7)', borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        x: { ticks: { color: txtColor, font: { size: 8 }, maxRotation: 45 }, grid: { display: false } },
+        y: { ticks: { color: txtColor, font: { size: 10 }, callback: v => v + 'M' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      },
+      plugins: { legend: { labels: { color: txtColor, font: { size: 10 }, padding: 12 } } }
+    }
+  });
+
+  // Pie chart: Quotation distribution
+  const ctx2 = document.getElementById('chart-finance-pie').getContext('2d');
+  if (financePieChart) financePieChart.destroy();
+  const pieColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#14b8a6','#f97316','#06b6d4','#84cc16','#a855f7','#e11d48','#0ea5e9','#22c55e','#eab308','#6366f1','#d946ef','#fb923c','#2dd4bf'];
+  financePieChart = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: WP_SYSTEMS.map(w => th ? w.th.substring(0,20) : w.en.substring(0,20)),
+      datasets: [{ data: WP_SYSTEMS.map(w => w.quotation), backgroundColor: pieColors, borderWidth: 0, spacing: 2 }]
+    },
+    options: { responsive: true, cutout: '55%', plugins: { legend: { position: 'right', labels: { color: txtColor, font: { size: 8 }, padding: 6, boxWidth: 10 } } } }
+  });
+
+  // Horizontal bar: Over/Under Budget (quotation - budget)
+  const ctx3 = document.getElementById('chart-finance-overunder').getContext('2d');
+  if (financeOverUnderChart) financeOverUnderChart.destroy();
+  const diffs = WP_SYSTEMS.map(w => +(w.quotation - w.budget).toFixed(1));
+  financeOverUnderChart = new Chart(ctx3, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ label: th ? 'เกิน/ต่ำกว่างบ (ล้านบาท)' : 'Over/Under Budget (M฿)', data: diffs, backgroundColor: diffs.map(d => d > 0 ? 'rgba(239,68,68,0.7)' : 'rgba(16,185,129,0.7)'), borderRadius: 3 }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      scales: {
+        x: { ticks: { color: txtColor, font: { size: 10 }, callback: v => (v > 0 ? '+' : '') + v + 'M' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        y: { ticks: { color: txtColor, font: { size: 8 } }, grid: { display: false } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
 // ---- ALERTS ----
 function getAlerts() {
   const alerts = [];
@@ -3860,21 +4105,25 @@ function renderAlerts() {
 // ---- RENDER ALL ----
 // ---- WORK PROGRESS ----
 const WP_SYSTEMS = [
-  { key: 'civil', en: 'Civil Works', th: 'ระบบงานโยธา', icon: '🏗️' },
-  { key: 'fuel', en: 'Fuel System', th: 'ระบบเชื้อเพลิง', icon: '♻️' },
-  { key: 'ash', en: 'Ash Handling', th: 'ระบบขี้เถ้า', icon: '🪨' },
-  { key: 'combustion', en: 'Combustion System', th: 'ระบบเผาไหม้', icon: '🔥' },
-  { key: 'boiler', en: 'Boiler System', th: 'ระบบหม้อไอน้ำ', icon: '♨️' },
-  { key: 'fgt', en: 'Flue Gas Treatment', th: 'ระบบบำบัดอากาศ', icon: '💨' },
-  { key: 'turbine_gen', en: 'Turbine & Generator', th: 'ระบบกังหันไอน้ำ & เครื่องกำเนิดไฟฟ้า', icon: '⚙️' },
-  { key: 'cooling', en: 'Cooling System', th: 'ระบบหล่อเย็น', icon: '❄️' },
-  { key: 'water_prod', en: 'Water Production', th: 'ระบบผลิตน้ำ', icon: '💧' },
-  { key: 'wastewater', en: 'Wastewater Treatment', th: 'ระบบบำบัดน้ำเสีย', icon: '🌊' },
-  { key: 'biogas', en: 'Biogas System', th: 'ระบบไบโอแก๊ส', icon: '🟢' },
-  { key: 'dcs', en: 'DCS Control System', th: 'ระบบควบคุม DCS', icon: '🖥️' },
-  { key: 'power_dist', en: 'Power Distribution', th: 'ระบบจำหน่ายไฟฟ้า', icon: '⚡' },
-  { key: 'lv_elec', en: 'LV Electrical', th: 'ระบบไฟฟ้าแรงต่ำ', icon: '🔌' },
-  { key: 'fire', en: 'Fire Protection', th: 'ระบบดับเพลิง', icon: '🧯' },
+  { key: 'civil', en: 'Civil Works', th: 'ระบบงานโยธา', icon: '🏗️', budget: 100.0, quotation: 125.0, actual: 93.9, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'fuel', en: 'Fuel Preparation & Handling', th: 'ระบบเตรียมเชื้อเพลิง', icon: '♻️', budget: 28.0, quotation: 41.6, actual: 6.3, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'ash', en: 'Ash Handling System', th: 'ระบบขี้เถ้า', icon: '🪨', budget: 9.7, quotation: 34.8, actual: 0, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'combustion', en: 'Combustion System', th: 'ระบบเผาไหม้', icon: '🔥', budget: 113.2, quotation: 151.6, actual: 31.7, contractors: 'KKG, GPW, LAWI MY, LAWI GER' },
+  { key: 'boiler', en: 'Boiler (Feed Water Pump)', th: 'ระบบหม้อไอน้ำ', icon: '♨️', budget: 110.0, quotation: 109.0, actual: 14.6, contractors: 'KKG, GPW, LAWI MY, LSB' },
+  { key: 'fgt', en: 'Flue Gas Cleaning System', th: 'ระบบบำบัดไอเสีย', icon: '💨', budget: 25.0, quotation: 70.9, actual: 0.64, contractors: 'KKG, GPW, LAWI MY, Longking' },
+  { key: 'turbine_gen', en: 'Turbine & Generator', th: 'ระบบกังหันไอน้ำ & เครื่องกำเนิดไฟฟ้า', icon: '⚙️', budget: 85.0, quotation: 83.0, actual: 0, contractors: 'KKG, GPW, LAWI MY, Shinko' },
+  { key: 'cooling', en: 'Cooling System', th: 'ระบบหล่อเย็น', icon: '❄️', budget: 9.3, quotation: 15.0, actual: 0.28, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'water_prod', en: 'Water Treatment System', th: 'ระบบผลิตน้ำ', icon: '💧', budget: 9.0, quotation: 11.0, actual: 8.3, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'wastewater', en: 'Wastewater & Leachate Treatment', th: 'ระบบบำบัดน้ำเสีย', icon: '🌊', budget: 14.9, quotation: 15.0, actual: 0.03, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'dcs', en: 'PLC Control & SCADA', th: 'ระบบควบคุม PLC & SCADA', icon: '🖥️', budget: 10.0, quotation: 11.6, actual: 1.3, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'instruments', en: 'Field Instruments & Analyzers', th: 'อุปกรณ์ & เครื่องวิเคราะห์', icon: '📡', budget: 9.3, quotation: 7.3, actual: 0.42, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'power_dist', en: 'Electrical MV System', th: 'ระบบไฟฟ้าแรงกลาง', icon: '⚡', budget: 11.1, quotation: 22.0, actual: 8.4, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'lv_elec', en: 'Electrical LV System', th: 'ระบบไฟฟ้าแรงต่ำ', icon: '🔌', budget: 21.6, quotation: 54.0, actual: 20.3, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'fire', en: 'Fire Fighting', th: 'ระบบดับเพลิง', icon: '🧯', budget: 7.0, quotation: 7.8, actual: 0, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'compressed_air', en: 'Compressed Air System', th: 'ระบบอากาศอัด', icon: '🌬️', budget: 6.7, quotation: 7.3, actual: 0, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'deodorize', en: 'Air Deodorization System', th: 'ระบบดับกลิ่น', icon: '🍃', budget: 6.0, quotation: 6.0, actual: 0, contractors: 'KKG' },
+  { key: 'utility', en: 'Utility System', th: 'ระบบสาธารณูปโภค', icon: '🔧', budget: 5.0, quotation: 5.0, actual: 0, contractors: 'KKG, GPW, LAWI MY' },
+  { key: 'pm_services', en: 'Project Management & Permits', th: 'บริหารโครงการ & ใบอนุญาต', icon: '📋', budget: 25.0, quotation: 25.5, actual: 9.2, contractors: 'KKG, GPW, GP4' },
 ];
 
 function wpSystemName(key) {
@@ -4817,12 +5066,41 @@ function defaultEPCSystems() {
         {id:906,name:'Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
         {id:907,name:'WWTP Controls & Monitoring',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:'Online monitoring for PCD'}
       ] },
-      biogas:      { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Design',done:false},{name:'Procurement',done:false},{name:'Installation',done:false}], workItems: [
-        {id:1001,name:'Biogas System Design',category:'engineering',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:''},
-        {id:1002,name:'Biogas Holder / Storage',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
-        {id:1003,name:'Biogas Scrubber & Flare',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
-        {id:1004,name:'Biogas Piping Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:''},
-        {id:1005,name:'Biogas Safety & Controls',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:'H2S/LEL monitoring'}
+      instruments: { progress: 2, status: 'Not Started', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'Instrument Index',done:true},{name:'Procurement',done:false},{name:'Installation',done:false},{name:'Calibration',done:false}], workItems: [
+        {id:5001,name:'Instrument Index & Data Sheets',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'All data sheets issued'},
+        {id:5002,name:'Pressure & Temperature Transmitters',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:''},
+        {id:5003,name:'Flow Meters & Level Switches',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-06-30',remarks:''},
+        {id:5004,name:'Gas Analyzers (O2, CO, NOx, SO2)',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:'CEMS analyzers'},
+        {id:5005,name:'Field Instrument Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:''},
+        {id:5006,name:'Loop Check & Calibration',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-10-31',remarks:''}
+      ] },
+      compressed_air: { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:false},{name:'Compressor Procurement',done:false},{name:'Piping',done:false},{name:'Commissioning',done:false}], workItems: [
+        {id:5101,name:'Compressed Air System Design',category:'engineering',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:''},
+        {id:5102,name:'Air Compressors (Service & Instrument)',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
+        {id:5103,name:'Air Receiver Tanks & Dryers',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
+        {id:5104,name:'Compressed Air Piping Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
+        {id:5105,name:'Compressor Commissioning & Testing',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:''}
+      ] },
+      deodorize: { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:false},{name:'Equipment Procurement',done:false},{name:'Installation',done:false}], workItems: [
+        {id:5201,name:'Deodorization System Design',category:'engineering',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:''},
+        {id:5202,name:'Bio-Filter / Chemical Scrubber',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
+        {id:5203,name:'Exhaust Fans & Ductwork',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-31',remarks:''},
+        {id:5204,name:'Deodorization Equipment Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-15',remarks:''},
+        {id:5205,name:'Odor Monitoring & Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:''}
+      ] },
+      utility: { progress: 0, status: 'Not Started', assignee: 'KK Green', deadline: '2026-09-30', checklist: [{name:'Design',done:false},{name:'Procurement',done:false},{name:'Installation',done:false}], workItems: [
+        {id:5301,name:'Utility System Design & Layout',category:'engineering',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-05-31',remarks:''},
+        {id:5302,name:'Service Water & Potable Water System',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
+        {id:5303,name:'HVAC for Control Room & MCC',category:'procurement',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-07-15',remarks:''},
+        {id:5304,name:'Utility Piping & Installation',category:'construction',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-08-31',remarks:''},
+        {id:5305,name:'Utility System Commissioning',category:'system',status:'Not Started',progress:0,assignee:'KK Green',deadline:'2026-09-30',remarks:''}
+      ] },
+      pm_services: { progress: 10, status: 'In Progress', assignee: 'GP4', deadline: '2026-12-31', checklist: [{name:'Project Plan',done:true},{name:'Permits & Licenses',done:false},{name:'Contractor Management',done:true},{name:'COD Preparation',done:false}], workItems: [
+        {id:5401,name:'Project Management Plan & Schedule',category:'engineering',status:'Completed',progress:100,assignee:'GP4',deadline:'2025-06-30',remarks:'Baseline schedule established'},
+        {id:5402,name:'EIA & Construction Permits',category:'engineering',status:'In Progress',progress:60,assignee:'GP4',deadline:'2026-06-30',remarks:'EIA approved, construction permit in progress'},
+        {id:5403,name:'PPA & Grid Connection Agreement',category:'engineering',status:'In Progress',progress:50,assignee:'GP4',deadline:'2026-06-30',remarks:'PPA signed, grid connection pending'},
+        {id:5404,name:'Contractor & Vendor Management',category:'engineering',status:'In Progress',progress:40,assignee:'GP4',deadline:'2026-12-31',remarks:'Ongoing management'},
+        {id:5405,name:'COD Preparation & Testing Plan',category:'system',status:'Not Started',progress:0,assignee:'GP4',deadline:'2026-12-31',remarks:'Reliability run & performance test'}
       ] },
       dcs:         { progress: 10, status: 'In Progress', assignee: 'KK Green', deadline: '2026-10-31', checklist: [{name:'I/O List',done:true},{name:'Logic Design',done:false},{name:'Hardware Procurement',done:false},{name:'Programming',done:false},{name:'Commissioning',done:false}], workItems: [
         {id:1101,name:'I/O List & Instrument Index',category:'engineering',status:'Completed',progress:100,assignee:'KK Green',deadline:'2025-12-31',remarks:'I/O count confirmed'},
