@@ -357,18 +357,26 @@ tailwind.config = {
     <div id="dash-rain-alerts" class="hidden mt-3 pt-3 border-t border-white/5 space-y-1"></div>
   </div>
 
-  <!-- S-Curve — Plan vs Actual (moved up after weather) -->
-  <div class="card p-6 mb-8">
-    <h3 class="text-sm font-semibold text-white mb-4" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
-    <canvas id="chart-scurve" height="280"></canvas>
-    <!-- Critical Path Items — below S-Curve -->
-    <div class="mt-5 pt-4 border-t border-white/10">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-        <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider" id="dash-critical-path-title">Critical Path — Must Complete On Time</h4>
+  <!-- S-Curve — Plan vs Actual -->
+  <div class="card p-4 sm:p-6 mb-6">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-xs sm:text-sm font-semibold text-white" id="dash-scurve-title">S-Curve — Plan vs Actual</h3>
+      <div class="flex items-center gap-3 text-[10px] text-slate-500">
+        <span class="flex items-center gap-1"><span style="display:inline-block;width:16px;height:2px;background:#60a5fa;border-radius:1px;opacity:0.7"></span>Plan</span>
+        <span class="flex items-center gap-1"><span style="display:inline-block;width:16px;height:2px;background:#34d399;border-radius:1px"></span>Actual</span>
+        <span class="flex items-center gap-1"><span style="display:inline-block;width:16px;height:2px;background:#4ade80;border-radius:1px;opacity:0.7;border-top:1px dashed #4ade80"></span>Forecast</span>
       </div>
-      <div id="dash-critical-path-items" class="space-y-2"></div>
     </div>
+    <div style="position:relative;width:100%;overflow:hidden;"><canvas id="chart-scurve"></canvas></div>
+  </div>
+
+  <!-- Critical Path -->
+  <div class="card p-4 sm:p-6 mb-6">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+      <h4 class="text-[11px] font-bold text-red-400/80 uppercase tracking-wider" id="dash-critical-path-title">Critical Path — Must Complete On Time</h4>
+    </div>
+    <div id="dash-critical-path-items" class="space-y-1.5"></div>
   </div>
 
   <!-- Key Milestones -->
@@ -3503,18 +3511,40 @@ function renderSCurve() {
     data: {
       labels,
       datasets: [
-        { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', backgroundColor: '#3b82f615', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: true },
-        { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', backgroundColor: '#10b98120', borderWidth: 2.5, tension: 0.4, pointRadius: 3, fill: true },
-        { label: th ? 'พยากรณ์' : 'Forecast', data: forecastData, borderColor: '#4ade80', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [8,5], fill: false },
+        { label: th ? 'แผนรวม' : 'Plan', data: GROUP_PLANS.overall, borderColor: '#60a5fa', backgroundColor: 'transparent', borderWidth: 2, tension: 0.35, pointRadius: 0, borderDash: [6,3], fill: false, order: 2 },
+        { label: th ? 'ผลจริง' : 'Actual', data: overallActual, borderColor: '#34d399', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.35, pointRadius: 0, pointHoverRadius: 5, fill: false, order: 1 },
+        { label: th ? 'พยากรณ์' : 'Forecast', data: forecastData, borderColor: '#4ade80', backgroundColor: 'transparent', borderWidth: 1.8, tension: 0.35, pointRadius: 0, borderDash: [6,4], fill: false, order: 3 },
       ]
     },
     options: {
       responsive: true,
-      layout: { padding: { top: 28 } },
-      plugins: { legend: { labels: { color: chartTextColor(), font: { size: 10 }, boxWidth: 14, padding: 10 } } },
+      maintainAspectRatio: true,
+      aspectRatio: window.innerWidth < 640 ? 1.4 : 2.5,
+      layout: { padding: { top: 30, bottom: 8, left: 4, right: 4 } },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.92)',
+          titleFont: { size: 11 },
+          bodyFont: { size: 11 },
+          padding: 10,
+          cornerRadius: 6,
+          callbacks: { label: function(ctx) { return ctx.dataset.label + ': ' + (ctx.parsed.y !== null ? ctx.parsed.y + '%' : '—'); } }
+        }
+      },
       scales: {
-        x: { ticks: { color: chartTextColor(), font: { size: 8 }, maxRotation: 45 }, grid: { color: chartGridColor() } },
-        y: { ticks: { color: chartTextColor(), font: { size: 10 }, callback: v => v + '%' }, grid: { color: chartGridColor() }, max: 100, min: 0 }
+        x: {
+          ticks: { color: chartTextColor(), font: { size: 9, family: 'Inter, system-ui, sans-serif' }, maxRotation: 0, autoSkip: true, maxTicksLimit: 12 },
+          grid: { color: chartGridColor(), lineWidth: 0.5 },
+          border: { color: chartGridColor() }
+        },
+        y: {
+          ticks: { color: chartTextColor(), font: { size: 9, family: 'Inter, system-ui, sans-serif' }, callback: v => v + '%', stepSize: 20 },
+          grid: { color: chartGridColor(), lineWidth: 0.5 },
+          border: { display: false },
+          max: 100, min: 0
+        }
       }
     },
     plugins: [{
@@ -3523,48 +3553,92 @@ function renderSCurve() {
         var xAxis = chart.scales.x;
         var yAxis = chart.scales.y;
         var c = chart.ctx;
+        var dpr = window.devicePixelRatio || 1;
         c.save();
 
-        // ── Helper: draw vertical annotation line with label ──
-        function drawAnnotation(idx, color, lightColor, label1, label2, position) {
+        // ── Draw a single vertical annotation with a floating badge ──
+        function drawLine(idx, color, opacity) {
           var px = xAxis.getPixelForValue(idx);
-          // Vertical dashed line
           c.strokeStyle = color;
-          c.lineWidth = 1.5;
-          c.setLineDash([5, 4]);
+          c.globalAlpha = opacity || 0.35;
+          c.lineWidth = 1;
+          c.setLineDash([3, 3]);
           c.beginPath();
           c.moveTo(px, yAxis.top);
           c.lineTo(px, yAxis.bottom);
           c.stroke();
           c.setLineDash([]);
-          // Label position: 'top', 'bottom', or 'top-left'/'top-right'
-          var labelY1, labelY2;
-          if (position === 'bottom') {
-            labelY1 = yAxis.bottom + 14;
-            labelY2 = yAxis.bottom + 25;
-          } else {
-            labelY1 = yAxis.top - 14;
-            labelY2 = yAxis.top - 3;
-          }
-          var nearEdge = px > xAxis.right - 80;
-          c.textAlign = nearEdge ? 'right' : (px < xAxis.left + 80 ? 'left' : 'center');
-          var lx = nearEdge ? px - 6 : (px < xAxis.left + 80 ? px + 6 : px);
-          c.font = 'bold 9px sans-serif';
-          c.fillStyle = color;
-          c.fillText(label1, lx, labelY1);
-          c.font = '8px sans-serif';
-          c.fillStyle = lightColor;
-          c.fillText(label2, lx, labelY2);
+          c.globalAlpha = 1;
         }
 
-        // ── LC Received (Dec'25 = index 11) — label at bottom ──
-        drawAnnotation(11, '#38bdf8', '#7dd3fc', 'LC Received', 'Dec 2025', 'bottom');
+        function drawBadge(idx, color, label, sub, yPct) {
+          var px = xAxis.getPixelForValue(idx);
+          var chartH = yAxis.bottom - yAxis.top;
+          var by = yAxis.top + chartH * yPct;
 
-        // ── Today — label at top ──
-        drawAnnotation(todayMonthIdx, '#fbbf24', '#fcd34d', '▼ Today', todayDateStr, 'top');
+          var f1 = 'bold 8px Inter,system-ui,sans-serif';
+          var f2 = '7px Inter,system-ui,sans-serif';
+          c.font = f1; var tw1 = c.measureText(label).width;
+          c.font = f2; var tw2 = c.measureText(sub).width;
+          var bw = Math.max(tw1, tw2) + 12;
+          var bh = 26;
 
-        // ── SCOD Target (Nov'26 = index 22) — label at top ──
-        drawAnnotation(22, '#f43f5e', '#fb7185', '🎯 SCOD', '30 Nov 2026', 'top');
+          // Position badge: prefer right of line, flip if near right edge
+          var lx = (px + bw + 8 > xAxis.right) ? px - bw - 6 : px + 6;
+          var ly = by - bh / 2;
+          // Clamp vertically
+          if (ly < yAxis.top) ly = yAxis.top + 2;
+          if (ly + bh > yAxis.bottom) ly = yAxis.bottom - bh - 2;
+
+          // Rounded rect background
+          var r = 4;
+          c.fillStyle = color;
+          c.globalAlpha = 0.1;
+          c.beginPath();
+          c.moveTo(lx+r, ly); c.lineTo(lx+bw-r, ly); c.quadraticCurveTo(lx+bw, ly, lx+bw, ly+r);
+          c.lineTo(lx+bw, ly+bh-r); c.quadraticCurveTo(lx+bw, ly+bh, lx+bw-r, ly+bh);
+          c.lineTo(lx+r, ly+bh); c.quadraticCurveTo(lx, ly+bh, lx, ly+bh-r);
+          c.lineTo(lx, ly+r); c.quadraticCurveTo(lx, ly, lx+r, ly);
+          c.fill();
+          // Thin border
+          c.globalAlpha = 0.25;
+          c.strokeStyle = color;
+          c.lineWidth = 0.5;
+          c.stroke();
+          c.globalAlpha = 1;
+
+          // Small connector line from badge to vertical line
+          c.strokeStyle = color;
+          c.globalAlpha = 0.3;
+          c.lineWidth = 0.5;
+          c.beginPath();
+          var cx = (px + bw + 8 > xAxis.right) ? lx + bw : lx;
+          c.moveTo(px, by);
+          c.lineTo(cx, by);
+          c.stroke();
+          c.globalAlpha = 1;
+
+          // Text
+          c.textAlign = 'left';
+          c.font = f1;
+          c.fillStyle = color;
+          c.fillText(label, lx + 6, ly + 11);
+          c.font = f2;
+          c.globalAlpha = 0.6;
+          c.fillStyle = '#cbd5e1';
+          c.fillText(sub, lx + 6, ly + 21);
+          c.globalAlpha = 1;
+        }
+
+        // 3 annotations at staggered vertical positions to avoid overlap
+        drawLine(11, '#38bdf8', 0.3);
+        drawBadge(11, '#38bdf8', 'LC Received', 'Dec 2025', 0.55);
+
+        drawLine(todayMonthIdx, '#fbbf24', 0.4);
+        drawBadge(todayMonthIdx, '#fbbf24', '● Today', todayDateStr, 0.15);
+
+        drawLine(22, '#f43f5e', 0.35);
+        drawBadge(22, '#f43f5e', 'SCOD Target', 'Nov 2026', 0.05);
 
         c.restore();
       }
@@ -3592,31 +3666,20 @@ function renderCriticalPath() {
     const dl = new Date(item.deadline);
     const daysLeft = Math.ceil((dl - now) / 86400000);
     const urgencyColor = daysLeft < 60 ? 'text-red-400' : (daysLeft < 120 ? 'text-amber-400' : 'text-blue-400');
-    const urgencyBg = daysLeft < 60 ? 'border-red-500/20 bg-red-500/[0.03]' : (daysLeft < 120 ? 'border-amber-500/15 bg-amber-500/[0.02]' : 'border-blue-500/10 bg-blue-500/[0.02]');
-    const severityBadge = item.severity === 'critical'
-      ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-500/20 text-red-400 uppercase">${th?'วิกฤต':'Critical'}</span>`
-      : item.severity === 'high'
-      ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-400 uppercase">${th?'สำคัญ':'High'}</span>`
-      : `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-500/20 text-blue-400 uppercase">${th?'ปานกลาง':'Medium'}</span>`;
-    const clickAttr = item.system ? ` onclick="document.querySelector('[data-page=workprogress]').click(); setTimeout(()=>openEPCDetail('${item.system}'),300)" class="cursor-pointer hover:bg-white/[0.04]"` : '';
+    const severityDot = item.severity === 'critical' ? 'bg-red-500' : (item.severity === 'high' ? 'bg-amber-500' : 'bg-blue-500');
+    const severityLabel = item.severity === 'critical' ? (th?'วิกฤต':'CRIT') : (item.severity === 'high' ? (th?'สำคัญ':'HIGH') : (th?'ปานกลาง':'MED'));
+    const severityTextColor = item.severity === 'critical' ? 'text-red-400' : (item.severity === 'high' ? 'text-amber-400' : 'text-blue-400');
+    const clickAttr = item.system ? ` onclick="document.querySelector('[data-page=workprogress]').click(); setTimeout(()=>openEPCDetail('${item.system}'),300)" style="cursor:pointer"` : '';
     const daysText = daysLeft < 0
-      ? `<span class="text-red-400 font-bold">${th?'เลยกำหนด':'Overdue'} ${Math.abs(daysLeft)}d</span>`
-      : `<span class="${urgencyColor} font-semibold">${daysLeft} ${th?'วัน':'days'}</span>`;
+      ? `<span class="text-red-400 font-bold">${Math.abs(daysLeft)}d ${th?'เกิน':'over'}</span>`
+      : `<span class="${urgencyColor}">${daysLeft}d</span>`;
 
-    return `<div${clickAttr} class="flex items-start gap-3 p-3 rounded-lg border ${urgencyBg} transition-colors">
-      <span class="text-lg mt-0.5 shrink-0">${item.icon}</span>
-      <div class="flex-1 min-w-0">
-        <div class="flex items-center gap-2 mb-1 flex-wrap">
-          <span class="text-xs font-bold text-white">${item.title}</span>
-          ${severityBadge}
-        </div>
-        <p class="text-[11px] text-slate-400 leading-relaxed">${item.detail}</p>
-      </div>
-      <div class="text-right shrink-0">
-        <p class="text-[10px] text-slate-500">${th?'เหลือ':'Left'}</p>
-        <p class="text-xs">${daysText}</p>
-        <p class="text-[9px] text-slate-600 mt-0.5">${dl.toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short',year:'2-digit'})}</p>
-      </div>
+    return `<div${clickAttr} class="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-white/[0.02] transition-colors group">
+      <span class="w-1.5 h-1.5 rounded-full ${severityDot} shrink-0"></span>
+      <span class="text-[11px] font-medium text-slate-200 flex-1 min-w-0 truncate">${item.title}</span>
+      <span class="text-[9px] ${severityTextColor} font-bold uppercase shrink-0 w-8 text-center">${severityLabel}</span>
+      <span class="text-[10px] tabular-nums ${urgencyColor} font-medium shrink-0 w-10 text-right">${daysText}</span>
+      <span class="text-[9px] text-slate-600 shrink-0 w-16 text-right">${dl.toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short'})}</span>
     </div>`;
   }).join('');
 }
