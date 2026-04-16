@@ -3461,14 +3461,8 @@ function renderSCurve() {
     data: {
       labels,
       datasets: [
-        { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: false },
-        { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', borderWidth: 2.5, tension: 0.4, pointRadius: 2, fill: false },
-        { label: t('groupPermits'), data: groupActual('permits'), borderColor: '#06b6d4', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
-        { label: t('groupEngineering'), data: groupActual('engineering'), borderColor: '#6366f1', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
-        { label: t('groupProcurement'), data: groupActual('procurement'), borderColor: '#f59e0b', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
-        { label: t('groupFabrication'), data: groupActual('fabrication'), borderColor: '#ef4444', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
-        { label: t('groupConstruction'), data: groupActual('construction'), borderColor: '#10b981', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
-        { label: t('groupCommissioning'), data: groupActual('commissioning'), borderColor: '#a855f7', borderWidth: 1.5, tension: 0.4, pointRadius: 0, fill: false, borderDash: [3,2] },
+        { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', backgroundColor: '#3b82f615', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: true },
+        { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', backgroundColor: '#10b98120', borderWidth: 2.5, tension: 0.4, pointRadius: 3, fill: true },
       ]
     },
     options: {
