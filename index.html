@@ -3456,10 +3456,30 @@ function renderSCurve() {
   // Use OE-verified actual data
   const overallActual = [...GROUP_ACTUALS.overall];
 
+  // Build forecast line — continues from last actual data point
+  const forecastData = Array(24).fill(null);
+  // Find last actual index
+  let lastActIdx = -1;
+  for (let i = overallActual.length - 1; i >= 0; i--) { if (overallActual[i] !== null) { lastActIdx = i; break; } }
+  if (lastActIdx >= 2) {
+    const lastVal = overallActual[lastActIdx];
+    // Average monthly rate from last 3 months
+    const rate3 = (overallActual[lastActIdx] - overallActual[lastActIdx - 3]) / 3;
+    // Forecast: accelerating curve (rate increases as more systems come online)
+    forecastData[lastActIdx] = lastVal; // connect to actual
+    for (let i = lastActIdx + 1; i < 24; i++) {
+      const monthsAhead = i - lastActIdx;
+      // Gradually accelerate: rate grows ~1.15x per month (recovery ramp-up)
+      const accelRate = rate3 * Math.pow(1.15, monthsAhead);
+      forecastData[i] = Math.min(100, Math.round(forecastData[i - 1] + accelRate));
+    }
+  }
+
   // "Today" marker index
   const now = new Date();
   const todayMonthIdx = (now.getFullYear() - 2025) * 12 + now.getMonth();
   const todayDateStr = now.toLocaleDateString(getLang() === 'th' ? 'th-TH' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  const th = getLang() === 'th';
 
   scurveChart = new Chart(ctx, {
     type: 'line',
@@ -3468,6 +3488,7 @@ function renderSCurve() {
       datasets: [
         { label: t('planned') + ' (Overall)', data: GROUP_PLANS.overall, borderColor: '#3b82f6', backgroundColor: '#3b82f615', borderWidth: 2.5, tension: 0.4, pointRadius: 0, borderDash: [6,3], fill: true },
         { label: t('actual') + ' (Overall)', data: overallActual, borderColor: '#10b981', backgroundColor: '#10b98120', borderWidth: 2.5, tension: 0.4, pointRadius: 3, fill: true },
+        { label: th ? 'พยากรณ์' : 'Forecast', data: forecastData, borderColor: '#4ade80', backgroundColor: 'transparent', borderWidth: 2, tension: 0.4, pointRadius: 0, borderDash: [8,5], fill: false },
       ]
     },
     options: {
@@ -3487,65 +3508,46 @@ function renderSCurve() {
         var c = chart.ctx;
         c.save();
 
-        // ── LC Received line (Dec'25 = index 11) ──
-        var lcIdx = 11;
-        var lcX = xAxis.getPixelForValue(lcIdx);
-        c.strokeStyle = '#38bdf8';
-        c.lineWidth = 1.5;
-        c.setLineDash([4, 3]);
-        c.beginPath();
-        c.moveTo(lcX, yAxis.top);
-        c.lineTo(lcX, yAxis.bottom);
-        c.stroke();
-        c.setLineDash([]);
-        c.font = 'bold 9px sans-serif';
-        c.fillStyle = '#38bdf8';
-        c.textAlign = 'center';
-        c.fillText('LC Received', lcX, yAxis.top - 14);
-        c.font = '8px sans-serif';
-        c.fillStyle = '#7dd3fc';
-        c.fillText('Dec 2025', lcX, yAxis.top - 3);
+        // ── Helper: draw vertical annotation line with label ──
+        function drawAnnotation(idx, color, lightColor, label1, label2, position) {
+          var px = xAxis.getPixelForValue(idx);
+          // Vertical dashed line
+          c.strokeStyle = color;
+          c.lineWidth = 1.5;
+          c.setLineDash([5, 4]);
+          c.beginPath();
+          c.moveTo(px, yAxis.top);
+          c.lineTo(px, yAxis.bottom);
+          c.stroke();
+          c.setLineDash([]);
+          // Label position: 'top', 'bottom', or 'top-left'/'top-right'
+          var labelY1, labelY2;
+          if (position === 'bottom') {
+            labelY1 = yAxis.bottom + 14;
+            labelY2 = yAxis.bottom + 25;
+          } else {
+            labelY1 = yAxis.top - 14;
+            labelY2 = yAxis.top - 3;
+          }
+          var nearEdge = px > xAxis.right - 80;
+          c.textAlign = nearEdge ? 'right' : (px < xAxis.left + 80 ? 'left' : 'center');
+          var lx = nearEdge ? px - 6 : (px < xAxis.left + 80 ? px + 6 : px);
+          c.font = 'bold 9px sans-serif';
+          c.fillStyle = color;
+          c.fillText(label1, lx, labelY1);
+          c.font = '8px sans-serif';
+          c.fillStyle = lightColor;
+          c.fillText(label2, lx, labelY2);
+        }
 
-        // ── SCOD Target line (Nov'26 = index 22) ──
-        var scodIdx = 22;
-        var scodX = xAxis.getPixelForValue(scodIdx);
-        c.strokeStyle = '#f43f5e';
-        c.lineWidth = 2;
-        c.setLineDash([6, 3]);
-        c.beginPath();
-        c.moveTo(scodX, yAxis.top);
-        c.lineTo(scodX, yAxis.bottom);
-        c.stroke();
-        c.setLineDash([]);
-        var scodNearRight = scodX > xAxis.right - 70;
-        c.font = 'bold 9px sans-serif';
-        c.fillStyle = '#f43f5e';
-        c.textAlign = scodNearRight ? 'right' : 'center';
-        var scodLabelX = scodNearRight ? scodX - 6 : scodX;
-        c.fillText('🎯 SCOD', scodLabelX, yAxis.top - 14);
-        c.font = '8px sans-serif';
-        c.fillStyle = '#fb7185';
-        c.fillText('30 Nov 2026', scodLabelX, yAxis.top - 3);
+        // ── LC Received (Dec'25 = index 11) — label at bottom ──
+        drawAnnotation(11, '#38bdf8', '#7dd3fc', 'LC Received', 'Dec 2025', 'bottom');
 
-        // ── Today line ──
-        var xPos = xAxis.getPixelForValue(todayMonthIdx);
-        c.strokeStyle = '#fbbf24';
-        c.lineWidth = 2;
-        c.setLineDash([6, 4]);
-        c.beginPath();
-        c.moveTo(xPos, yAxis.top);
-        c.lineTo(xPos, yAxis.bottom);
-        c.stroke();
-        c.setLineDash([]);
-        var nearRight = xPos > xAxis.right - 80;
-        c.fillStyle = '#fbbf24';
-        c.textAlign = nearRight ? 'right' : 'center';
-        var labelX = nearRight ? xPos - 8 : xPos;
-        c.font = 'bold 10px sans-serif';
-        c.fillText('▼ Today', labelX, yAxis.top - 14);
-        c.font = '9px sans-serif';
-        c.fillStyle = '#fcd34d';
-        c.fillText(todayDateStr, labelX, yAxis.top - 3);
+        // ── Today — label at top ──
+        drawAnnotation(todayMonthIdx, '#fbbf24', '#fcd34d', '▼ Today', todayDateStr, 'top');
+
+        // ── SCOD Target (Nov'26 = index 22) — label at top ──
+        drawAnnotation(22, '#f43f5e', '#fb7185', '🎯 SCOD', '30 Nov 2026', 'top');
 
         c.restore();
       }
