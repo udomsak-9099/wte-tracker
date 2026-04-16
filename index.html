@@ -1012,6 +1012,59 @@ tailwind.config = {
       </table>
     </div>
 
+    <!-- Contractor Payment Summary (from OE Report) -->
+    <div class="card p-5 mb-5 overflow-x-auto">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-contractor-title">EPC Contract Payment by Contractor (Total: ฿1,315M)</h4>
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left text-[10px]" id="rpt-fin-ctr-name">Contractor</th>
+            <th class="text-right text-[10px]">Contract Value (THB)</th>
+            <th class="text-right text-[10px]">% of Total</th>
+            <th class="text-right text-[10px]" id="rpt-fin-ctr-progress">Task Progress</th>
+            <th class="text-left text-[10px]">Status</th>
+          </tr>
+        </thead>
+        <tbody id="rpt-fin-contractor-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- S-Curve Payment Milestone -->
+    <div class="card p-5 mb-5">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-payment-scurve-title">Payment Milestone S-Curve — Plan vs Actual (Mar 2026)</h4>
+      <div class="grid grid-cols-3 gap-3 mb-4">
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center">
+          <p class="text-[10px] text-slate-400 mb-1">Planned (Cumulative)</p>
+          <p class="text-xl font-bold text-blue-400">70.11%</p>
+        </div>
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center">
+          <p class="text-[10px] text-slate-400 mb-1">Actual (Cumulative)</p>
+          <p class="text-xl font-bold text-emerald-400">64.51%</p>
+        </div>
+        <div class="p-3 rounded-lg bg-white/[0.03] text-center">
+          <p class="text-[10px] text-slate-400 mb-1">Variance</p>
+          <p class="text-xl font-bold text-red-400">–5.60pp</p>
+        </div>
+      </div>
+      <p class="text-[10px] text-slate-500">In-month movement: Actual +4.57% vs Planned +7.50%. Cumulative variance represents ~THB 73.64M of Total Contract Price.</p>
+    </div>
+
+    <!-- Delivery Schedule -->
+    <div class="card p-5 mb-5 overflow-x-auto">
+      <h4 class="text-xs font-bold text-white uppercase tracking-wider mb-3" id="rpt-fin-delivery-title">Equipment Delivery Schedule (OE Mar 2026)</h4>
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left text-[10px]">Status</th>
+            <th class="text-left text-[10px]">Equipment / Package</th>
+            <th class="text-left text-[10px]">Date</th>
+            <th class="text-left text-[10px]">Origin</th>
+          </tr>
+        </thead>
+        <tbody id="rpt-fin-delivery-tbody"></tbody>
+      </table>
+    </div>
+
     <!-- Contractor Summary -->
     <div class="grid grid-cols-2 gap-5 mb-5">
       <div class="card p-5">
@@ -2873,18 +2926,18 @@ function applyLang() {
 // Source: GP4 Surat WtE CM 2025 Q4 (Oct-Dec 2025)
 
 const DEFAULT_PHASES = [
-  // Engineering — CM Q4: 97.48% actual vs 98.75% plan
-  { name: 'Engineering', icon: '📐', group: 'engineering', start: '2024-10-01', end: '2026-03-31', progress: 97, status: 'In Progress', notes: 'CM Q4/2025: 97.48% actual vs 98.75% plan. Core engineering complete, close-out items and construction support remaining.' },
-  // Permits & Licensing — from CM Q4 Section 8
-  { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-03-31', progress: 75, status: 'Delayed', notes: 'CM Q4: CP obtained, CoP 88%, ESA 88%, Ror.Ngor.4 50%, BOI 80%. PPA & WCA signed. Ror.Ngor.4 pending — critical for machine installation.' },
-  // Procurement — CM Q4: 87.87% actual vs 89.91% plan
-  { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 88, status: 'In Progress', notes: 'CM Q4/2025: 87.87% actual vs 89.91% plan. Long lead items ordered: turbine (Shinko), generator (TDPS), boiler (SL Biotech), combustion (Lawi).' },
-  // Fabrication — CM Q4: 32.11% actual vs 64.92% plan (DELAYED)
-  { name: 'Fabrication', icon: '⚙️', group: 'procurement', start: '2025-06-01', end: '2026-08-31', progress: 32, status: 'Delayed', notes: 'CM Q4/2025: 32.11% actual vs 64.92% plan. Delay from drawing clarifications and vendor production queue.' },
-  // Erection — CM Q4: 2.73% actual vs 3.42% plan
-  { name: 'Erection', icon: '🏗️', group: 'construction', start: '2025-07-01', end: '2026-10-31', progress: 3, status: 'In Progress', notes: 'CM Q4/2025: 2.73% actual vs 3.42% plan. Weather constraints and interface congestion on piling and foundation.' },
-  // Commissioning — CM Q4: 0% as planned
-  { name: 'Commissioning', icon: '🔬', group: 'commissioning', start: '2026-08-01', end: '2026-11-30', progress: 0, status: 'Not Started', notes: 'CM Q4/2025: 0% as planned. SCOD 30 Nov 2026.' },
+  // Engineering — Mar 2026 OE: 98.81% actual vs 99.00% plan
+  { name: 'Engineering', icon: '📐', group: 'engineering', start: '2024-10-01', end: '2026-03-31', progress: 99, status: 'In Progress', notes: 'OE Mar 2026: 98.81% actual vs 99.00% plan (–0.19pp). Close-out & construction support stage. Final comments and minor revisions only.' },
+  // Permits & Licensing — Mar 2026 OE: A.1 100%, CoP 100%, ESA 100%, BOI 100%, Ror.Ngor.4 progressing
+  { name: 'Permits & Licensing', icon: '📋', group: 'permits', start: '2024-01-01', end: '2026-06-30', progress: 90, status: 'In Progress', notes: 'OE Mar 2026: A.1 Construction Permit 100% in force. CoP 100% (awaiting authority comments). ESA 100% submitted. BOI 100% (board approved 18 Feb). Ror.Ngor.4 in progress — entering DIW system. Fire-fighting pipeline concept design not commenced.' },
+  // Procurement — Mar 2026 OE: 94.63% actual vs 100.00% plan
+  { name: 'Procurement', icon: '📦', group: 'procurement', start: '2025-01-01', end: '2026-09-30', progress: 95, status: 'In Progress', notes: 'OE Mar 2026: 94.63% actual vs 100.00% plan (–5.37pp). Late-stage close-out. Remaining: final vendor documentation, residual expediting, outstanding deliveries.' },
+  // Fabrication — Mar 2026 OE: 53.21% actual vs 95.53% plan (DELAYED)
+  { name: 'Fabrication', icon: '⚙️', group: 'procurement', start: '2025-06-01', end: '2026-08-31', progress: 53, status: 'Delayed', notes: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Materially behind baseline. Leading indicator for downstream delay.' },
+  // Erection — Mar 2026 OE: 6.28% actual vs 27.28% plan
+  { name: 'Erection', icon: '🏗️', group: 'construction', start: '2025-07-01', end: '2026-10-31', progress: 6, status: 'Delayed', notes: 'OE Mar 2026: 6.28% actual vs 27.28% plan (–21.00pp). Combustion column 60%, fuel tower column 30%. Most downstream packages at 0%.' },
+  // Commissioning — Mar 2026: 0% as planned
+  { name: 'Commissioning', icon: '🔬', group: 'commissioning', start: '2026-08-01', end: '2026-11-30', progress: 0, status: 'Not Started', notes: 'OE Mar 2026: 0% as planned. SCOD 30 Nov 2026.' },
 ];
 
 // Tasks based on information stated in CM Reports and TDD Report only
@@ -2893,10 +2946,10 @@ const DEFAULT_TASKS = [
   { id: 1, name: 'PPA signed with PEA (VSPP-MSW1-PEA-009/2567)', phase: 1, assignee: 'GP4', start: '2024-01-01', end: '2024-06-28', status: 'Completed', priority: 'Critical', notes: '5.0 MW, 20 years, FiT basis. Signed 28 Jun 2024.' },
   { id: 2, name: 'Waste Concession Agreement (WCA 1/2567)', phase: 1, assignee: 'GP4', start: '2023-10-01', end: '2023-12-27', status: 'Completed', priority: 'Critical', notes: 'Signed 27 Dec 2023 with TRC SAO. 22-year term, 400 ton/day min, 450 THB/ton.' },
   { id: 3, name: 'Construction Permit (Form A.1)', phase: 1, assignee: 'GP4', start: '2025-06-01', end: '2025-10-31', status: 'Completed', priority: 'Critical', notes: 'CM Q4: obtained and currently effective.' },
-  { id: 4, name: 'Code of Practice (CoP) report', phase: 1, assignee: 'GP4', start: '2025-03-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Final report under preparation.' },
-  { id: 5, name: 'Environmental Site Assessment (ESA)', phase: 1, assignee: 'GP4', start: '2025-05-01', end: '2026-02-28', status: 'In Progress', priority: 'High', notes: 'CM Q4: 88% complete. Prepared in parallel with CoP.' },
-  { id: 6, name: 'Factory Operation License (Ror.Ngor.4)', phase: 1, assignee: 'GP4', start: '2025-08-01', end: '2026-03-31', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: 50%. Pending CoP & ESA. Needed before machine installation.' },
-  { id: 7, name: 'BOI Investment Promotion', phase: 1, assignee: 'GP4', start: '2025-06-01', end: '2026-03-31', status: 'In Progress', priority: 'High', notes: 'CM Q4: 80% complete.' },
+  { id: 4, name: 'Code of Practice (CoP) report', phase: 1, assignee: 'GP4', start: '2025-03-01', end: '2026-03-31', status: 'Completed', priority: 'High', notes: 'OE Mar 2026: 100% complete. Awaiting final authority comments / administrative closure.' },
+  { id: 5, name: 'Environmental Site Assessment (ESA)', phase: 1, assignee: 'GP4', start: '2025-05-01', end: '2026-03-31', status: 'Completed', priority: 'High', notes: 'OE Mar 2026: 100% complete. Full report submitted. Awaiting final authority comments.' },
+  { id: 6, name: 'Factory Operation License (Ror.Ngor.4)', phase: 1, assignee: 'GP4', start: '2025-08-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Advancing — revised machinery data complete, detailed drawings prepared, entering DIW online system. Needed before machine installation.' },
+  { id: 7, name: 'BOI Investment Promotion', phase: 1, assignee: 'GP4', start: '2025-06-01', end: '2026-04-30', status: 'Completed', priority: 'High', notes: 'OE Mar 2026: 100% — Board approved 18 Feb 2026. Final administrative issuance pending.' },
   // 2 - Procurement (phase 2)
   { id: 8, name: 'Combustion system — Lawi Engineering', phase: 2, assignee: 'Lawi Eng.', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Grate incinerator. PO placed per CM Q4.' },
   { id: 9, name: 'Boiler non-pressure part — SL Biotechnology / Shandong Shuanglong', phase: 2, assignee: 'SL Biotech', start: '2025-01-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'TDD: Water tube boiler, superheater, economizer. PO placed.' },
@@ -2905,28 +2958,33 @@ const DEFAULT_TASKS = [
   { id: 12, name: 'Flue gas treatment system', phase: 2, assignee: 'Lawi/KK Green', start: '2025-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: SNCR, bag filter, CEMS. Long lead ordered per CM Q4.' },
   { id: 13, name: 'Step-up transformer (8.25 MVA, 6.6/33 kV)', phase: 2, assignee: 'KK Green', start: '2025-08-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'TDD: Per single line diagram review.' },
   // 3 - Fabrication (phase 3)
-  { id: 14, name: 'Mechanical & structural components fabrication', phase: 3, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'CM Q4: 32.11% vs 64.92% plan. Drawing clarifications & vendor queue.' },
+  { id: 14, name: 'Mechanical & structural components fabrication', phase: 3, assignee: 'Vendors', start: '2025-06-01', end: '2026-08-31', status: 'Delayed', priority: 'Critical', notes: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Continuing shortfall — leading indicator for downstream delay.' },
   // 4 - Erection (phase 4)
-  { id: 15, name: 'Civil foundation and piling works', phase: 4, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'CM Q4: Weather delays & interface congestion noted.' },
+  { id: 15, name: 'Civil foundation and piling works', phase: 4, assignee: 'KK Green / Green Parawood', start: '2025-07-01', end: '2026-06-30', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Civil certified progress 23.58%. Active fronts: warehouse, stack foundation, clarifier tank, cooling tower, turbine hall, transformer yard, truck scale.' },
+  { id: 17, name: 'Structural steel erection — Combustion', phase: 4, assignee: 'KK Green', start: '2026-02-01', end: '2026-07-31', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Column installation ~60%, base frame ~20%. Active steel unloading, elevation checks, column erection.' },
+  { id: 18, name: 'Structural steel erection — Fuel Tower', phase: 4, assignee: 'KK Green', start: '2026-02-01', end: '2026-07-31', status: 'In Progress', priority: 'High', notes: 'OE Mar 2026: Column installation ~30%. Base frame/platform at early stage.' },
+  { id: 19, name: 'Structural steel erection — Turbine Building', phase: 4, assignee: 'KK Green', start: '2026-02-01', end: '2026-08-31', status: 'In Progress', priority: 'Critical', notes: 'OE Mar 2026: Steel column erection for T/G building advancing. One of principal work fronts.' },
+  { id: 20, name: 'Fire-fighting pipeline system', phase: 4, assignee: 'KK Green', start: '2026-04-01', end: '2026-09-30', status: 'Pending', priority: 'High', notes: 'OE Mar 2026: Not commenced. Concept design finalization stage. Key interface/HSE item — requires early design close-out.' },
   // 5 - Commissioning (phase 5)
-  { id: 16, name: 'Commissioning (not yet started)', phase: 5, assignee: 'KK Green', start: '2026-08-01', end: '2026-11-30', status: 'Pending', priority: 'Critical', notes: 'CM Q4: No commissioning work during this period as planned.' },
+  { id: 16, name: 'Commissioning (not yet started)', phase: 5, assignee: 'KK Green', start: '2026-08-01', end: '2026-11-30', status: 'Pending', priority: 'Critical', notes: 'OE Mar 2026: 0% as planned. SCOD 30 Nov 2026.' },
 ];
 
 // Issues from CM Reports findings and LTA observations only
 const DEFAULT_ISSUES = [
-  { id: 1, title: 'Fabrication significantly behind schedule', desc: 'CM Q4: 32.11% actual vs 64.92% plan. Delay attributed to final drawing clarifications and vendor production queue constraints.', phase: 3, severity: 'High', status: 'In Progress', assignee: 'Vendors', date: '2025-12-31', resolution: 'Fast-tracking vendor drawing approvals, expediting near-term fabrication, aligning priorities with site execution.' },
-  { id: 2, title: 'Overall progress behind schedule', desc: 'CM Q4: Overall 40.33% actual vs 54.89% plan (~14.5% gap).', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2025-12-31', resolution: 'Converting site execution into certifiable progress, accelerating critical construction and interface releases.' },
-  { id: 3, title: 'Ror.Ngor.4 factory permit pending', desc: 'CM Q4: Factory operation license at 50%, pending CoP and ESA completion. Needed before machine installation.', phase: 1, severity: 'High', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
-  { id: 4, title: 'Progress measurement methodology not defined', desc: 'TDD/CM: LTA recommends clearly defining how actual progress is measured, particularly during Erection Phase.', phase: 0, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-10-30', resolution: '' },
-  { id: 5, title: 'Weather delays on civil works', desc: 'CM Q4: Weather-related constraints and interface congestion as civil foundation and piling overlapped across work fronts.', phase: 4, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2025-12-15', resolution: 'Prioritizing critical construction releases.' },
-  { id: 6, title: 'O&M team not yet mobilized', desc: 'CM Q4: O&M team has not been mobilized during this monitoring period.', phase: 5, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2025-12-31', resolution: '' },
-  { id: 7, title: 'EHS documentation gaps', desc: 'CM Q4: Workforce profile, welfare facilities, EHS training records, HSE org structure not provided for review.', phase: 4, severity: 'Medium', status: 'Open', assignee: 'KK Green', date: '2025-12-31', resolution: 'LTA recommends submission in next monitoring period.' },
+  { id: 1, title: 'Fabrication critically behind schedule', desc: 'OE Mar 2026: 53.21% actual vs 95.53% plan (–42.32pp). Gap widened from –41.64pp in Feb. Rate of output below recovery baseline.', phase: 3, severity: 'High', status: 'In Progress', assignee: 'Vendors / LAWI', date: '2026-03-31', resolution: 'OE recommends updated recovery programme linking fabrication release dates to erection and mechanical installation sequences.' },
+  { id: 2, title: 'Overall progress materially behind baseline', desc: 'OE Mar 2026: Master S-Curve 51.45% actual vs 74.96% plan (–23.51pp). Gap widened from –22.10pp in Feb. Project behind schedule.', phase: 0, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE recommends workfront-release matrix and detailed site logistics/lifting coordination plan.' },
+  { id: 3, title: 'Ror.Ngor.4 factory permit not yet closed', desc: 'OE Mar 2026: Advanced but not closed. Revised machinery data complete, entering DIW system. Required before machine installation.', phase: 1, severity: 'High', status: 'In Progress', assignee: 'GP4', date: '2026-03-31', resolution: 'Project team entering finalized info into DIW online system. Consistency required across Ror.Ngor.4, CoP, ESA, and approved equipment docs.' },
+  { id: 4, title: 'Erection phase significantly behind plan', desc: 'OE Mar 2026: 6.28% actual vs 27.28% plan (–21.00pp). Variance widened from –15.18pp in Feb. Planned take-off not achieved.', phase: 4, severity: 'High', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'Most downstream mechanical packages queued behind structural workfront release. OE recommends erection productivity improvement plan.' },
+  { id: 5, title: 'Fire-fighting pipeline not commenced', desc: 'OE Mar 2026: Fire-fighting pipeline system not commenced. Still at concept design finalization stage. Key HSE and sequencing interface item.', phase: 4, severity: 'High', status: 'Open', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE recommends firm design-freeze / procurement-close-out / interface deliverables schedule. Avoid downstream interference with underground works.' },
+  { id: 6, title: 'Payment milestone behind plan', desc: 'OE Mar 2026: Payment S-Curve 64.51% actual vs 70.11% plan (–5.60pp). In-month actual +4.57% vs planned +7.50%.', phase: 0, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'OE maintaining separation between payment-milestone achievement and physical construction progress.' },
+  { id: 7, title: 'O&M team not yet mobilized', desc: 'OE Mar 2026: O&M team has not been mobilized. Required for commissioning preparation.', phase: 5, severity: 'Low', status: 'Open', assignee: 'GP4', date: '2026-06-30', resolution: '' },
+  { id: 8, title: 'Procurement close-out remaining', desc: 'OE Mar 2026: 94.63% actual vs 100.00% plan (–5.37pp). Remaining: vendor documentation, residual expediting, outstanding deliveries.', phase: 2, severity: 'Medium', status: 'In Progress', assignee: 'KK Green', date: '2026-03-31', resolution: 'Pending PO items: Ash Handling System (~4 months after PO), Crane (90 days from PO), 12.5 MVA Transformer (date TBC).' },
 ];
 
 function loadData() {
   const d = localStorage.getItem('wte_data');
   if (d) return JSON.parse(d);
-  return { phases: DEFAULT_PHASES, tasks: DEFAULT_TASKS, issues: DEFAULT_ISSUES, nextTaskId: 17, nextIssueId: 8 };
+  return { phases: DEFAULT_PHASES, tasks: DEFAULT_TASKS, issues: DEFAULT_ISSUES, nextTaskId: 21, nextIssueId: 9 };
 }
 function saveData() { localStorage.setItem('wte_data', JSON.stringify(data)); }
 let data = loadData();
@@ -3113,14 +3171,15 @@ function scurveLabels() {
 }
 
 // Planned S-curves per group (% within each group scope, 24 months Jan25-Dec26)
-// Plan curves Jan 2025 - Dec 2026 (24 months) based on project schedule
-// Q3/2025 (month 9): overall plan 33.13%, Q4/2025 (month 12): overall plan 54.89%
+// Plan curves based on OE Mar 2026 Extension Baseline S-Curve
+// Key reference points from OE report: Feb Plan 71.06%, Mar Plan 76.26%, Apr Plan 80.36%
 const GROUP_PLANS = {
-  overall:       [2,4,7,10,14,18,22,27,33,38,44,55, 60,65,70,76,81,86,90,93,96,98,99,100],
+  overall:       [2,5,8,12,17,22,28,35,42,48,55,62, 67,71,76,80,84,88,91,94,96,98,99,100],
   permits:       [5,10,15,22,30,38,45,52,58,65,72,78, 82,86,90,94,97,99,100,100,100,100,100,100],
-  engineering:   [15,25,38,50,62,72,80,87,93,95,97,99, 100,100,100,100,100,100,100,100,100,100,100,100],
-  procurement:   [1,3,6,10,16,24,33,42,52,62,72,80, 85,88,91,93,95,97,98,99,100,100,100,100],
-  construction:  [0,0,0,0,0,0,1,2,3,5,8,12, 18,26,36,48,60,72,82,90,95,98,99,100],
+  engineering:   [15,25,38,50,62,72,80,87,93,95,97,99, 99,99,99,100,100,100,100,100,100,100,100,100],
+  procurement:   [1,3,8,15,25,38,50,62,72,82,90,95, 97,98,100,100,100,100,100,100,100,100,100,100],
+  fabrication:   [0,0,0,0,0,2,5,12,22,35,50,65, 78,85,90,95,97,99,100,100,100,100,100,100],
+  construction:  [0,0,0,0,0,0,1,2,3,5,8,12, 16,20,30,40,52,65,78,88,95,98,99,100],
   commissioning: [0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,5,20,50,80,100],
 };
 
@@ -3996,6 +4055,72 @@ function renderFinanceReport() {
     <td class="text-xs text-right text-white font-bold font-mono">${pctSpent.toFixed(1)}%</td>
   </tr>`;
 
+  // Contractor Payment Table (from OE Report Section 5.2.1.3)
+  const CONTRACTORS = [
+    { name: 'KK Green Co., Ltd. (KKG)', value: 301534506, pct: 22.93, progress: 51.96 },
+    { name: 'Green Parawood Co., Ltd. (GPW)', value: 272103302, pct: 20.69, progress: 79.20 },
+    { name: 'LAWI Engineering (Thailand)', value: 6000000, pct: 0.46, progress: 100.00 },
+    { name: 'LAWI Engineering (M) Sdn Bhd', value: 477815792, pct: 36.34, progress: 77.48 },
+    { name: 'LAWI Engineering GmbH', value: 79945200, pct: 6.08, progress: 25.00 },
+    { name: 'Shandong Longsheng (SLB)', value: 108350000, pct: 8.24, progress: 45.00 },
+    { name: 'Shinko Ind. Ltd.', value: 69251200, pct: 5.27, progress: 45.00 },
+  ];
+  document.getElementById('rpt-fin-contractor-title').textContent = th ? 'สัญญา EPC ตามผู้รับเหมา (รวม: ฿1,315M)' : 'EPC Contract Payment by Contractor (Total: ฿1,315M)';
+  document.getElementById('rpt-fin-contractor-tbody').innerHTML = CONTRACTORS.map(c => {
+    const cls = c.progress >= 100 ? 'text-emerald-400' : c.progress >= 50 ? 'text-blue-400' : 'text-amber-400';
+    return `<tr class="hover:bg-white/[0.02]">
+      <td class="text-xs text-white">${c.name}</td>
+      <td class="text-xs text-right text-slate-300 font-mono">฿${(c.value/1e6).toFixed(1)}M</td>
+      <td class="text-xs text-right text-slate-400 font-mono">${c.pct.toFixed(2)}%</td>
+      <td class="text-xs text-right ${cls} font-mono font-medium">${c.progress.toFixed(2)}%</td>
+      <td class="text-xs">${c.progress >= 100 ? '<span class="badge badge-green">Complete</span>' : c.progress >= 50 ? '<span class="badge badge-blue">Active</span>' : '<span class="badge badge-amber">In Progress</span>'}</td>
+    </tr>`;
+  }).join('') + `<tr class="border-t border-slate-600"><td class="text-xs font-bold text-white py-2">${th?'รวม':'TOTAL'}</td><td class="text-xs text-right font-bold text-white font-mono">฿1,315.0M</td><td class="text-xs text-right font-bold text-white font-mono">100.00%</td><td class="text-xs text-right font-bold text-blue-400 font-mono">64.51%</td><td></td></tr>`;
+
+  // Delivery Schedule Table
+  const DELIVERIES = [
+    { status: '✅', item: 'J-Bolt for Warehouse Building', date: '03 Feb 2026', origin: 'China' },
+    { status: '✅', item: 'Turbine Building Steel Structure', date: '18-19 Feb 2026', origin: 'China' },
+    { status: '✅', item: 'Combustion System Steel Structure', date: '10-11 Mar 2026', origin: 'China' },
+    { status: '✅', item: '2500 kVA Transformer', date: '13 Mar 2026', origin: 'Thailand' },
+    { status: '📦', item: 'Water Tank', date: '25 Mar 2026', origin: 'China' },
+    { status: '📦', item: 'Control Building', date: '30 Mar 2026', origin: 'China' },
+    { status: '📦', item: 'Steam Boiler Shipment #0', date: '30 Mar 2026', origin: 'China' },
+    { status: '📦', item: 'Water Treatment System', date: '31 Mar 2026', origin: 'China' },
+    { status: '📦', item: '3500 kVA Transformer', date: '31 Mar 2026', origin: 'Thailand' },
+    { status: '🔜', item: 'Combustion — Ash Hopper', date: '08 Apr 2026', origin: 'China' },
+    { status: '🔜', item: 'Combustion — Fuel Dosing, Grate & Hydraulic', date: '08 Apr 2026', origin: 'China' },
+    { status: '🔜', item: 'Steam Boiler Shipment 1st', date: '22 Apr 2026', origin: 'China' },
+    { status: '🔜', item: 'Warehouse Building 1st', date: '30 Apr 2026', origin: 'China' },
+    { status: '🔜', item: 'Combustion — Platform', date: '30 Apr 2026', origin: 'China' },
+    { status: '🔜', item: 'Warehouse Building 2nd', date: '04 May 2026', origin: 'China' },
+    { status: '🔜', item: 'Combustion — Instruments', date: '14 May 2026', origin: 'Germany' },
+    { status: '🔜', item: 'Steam Boiler Shipment #1.5', date: '20 May 2026', origin: 'China' },
+    { status: '🔜', item: 'Flue Gas Cleaning System 1st', date: '22 May 2026', origin: 'China' },
+    { status: '🔜', item: '400V Panel', date: '30 May 2026', origin: 'Thailand' },
+    { status: '🔜', item: 'DCS System', date: '02 Jun 2026', origin: 'Thailand' },
+    { status: '🔜', item: 'Combustion — Fan & Rotary', date: '01 Jul 2026', origin: 'China' },
+    { status: '🔜', item: 'Condenser', date: '20 Jul 2026', origin: 'Japan' },
+    { status: '🔜', item: 'Steam Boiler Shipment 2nd', date: '22 Jul 2026', origin: 'China' },
+    { status: '🔜', item: '33kV Panel', date: '24 Jul 2026', origin: 'Thailand' },
+    { status: '🔜', item: 'Flue Gas Cleaning System 2nd', date: '22 Aug 2026', origin: 'China' },
+    { status: '🔜', item: 'BMH Shredder', date: '25 Aug 2026', origin: 'Finland' },
+    { status: '🔜', item: 'Steam Turbine (Shinko)', date: '20 Sep 2026', origin: 'Japan' },
+    { status: '⏳', item: 'Ash Handling System', date: '~4 months after PO', origin: 'China' },
+    { status: '⏳', item: 'Crane', date: '~90 days from PO', origin: 'China' },
+    { status: '⏳', item: '12.5 MVA Transformer', date: 'TBC', origin: 'Thailand' },
+  ];
+  document.getElementById('rpt-fin-delivery-title').textContent = th ? 'ตารางส่งมอบอุปกรณ์ (OE มี.ค. 2569)' : 'Equipment Delivery Schedule (OE Mar 2026)';
+  document.getElementById('rpt-fin-delivery-tbody').innerHTML = DELIVERIES.map(d => {
+    const cls = d.status === '✅' ? 'text-emerald-400' : d.status === '📦' ? 'text-blue-400' : d.status === '⏳' ? 'text-slate-400' : 'text-amber-400';
+    return `<tr class="hover:bg-white/[0.02]">
+      <td class="text-xs ${cls}">${d.status}</td>
+      <td class="text-xs text-white">${d.item}</td>
+      <td class="text-xs text-slate-300">${d.date}</td>
+      <td class="text-xs text-slate-400">${d.origin}</td>
+    </tr>`;
+  }).join('');
+
   // ---- Charts ----
   const labels = WP_SYSTEMS.map(w => th ? w.th.substring(0, 15) : w.en.substring(0, 15));
   const txtColor = chartTextColor();
@@ -4134,6 +4259,58 @@ function wpSystemName(key) {
 function wpSystemIcon(key) { return WP_SYSTEMS.find(s => s.key === key)?.icon || '📝'; }
 
 const DEFAULT_WP_REPORTS = [
+  {
+    id: 1004,
+    date: '2026-03-25',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 45,
+    equipment: 8,
+    system: 'civil',
+    activities: 'OE Mar 2026 — Civil Progress (23.58% cumulative certified):\n• Warehouse area: pile head cutting ongoing (weighted 0.992%)\n• Stack Foundation: rebar & formwork works (weighted 0.247%)\n• Water Treatment — Clarifier Tank Foundation 70 cu/hr (weighted 0.143%)\n• Cooling Tower Concrete Structure (weighted 1.036%)\n• Turbine Hall & Control Switchgear Room (weighted 1.884%)\n• Transformer Foundation & Yard (weighted 0.060%)\n• Truck Scale construction (weighted 0.070%)\n• Jet Clarifier / Water Tank assembly\n• Biogas pond excavation continuing',
+    issues: 'No civil execution problems recorded (N/A). Interface coordination across simultaneous work fronts requires continued daily coordination and short-interval planning.',
+    photos: '',
+    remarks: 'Engineering Drawings & Calculation Sheets at 50% overall progress. Fire-fighting pipeline concept design not yet commenced — key interface item.'
+  },
+  {
+    id: 1005,
+    date: '2026-03-24',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 35,
+    equipment: 6,
+    system: 'combustion',
+    activities: 'OE Mar 2026 — Structural Erection Progress:\n• Combustion steel structure: Column installation ~60% complete\n• Combustion base frame / base support works ~20% complete\n• Active steel unloading, setting-out/elevation checks, column erection\n• Inspection of column deviation for main combustion structure\n• Combustion System Steel Structure arrived at site 10-11 Mar 2026 (from China)',
+    issues: 'Most downstream systems at 0% — hopper & ash outlet, moving grate & grate bar, combustion & post-combustion casing, fuel dosing system, hydraulic system all pending behind structural workfront release.',
+    photos: '',
+    remarks: 'March marked clear transition into vertical construction. Erection phase overall 6.28% actual vs 27.28% plan.'
+  },
+  {
+    id: 1006,
+    date: '2026-03-24',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 20,
+    equipment: 4,
+    system: 'fuel',
+    activities: 'OE Mar 2026 — Fuel Tower Steel Structure:\n• Column installation ~30% complete\n• Base frame and platform works at early stage, not yet materially progressed\n• Steel members being managed under controlled storage, identification, and release',
+    issues: 'Base frame and platform works still early stage.',
+    photos: '',
+    remarks: 'Fuel tower erection advancing but at earlier stage than combustion structure.'
+  },
+  {
+    id: 1007,
+    date: '2026-03-20',
+    weather: 'Sunny',
+    workStatus: 'Normal',
+    manpower: 25,
+    equipment: 5,
+    system: 'turbine_gen',
+    activities: 'OE Mar 2026 — Turbine Building Structure:\n• Steel column erection for T/G building advancing\n• Turbine Building steel arrived at site 18-19 Feb 2026\n• Alignment checks against foundation benchmarks and anchor bolt positions\n• Staged assembly and erection sequencing ongoing',
+    issues: '',
+    photos: '',
+    remarks: 'One of principal work fronts in March. Turbine delivery from Shinko planned Sep 2026.'
+  },
   {
     id: 1001,
     date: '2026-03-17',
