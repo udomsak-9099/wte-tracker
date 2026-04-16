@@ -3465,22 +3465,30 @@ function renderSCurve() {
   // Use OE-verified actual data
   const overallActual = [...GROUP_ACTUALS.overall];
 
-  // Build forecast line — continues from last actual data point
+  // Build forecast line — catch up to plan by Jun'26 (index 17), then follow plan
   const forecastData = Array(24).fill(null);
-  // Find last actual index
   let lastActIdx = -1;
   for (let i = overallActual.length - 1; i >= 0; i--) { if (overallActual[i] !== null) { lastActIdx = i; break; } }
-  if (lastActIdx >= 2) {
+  if (lastActIdx >= 0) {
     const lastVal = overallActual[lastActIdx];
-    // Average monthly rate from last 3 months
-    const rate3 = (overallActual[lastActIdx] - overallActual[lastActIdx - 3]) / 3;
-    // Forecast: accelerating curve (rate increases as more systems come online)
+    const catchUpIdx = 17; // Jun'26 — target to rejoin plan
+    const plan = GROUP_PLANS.overall;
     forecastData[lastActIdx] = lastVal; // connect to actual
-    for (let i = lastActIdx + 1; i < 24; i++) {
-      const monthsAhead = i - lastActIdx;
-      // Gradually accelerate: rate grows ~1.15x per month (recovery ramp-up)
-      const accelRate = rate3 * Math.pow(1.15, monthsAhead);
-      forecastData[i] = Math.min(100, Math.round(forecastData[i - 1] + accelRate));
+
+    if (lastActIdx < catchUpIdx) {
+      // Interpolate smoothly from lastVal to plan[catchUpIdx] using easing
+      const gap = plan[catchUpIdx] - lastVal;
+      const steps = catchUpIdx - lastActIdx;
+      for (let i = lastActIdx + 1; i <= catchUpIdx; i++) {
+        const t = (i - lastActIdx) / steps;
+        // Ease-in curve (accelerating recovery)
+        const eased = t * t;
+        forecastData[i] = Math.round(lastVal + gap * eased);
+      }
+    }
+    // After catch-up: follow plan
+    for (let i = Math.max(lastActIdx + 1, catchUpIdx + 1); i < 24; i++) {
+      forecastData[i] = plan[i];
     }
   }
 
