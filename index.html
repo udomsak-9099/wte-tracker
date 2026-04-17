@@ -367,7 +367,14 @@ tailwind.config = {
         <span class="flex items-center gap-1"><span style="display:inline-block;width:16px;height:2px;background:#4ade80;border-radius:1px;opacity:0.7;border-top:1px dashed #4ade80"></span>Forecast</span>
       </div>
     </div>
-    <div style="position:relative;width:100%;overflow:hidden;"><canvas id="chart-scurve"></canvas></div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <!-- Chart (2/3) -->
+      <div class="lg:col-span-2">
+        <div style="position:relative;width:100%;overflow:hidden;"><canvas id="chart-scurve"></canvas></div>
+      </div>
+      <!-- Summary Panel (1/3) -->
+      <div class="lg:col-span-1 flex flex-col gap-3" id="dash-scurve-summary"></div>
+    </div>
   </div>
 
   <!-- Critical Path -->
@@ -3466,7 +3473,116 @@ function groupActual(group) {
   return [...actuals];
 }
 
+function renderSCurveSummary() {
+  const th = getLang() === 'th';
+  const now = new Date();
+  const actuals = GROUP_ACTUALS.overall;
+  const plan = GROUP_PLANS.overall;
+
+  // Find latest actual
+  let lastIdx = -1;
+  for (let i = actuals.length - 1; i >= 0; i--) { if (actuals[i] !== null) { lastIdx = i; break; } }
+  const lastActual = lastIdx >= 0 ? actuals[lastIdx] : 0;
+  const lastPlan = lastIdx >= 0 ? plan[lastIdx] : 0;
+  const variance = lastActual - lastPlan;
+  const varianceColor = variance >= 0 ? '#34d399' : (variance >= -15 ? '#fbbf24' : '#f87171');
+  const varianceSign = variance > 0 ? '+' : '';
+
+  // Countdown to SCOD (Nov 30, 2026)
+  const scod = new Date('2026-11-30');
+  const daysToScod = Math.ceil((scod - now) / 86400000);
+  const monthsToScod = Math.floor(daysToScod / 30);
+
+  // Forecast for next month (Apr/May'26) from forecast calc
+  const lastLabel = lastIdx >= 0 ? scurveLabels()[lastIdx] : '';
+
+  // Group progress pills — phase highlights
+  const phases = [
+    { key: 'permits',       label: th ? 'ใบอนุญาต' : 'Permits',       color: '#06b6d4' },
+    { key: 'engineering',   label: th ? 'วิศวกรรม' : 'Engineering',    color: '#6366f1' },
+    { key: 'procurement',   label: th ? 'จัดซื้อ'   : 'Procurement',   color: '#f59e0b' },
+    { key: 'fabrication',   label: th ? 'ผลิตชิ้นส่วน' : 'Fabrication', color: '#ef4444' },
+    { key: 'construction',  label: th ? 'ก่อสร้าง'  : 'Construction',  color: '#10b981' },
+    { key: 'commissioning', label: th ? 'ทดสอบระบบ' : 'Commissioning', color: '#a855f7' },
+  ];
+
+  function latestGroup(g) {
+    const arr = GROUP_ACTUALS[g] || [];
+    for (let i = arr.length - 1; i >= 0; i--) { if (arr[i] !== null) return arr[i]; }
+    return 0;
+  }
+  function latestPlanVal(g) {
+    const arr = GROUP_PLANS[g] || [];
+    const idx = lastIdx >= 0 ? lastIdx : arr.length - 1;
+    return arr[idx] || 0;
+  }
+
+  const phaseRows = phases.map(p => {
+    const a = latestGroup(p.key);
+    const pl = latestPlanVal(p.key);
+    const d = a - pl;
+    const dColor = d >= 0 ? 'text-emerald-400' : (d >= -15 ? 'text-amber-400' : 'text-red-400');
+    const dSign = d > 0 ? '+' : '';
+    return `<div class="flex items-center gap-2 py-1">
+      <span class="w-1.5 h-1.5 rounded-full shrink-0" style="background:${p.color}"></span>
+      <span class="text-[11px] text-slate-300 flex-1 min-w-0 truncate">${p.label}</span>
+      <span class="text-[11px] font-semibold tabular-nums text-white w-10 text-right">${a.toFixed(0)}%</span>
+      <span class="text-[10px] tabular-nums ${dColor} w-12 text-right">${dSign}${d.toFixed(1)}pp</span>
+    </div>`;
+  }).join('');
+
+  const html = `
+    <!-- Headline: Overall Progress -->
+    <div class="rounded-lg bg-gradient-to-br from-emerald-500/10 to-emerald-500/[0.03] border border-emerald-500/20 p-3">
+      <div class="text-[10px] uppercase tracking-wider text-emerald-400/80 font-semibold mb-1">${th?'ความคืบหน้ารวม':'Overall Progress'}</div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-3xl font-bold text-white tabular-nums">${lastActual.toFixed(1)}<span class="text-lg text-slate-400">%</span></span>
+        <span class="text-[10px] text-slate-500">${lastLabel}</span>
+      </div>
+      <div class="flex items-center gap-2 mt-1.5 text-[10px]">
+        <span class="text-slate-500">${th?'แผน':'Plan'} <span class="text-slate-300 font-medium">${lastPlan.toFixed(1)}%</span></span>
+        <span class="text-slate-700">•</span>
+        <span class="font-bold" style="color:${varianceColor}">${varianceSign}${variance.toFixed(1)}pp ${th?'เทียบแผน':'vs plan'}</span>
+      </div>
+    </div>
+
+    <!-- SCOD Countdown -->
+    <div class="rounded-lg bg-gradient-to-br from-rose-500/10 to-rose-500/[0.03] border border-rose-500/20 p-3">
+      <div class="text-[10px] uppercase tracking-wider text-rose-400/80 font-semibold mb-1">🎯 ${th?'กำหนดส่ง (SCOD)':'SCOD Target'}</div>
+      <div class="flex items-baseline gap-2">
+        <span class="text-2xl font-bold text-white tabular-nums">${daysToScod}</span>
+        <span class="text-[11px] text-slate-400">${th?'วัน':'days left'}</span>
+        <span class="text-[10px] text-slate-600 ml-auto">30 Nov 2026</span>
+      </div>
+      <div class="text-[10px] text-slate-500 mt-1">≈ ${monthsToScod} ${th?'เดือน':'months'} ${th?'จนถึง COD':'until COD'}</div>
+    </div>
+
+    <!-- Key Milestones Status -->
+    <div class="rounded-lg border border-white/5 bg-white/[0.015] p-3">
+      <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-2">${th?'เหตุการณ์สำคัญ':'Key Events'}</div>
+      <div class="space-y-1.5 text-[11px]">
+        <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span><span class="text-slate-300 flex-1">LC Received</span><span class="text-slate-600">Dec'25</span></div>
+        <div class="flex items-center gap-2"><span class="text-emerald-400">✓</span><span class="text-slate-300 flex-1">BOI / CoP / ESA</span><span class="text-slate-600">Q1'26</span></div>
+        <div class="flex items-center gap-2"><span class="text-amber-400">◐</span><span class="text-slate-300 flex-1">Ror.Ngor.4 (60%)</span><span class="text-slate-600">Jun'26</span></div>
+        <div class="flex items-center gap-2"><span class="text-slate-500">○</span><span class="text-slate-400 flex-1">Boiler Shipment</span><span class="text-slate-600">Jul'26</span></div>
+        <div class="flex items-center gap-2"><span class="text-slate-500">○</span><span class="text-slate-400 flex-1">Turbine Delivery</span><span class="text-slate-600">Sep'26</span></div>
+        <div class="flex items-center gap-2"><span class="text-slate-500">○</span><span class="text-slate-400 flex-1">COD Target</span><span class="text-rose-400 font-semibold">Nov'26</span></div>
+      </div>
+    </div>
+
+    <!-- Phase Breakdown -->
+    <div class="rounded-lg border border-white/5 bg-white/[0.015] p-3">
+      <div class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold mb-2">${th?'ตามกลุ่มงาน':'By Phase'}</div>
+      ${phaseRows}
+    </div>
+  `;
+
+  const container = document.getElementById('dash-scurve-summary');
+  if (container) container.innerHTML = html;
+}
+
 function renderSCurve() {
+  renderSCurveSummary();
   const ctx = document.getElementById('chart-scurve').getContext('2d');
   if (scurveChart) scurveChart.destroy();
   const labels = scurveLabels();
@@ -3519,7 +3635,7 @@ function renderSCurve() {
     options: {
       responsive: true,
       maintainAspectRatio: true,
-      aspectRatio: window.innerWidth < 640 ? 1.4 : 2.5,
+      aspectRatio: window.innerWidth < 1024 ? 1.5 : 1.7,
       layout: { padding: { top: 44, bottom: 8, left: 4, right: 4 } },
       interaction: { mode: 'index', intersect: false },
       plugins: {
