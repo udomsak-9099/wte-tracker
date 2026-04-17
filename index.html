@@ -463,6 +463,36 @@ tailwind.config = {
     <div id="dash-contractor-bars" class="space-y-3"></div>
   </div>
 
+  <!-- Pre-Delivery Civil/Steel Readiness Plan -->
+  <div class="card p-5 mb-6">
+    <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
+      <div>
+        <h3 class="text-xs font-bold text-white uppercase tracking-wider" id="dash-predelivery-title">🏗️ Pre-Delivery Civil & Steel Plan</h3>
+        <p class="text-[10px] text-slate-500 mt-0.5" id="dash-predelivery-sub">Civil works, buildings & steel structure — must complete before equipment arrives</p>
+      </div>
+      <div class="flex items-center gap-3 text-[10px]">
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span><span class="text-slate-400" id="pd-leg-done">Done</span></span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500"></span><span class="text-slate-400" id="pd-leg-progress">In Progress</span></span>
+        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span><span class="text-slate-400" id="pd-leg-risk">Behind</span></span>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-[11px]" id="dash-predelivery-table">
+        <thead>
+          <tr class="text-left text-[10px] uppercase tracking-wider text-slate-500 border-b border-white/5">
+            <th class="py-2 pr-3" id="pd-th-eq">Equipment</th>
+            <th class="py-2 pr-3" id="pd-th-arr">Arrival</th>
+            <th class="py-2 pr-3" id="pd-th-work">Civil / Steel Work Required</th>
+            <th class="py-2 pr-3" id="pd-th-deadline">Deadline</th>
+            <th class="py-2 pr-3" id="pd-th-left">Days Left</th>
+            <th class="py-2" id="pd-th-status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="dash-predelivery-body"></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Upcoming Deliveries with Countdown -->
   <div class="card p-5 mb-8">
     <div class="flex items-center justify-between mb-4">
@@ -3042,6 +3072,44 @@ const DELIVERY_PLAN = [
   { equipment: 'Crane', task: '90 days from PO', date: null, country: 'China', system: 'civil', arrived: false, prereqs: '' },
 ];
 
+// ── Pre-Delivery Civil/Steel Readiness Plan ──
+// For each delivery, list the civil works / buildings / steel structure work
+// that MUST complete before equipment arrives. Deadlines backward-scheduled.
+const PRE_DELIVERY_PLAN = [
+  // ── Equipment already arrived — civil works done ──
+  { equipment: 'Warehouse Building (J-Bolt)', arrival: '2026-02-03', work: 'Foundation & J-bolt embedment — Warehouse', deadline: '2026-01-20', progress: 100 },
+  { equipment: 'Turbine Building Steel', arrival: '2026-02-18', work: 'Turbine building foundation & anchor bolts', deadline: '2026-02-05', progress: 100 },
+  { equipment: 'Combustion Steel Structure', arrival: '2026-03-10', work: 'Combustion area foundation + laydown', deadline: '2026-02-25', progress: 100 },
+  { equipment: 'Control Building', arrival: '2026-04-03', work: 'Control building foundation & floor slab', deadline: '2026-03-20', progress: 100 },
+
+  // ── Upcoming — must race to finish ──
+  { equipment: 'Combustion — Ash Hopper', arrival: '2026-04-15', work: 'Ash hopper pit RC + steel frame ready', deadline: '2026-04-05', progress: 85 },
+  { equipment: 'Combustion — Grate/Hydraulic', arrival: '2026-04-15', work: 'Combustion floor slab + support steel', deadline: '2026-04-05', progress: 82 },
+  { equipment: 'Boiler Shipment #0', arrival: '2026-04-19', work: 'Boiler steel structure erection (incl. Deaerator & Air Heater supports)', deadline: '2026-04-10', progress: 70 },
+  { equipment: 'Boiler Shipment 1st', arrival: '2026-04-22', work: 'Boiler foundation finished + laydown area prepared', deadline: '2026-04-15', progress: 65 },
+  { equipment: 'Warehouse 1st Shipment', arrival: '2026-04-30', work: 'Warehouse foundation + laydown area', deadline: '2026-04-20', progress: 55 },
+  { equipment: 'Water Treatment System', arrival: '2026-03-31', work: 'Water treatment building foundation', deadline: '2026-03-15', progress: 90 },
+  { equipment: 'Warehouse 2nd Shipment', arrival: '2026-05-04', work: 'Warehouse structural columns/roof ready to receive', deadline: '2026-04-28', progress: 35 },
+  { equipment: 'Water Tank #1', arrival: '2026-05-10', work: 'Water tank foundation + DIA sets + laydown', deadline: '2026-04-25', progress: 45 },
+  { equipment: 'Combustion — Instrument', arrival: '2026-05-14', work: 'Instrument storage area (indoor, dry)', deadline: '2026-04-30', progress: 40 },
+  { equipment: 'Warehouse 3rd Shipment', arrival: '2026-05-15', work: 'Warehouse cladding ready for 3rd shipment', deadline: '2026-05-10', progress: 20 },
+  { equipment: 'Combustion — Platform', arrival: '2026-05-15', work: 'Platform support steel + access ladders', deadline: '2026-05-05', progress: 25 },
+  { equipment: 'Boiler Shipment #1.5', arrival: '2026-05-20', work: 'Steel for pumps, air heaters, flue gas ducts', deadline: '2026-05-10', progress: 30 },
+  { equipment: '2,500 kVA Transformer', arrival: '2026-05-20', work: 'Transformer pad foundation + oil pit', deadline: '2026-05-05', progress: 60 },
+  { equipment: 'Flue Gas System 1st', arrival: '2026-05-22', work: 'FGT foundation + laydown area', deadline: '2026-05-05', progress: 40 },
+  { equipment: '400V Panel', arrival: '2026-05-30', work: 'Electrical room floor + cable tray supports', deadline: '2026-05-15', progress: 30 },
+  { equipment: 'DCS System', arrival: '2026-06-02', work: 'DCS room storage ready (indoor, air-cond)', deadline: '2026-05-15', progress: 25 },
+  { equipment: 'Combustion — Fan & Rotary', arrival: '2026-07-01', work: 'Fan foundation + storage area', deadline: '2026-06-15', progress: 20 },
+  { equipment: 'Condenser', arrival: '2026-07-20', work: 'Condenser foundation + storage (5×30m laydown)', deadline: '2026-06-30', progress: 10 },
+  { equipment: '3,500 kVA Transformer', arrival: '2026-07-20', work: 'Transformer pad foundation + cable trench', deadline: '2026-06-30', progress: 15 },
+  { equipment: 'Boiler Shipment 2nd', arrival: '2026-07-22', work: 'Boiler laydown area for water wall & superheater', deadline: '2026-07-10', progress: 15 },
+  { equipment: '33kV Panel', arrival: '2026-07-24', work: 'HV switchgear room + cable gland pit', deadline: '2026-06-20', progress: 10 },
+  { equipment: '12.5 MVA Transformer', arrival: '2026-08-15', work: 'Main transformer pad + fire wall + oil pit', deadline: '2026-07-15', progress: 5 },
+  { equipment: 'Flue Gas System 2nd', arrival: '2026-08-22', work: 'FGT 2nd foundation + platform steel', deadline: '2026-07-30', progress: 5 },
+  { equipment: 'BMH Shredder', arrival: '2026-08-25', work: 'Shredder foundation + infeed chute steel', deadline: '2026-07-10', progress: 0 },
+  { equipment: 'Steam Turbine (Shinko)', arrival: '2026-09-20', work: 'Turbine pedestal (2,500 m³ RC) + hall steel + laydown', deadline: '2026-08-30', progress: 8 },
+];
+
 function loadData() {
   const d = localStorage.getItem('wte_data');
   if (d) return JSON.parse(d);
@@ -3372,6 +3440,9 @@ function renderDashboard() {
     </div>`;
   }
   document.getElementById('dash-delivery-list').innerHTML = delHtml;
+
+  // ── Pre-Delivery Civil/Steel Readiness Plan ──
+  renderPreDeliveryPlan();
 
   // ── Phase Progress Cards ──
   const container = document.getElementById('phase-cards');
@@ -3762,6 +3833,111 @@ function renderCriticalPath() {
       <span class="text-[9px] text-slate-600 shrink-0 w-16 text-right">${dl.toLocaleDateString(th?'th-TH':'en-US',{day:'numeric',month:'short'})}</span>
     </div>`;
   }).join('');
+}
+
+// ── Pre-Delivery Civil/Steel Readiness Plan ──
+// For each equipment delivery, shows the civil/steel work that must complete first.
+// Deadline is back-scheduled from arrival. Status reflects progress vs days remaining.
+function renderPreDeliveryPlan() {
+  const th = getLang() === 'th';
+  const locale = th ? 'th-TH' : 'en-US';
+  const now = new Date();
+  const todayMs = now.getTime();
+
+  // Labels
+  const titleEl = document.getElementById('dash-predelivery-title');
+  const subEl = document.getElementById('dash-predelivery-sub');
+  if (titleEl) titleEl.textContent = th ? '🏗️ แผนงานโยธา·เหล็กก่อนรับอุปกรณ์' : '🏗️ Pre-Delivery Civil & Steel Plan';
+  if (subEl) subEl.textContent = th ? 'งานโยธา อาคาร และโครงสร้างเหล็ก — ต้องเสร็จก่อนของเข้าไซต์' : 'Civil works, buildings & steel structure — must complete before equipment arrives';
+  var legDone = document.getElementById('pd-leg-done');    if (legDone) legDone.textContent = th ? 'เสร็จแล้ว' : 'Done';
+  var legProg = document.getElementById('pd-leg-progress');if (legProg) legProg.textContent = th ? 'กำลังทำ' : 'In Progress';
+  var legRisk = document.getElementById('pd-leg-risk');    if (legRisk) legRisk.textContent = th ? 'ล่าช้า/เสี่ยง' : 'Behind';
+  var thEq = document.getElementById('pd-th-eq');      if (thEq) thEq.textContent = th ? 'อุปกรณ์' : 'Equipment';
+  var thArr = document.getElementById('pd-th-arr');    if (thArr) thArr.textContent = th ? 'เข้าไซต์' : 'Arrival';
+  var thWork = document.getElementById('pd-th-work');  if (thWork) thWork.textContent = th ? 'งานโยธา/เหล็กที่ต้องเสร็จ' : 'Civil / Steel Work Required';
+  var thDl = document.getElementById('pd-th-deadline');if (thDl) thDl.textContent = th ? 'ต้องเสร็จภายใน' : 'Deadline';
+  var thLeft = document.getElementById('pd-th-left');  if (thLeft) thLeft.textContent = th ? 'เหลือ' : 'Days Left';
+  var thSt = document.getElementById('pd-th-status'); if (thSt) thSt.textContent = th ? 'สถานะ' : 'Status';
+
+  // Sort by deadline ascending; keep completed at bottom
+  var rows = PRE_DELIVERY_PLAN.slice().sort((a, b) => {
+    if (a.progress >= 100 && b.progress < 100) return 1;
+    if (b.progress >= 100 && a.progress < 100) return -1;
+    return new Date(a.deadline) - new Date(b.deadline);
+  });
+
+  const fmt = (d) => new Date(d).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: '2-digit' });
+
+  const html = rows.map(r => {
+    const dl = new Date(r.deadline);
+    const daysLeft = Math.ceil((dl - now) / 86400000);
+    const arr = new Date(r.arrival);
+    const buffer = Math.ceil((arr - dl) / 86400000);
+
+    // Status logic
+    let status, statusColor, dotColor, rowBg;
+    if (r.progress >= 100) {
+      status = th ? 'เสร็จแล้ว' : 'Done';
+      statusColor = 'text-emerald-400';
+      dotColor = 'bg-emerald-500';
+      rowBg = '';
+    } else if (daysLeft < 0) {
+      status = th ? `เกิน ${Math.abs(daysLeft)}d` : `${Math.abs(daysLeft)}d overdue`;
+      statusColor = 'text-red-400 font-bold';
+      dotColor = 'bg-red-500 animate-pulse';
+      rowBg = 'bg-red-500/[0.04]';
+    } else {
+      // Required progress by now = (total days - days left) / total days
+      // Simple heuristic: if progress < (1 - daysLeft/60) * 100 → behind
+      const expectedProg = Math.max(0, Math.min(100, 100 - (daysLeft / 45) * 100));
+      if (r.progress < expectedProg - 15) {
+        status = th ? 'ล่าช้า' : 'Behind';
+        statusColor = 'text-red-400';
+        dotColor = 'bg-red-500';
+        rowBg = 'bg-red-500/[0.03]';
+      } else if (r.progress < expectedProg - 5 || daysLeft < 14) {
+        status = th ? 'เร่งด่วน' : 'Urgent';
+        statusColor = 'text-amber-400';
+        dotColor = 'bg-amber-500';
+        rowBg = 'bg-amber-500/[0.03]';
+      } else {
+        status = th ? 'กำลังทำ' : 'On Track';
+        statusColor = 'text-emerald-400';
+        dotColor = 'bg-emerald-500';
+        rowBg = '';
+      }
+    }
+
+    const daysText = daysLeft < 0
+      ? `<span class="text-red-400 font-bold">${Math.abs(daysLeft)}d ${th?'เกิน':'over'}</span>`
+      : daysLeft === 0
+      ? `<span class="text-red-400 font-bold">${th?'วันนี้':'Today'}</span>`
+      : `<span class="${daysLeft < 14 ? 'text-amber-400' : 'text-slate-300'} tabular-nums">${daysLeft}d</span>`;
+
+    const progBar = `<div class="flex items-center gap-2">
+      <div class="flex-1 h-1.5 rounded-full bg-white/5 overflow-hidden min-w-[60px]">
+        <div class="h-full rounded-full" style="width:${r.progress}%;background:${r.progress>=100?'#10b981':r.progress>=60?'#34d399':r.progress>=30?'#f59e0b':'#ef4444'}"></div>
+      </div>
+      <span class="text-[10px] tabular-nums text-slate-400 w-9 text-right">${r.progress}%</span>
+    </div>`;
+
+    return `<tr class="border-b border-white/5 ${rowBg}">
+      <td class="py-2.5 pr-3">
+        <div class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full ${dotColor} shrink-0"></span>
+          <span class="text-[11px] font-medium text-slate-200">${r.equipment}</span>
+        </div>
+      </td>
+      <td class="py-2.5 pr-3 text-[10px] text-slate-400 whitespace-nowrap">${fmt(r.arrival)}</td>
+      <td class="py-2.5 pr-3 text-[11px] text-slate-300 max-w-[320px]">${r.work}<div class="mt-1">${progBar}</div></td>
+      <td class="py-2.5 pr-3 text-[10px] text-slate-400 whitespace-nowrap">${fmt(r.deadline)}<div class="text-[9px] text-slate-600">${th?'buffer':'buffer'}: ${buffer}d</div></td>
+      <td class="py-2.5 pr-3 text-[11px] whitespace-nowrap">${daysText}</td>
+      <td class="py-2.5 text-[10px] ${statusColor} whitespace-nowrap">${status}</td>
+    </tr>`;
+  }).join('');
+
+  const tbody = document.getElementById('dash-predelivery-body');
+  if (tbody) tbody.innerHTML = html;
 }
 
 function renderGroupSCurves() {
