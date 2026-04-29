@@ -10,8 +10,10 @@ import type { Database } from "@/lib/database.types";
 
 type EnvInsert = Database["public"]["Tables"]["environmental_records"]["Insert"];
 
+type EnvRecord = Database["public"]["Tables"]["environmental_records"]["Row"];
+
 export function useEnvRecords(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<EnvRecord[]>({
     enabled: !!projectId,
     queryKey: ["env-records", projectId],
     queryFn: async () => {
@@ -22,7 +24,7 @@ export function useEnvRecords(projectId: string | null | undefined) {
         .order("record_date", { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data;
+      return (data ?? []) as EnvRecord[];
     },
   });
 }

@@ -10,8 +10,14 @@ import type { Database } from "@/lib/database.types";
 
 type PtwInsert = Database["public"]["Tables"]["permits_to_work"]["Insert"];
 
+export type PtwRow =
+  Database["public"]["Tables"]["permits_to_work"]["Row"] & {
+    issued: { full_name: string } | null;
+    approved: { full_name: string } | null;
+  };
+
 export function usePtwList(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<PtwRow[]>({
     enabled: !!projectId,
     queryKey: ["ptw", projectId],
     queryFn: async () => {
@@ -22,7 +28,7 @@ export function usePtwList(projectId: string | null | undefined) {
         .order("created_at", { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as PtwRow[];
     },
   });
 }

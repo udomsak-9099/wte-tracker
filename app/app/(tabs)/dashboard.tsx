@@ -52,7 +52,7 @@ export default function Dashboard() {
             .select("progress")
             .eq("project_id", current.id),
         ]);
-      const phaseRows = phases.data ?? [];
+      const phaseRows = (phases.data ?? []) as { progress: number | null }[];
       const overallProgress =
         phaseRows.length === 0
           ? 0

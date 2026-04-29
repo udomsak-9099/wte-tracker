@@ -3,6 +3,7 @@ import { Stack, useRouter } from "expo-router";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useProject } from "@/contexts/project";
+import type { Permit } from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
@@ -18,7 +19,7 @@ export default function PermitsScreen() {
   const { current } = useProject();
   const router = useRouter();
 
-  const permits = useQuery({
+  const permits = useQuery<Permit[]>({
     enabled: !!current,
     queryKey: ["permits", current?.id],
     queryFn: async () => {
@@ -28,7 +29,7 @@ export default function PermitsScreen() {
         .eq("project_id", current!.id)
         .order("name", { ascending: true });
       if (error) throw error;
-      return data;
+      return (data ?? []) as Permit[];
     },
   });
 

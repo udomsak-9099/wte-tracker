@@ -1,9 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/lib/database.types";
+
+export type EquipmentRow =
+  Database["public"]["Tables"]["equipment_items"]["Row"] & {
+    organizations: { name: string } | null;
+    epc_systems: { name: string } | null;
+  };
+
+export type ShipmentRow =
+  Database["public"]["Tables"]["equipment_shipments"]["Row"] & {
+    shipping: { name: string } | null;
+  };
 
 export function useEquipmentItems(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<EquipmentRow[]>({
     enabled: !!projectId,
     queryKey: ["equipment-items", projectId],
     queryFn: async () => {
@@ -15,13 +27,13 @@ export function useEquipmentItems(projectId: string | null | undefined) {
         .eq("project_id", projectId!)
         .order("name");
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as EquipmentRow[];
     },
   });
 }
 
 export function useEquipmentItem(id: string | null | undefined) {
-  return useQuery({
+  return useQuery<EquipmentRow | null>({
     enabled: !!id,
     queryKey: ["equipment-item", id],
     queryFn: async () => {
@@ -33,13 +45,13 @@ export function useEquipmentItem(id: string | null | undefined) {
         .eq("id", id!)
         .single();
       if (error) throw error;
-      return data;
+      return (data as unknown as EquipmentRow) ?? null;
     },
   });
 }
 
 export function useShipmentsForItem(itemId: string | null | undefined) {
-  return useQuery({
+  return useQuery<ShipmentRow[]>({
     enabled: !!itemId,
     queryKey: ["shipments", itemId],
     queryFn: async () => {
@@ -49,7 +61,7 @@ export function useShipmentsForItem(itemId: string | null | undefined) {
         .eq("equipment_item_id", itemId!)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as ShipmentRow[];
     },
   });
 }

@@ -10,8 +10,15 @@ import type { Database } from "@/lib/database.types";
 
 type IssueInsert = Database["public"]["Tables"]["issues"]["Insert"];
 
+export type IssueWithPhase =
+  Database["public"]["Tables"]["issues"]["Row"] & {
+    phases: { project_id: string | null; name: string } | null;
+  };
+
+type PhaseSummary = { id: string; name: string; display_order: number | null };
+
 export function useProjectIssues(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<IssueWithPhase[]>({
     enabled: !!projectId,
     queryKey: ["issues", projectId],
     queryFn: async () => {
@@ -22,13 +29,13 @@ export function useProjectIssues(projectId: string | null | undefined) {
         .order("reported_date", { ascending: false })
         .limit(100);
       if (error) throw error;
-      return data;
+      return (data ?? []) as unknown as IssueWithPhase[];
     },
   });
 }
 
 export function useProjectPhases(projectId: string | null | undefined) {
-  return useQuery({
+  return useQuery<PhaseSummary[]>({
     enabled: !!projectId,
     queryKey: ["phases", projectId],
     queryFn: async () => {
@@ -38,7 +45,7 @@ export function useProjectPhases(projectId: string | null | undefined) {
         .eq("project_id", projectId!)
         .order("display_order");
       if (error) throw error;
-      return data;
+      return (data ?? []) as PhaseSummary[];
     },
   });
 }

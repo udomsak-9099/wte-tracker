@@ -4,6 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
+import type {
+  EquityCall,
+  LoanDrawdown,
+  PaymentMilestone,
+} from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
@@ -16,7 +21,7 @@ export default function Finance() {
   const { current } = useProject();
   const canSeeEquity = profile?.role !== "bank";
 
-  const loans = useQuery({
+  const loans = useQuery<LoanDrawdown[]>({
     enabled: !!current,
     queryKey: ["loans", current?.id],
     queryFn: async () => {
@@ -26,11 +31,11 @@ export default function Finance() {
         .eq("project_id", current!.id)
         .order("drawdown_date", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []) as LoanDrawdown[];
     },
   });
 
-  const equity = useQuery({
+  const equity = useQuery<EquityCall[]>({
     enabled: !!current && canSeeEquity,
     queryKey: ["equity", current?.id],
     queryFn: async () => {
@@ -40,11 +45,11 @@ export default function Finance() {
         .eq("project_id", current!.id)
         .order("call_date", { ascending: false });
       if (error) throw error;
-      return data;
+      return (data ?? []) as EquityCall[];
     },
   });
 
-  const milestones = useQuery({
+  const milestones = useQuery<PaymentMilestone[]>({
     enabled: !!current,
     queryKey: ["milestones", current?.id],
     queryFn: async () => {
@@ -54,7 +59,7 @@ export default function Finance() {
         .eq("project_id", current!.id)
         .order("due_date", { ascending: true });
       if (error) throw error;
-      return data;
+      return (data ?? []) as PaymentMilestone[];
     },
   });
 

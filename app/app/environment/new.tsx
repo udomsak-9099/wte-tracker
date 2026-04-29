@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -35,7 +35,7 @@ export default function NewEnvRecord() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const { control, handleSubmit, formState } = useForm<EnvRecordInput>({
-    resolver: zodResolver(envRecordSchema),
+    resolver: zodResolver(envRecordSchema) as Resolver<EnvRecordInput>,
     defaultValues: {
       record_date: today(),
       category: "",

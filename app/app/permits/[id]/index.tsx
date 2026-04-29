@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
+import type { Permit } from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
@@ -30,7 +31,7 @@ function parseChecklist(raw: unknown): ChecklistItem[] {
 export default function PermitDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  const permit = useQuery({
+  const permit = useQuery<Permit | null>({
     enabled: !!id,
     queryKey: ["permit", id],
     queryFn: async () => {
@@ -40,7 +41,7 @@ export default function PermitDetail() {
         .eq("id", id!)
         .single();
       if (error) throw error;
-      return data;
+      return (data as Permit) ?? null;
     },
   });
 

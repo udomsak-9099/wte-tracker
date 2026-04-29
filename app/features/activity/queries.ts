@@ -1,11 +1,17 @@
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/lib/supabase";
+import type { Database } from "@/lib/database.types";
 
 const PAGE_SIZE = 30;
 
+export type ActivityRow =
+  Database["public"]["Tables"]["activity_log"]["Row"] & {
+    profiles: { full_name: string; role: string } | null;
+  };
+
 export function useActivityLog(filterAction?: string) {
-  return useInfiniteQuery({
+  return useInfiniteQuery<ActivityRow[]>({
     queryKey: ["activity-log", filterAction ?? "all"],
     initialPageParam: 0,
     queryFn: async ({ pageParam }) => {
@@ -13,11 +19,11 @@ export function useActivityLog(filterAction?: string) {
         .from("activity_log")
         .select("*, profiles(full_name, role)")
         .order("created_at", { ascending: false })
-        .range(pageParam, pageParam + PAGE_SIZE - 1);
+        .range(pageParam as number, (pageParam as number) + PAGE_SIZE - 1);
       if (filterAction) q = q.eq("action", filterAction);
       const { data, error } = await q;
       if (error) throw error;
-      return data;
+      return (data ?? []) as ActivityRow[];
     },
     getNextPageParam: (lastPage, all) =>
       (lastPage?.length ?? 0) === PAGE_SIZE ? all.length * PAGE_SIZE : undefined,

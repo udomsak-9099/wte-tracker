@@ -25,12 +25,13 @@ export default function ProfileScreen() {
   const update = useMutation({
     mutationFn: async () => {
       if (!session?.user) throw new Error("Not signed in");
+      const update = {
+        full_name: fullName.trim(),
+        phone: phone.trim() || null,
+      };
       const { error } = await supabase
         .from("profiles")
-        .update({
-          full_name: fullName.trim(),
-          phone: phone.trim() || null,
-        })
+        .update(update as never)
         .eq("id", session.user.id);
       if (error) throw error;
     },

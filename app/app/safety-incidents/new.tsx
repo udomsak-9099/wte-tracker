@@ -65,18 +65,19 @@ export default function NewSafetyIncident() {
     try {
       const incident = await create.mutateAsync(values);
       if (photos.length > 0) {
+        const incidentId = (incident as { id: string }).id;
         await supabase.from("attachments").insert(
           photos.map((p) => ({
             entity_type: "safety_incident",
-            entity_id: incident.id,
+            entity_id: incidentId,
             storage_path: p.path,
             mime_type: "image/jpeg",
-          }))
+          })) as never
         );
         await logActivity(
           "attach_photos",
           "safety_incidents",
-          incident.id,
+          incidentId,
           { count: photos.length }
         );
       }

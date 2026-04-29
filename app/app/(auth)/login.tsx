@@ -127,6 +127,7 @@ type FieldProps = {
 };
 
 function Field({ control, name, ...rest }: FieldProps) {
+  const { placeholder, ...inputRest } = rest;
   return (
     <Controller
       control={control}
@@ -138,12 +139,12 @@ function Field({ control, name, ...rest }: FieldProps) {
               styles.input,
               fieldState.error && { borderColor: colors.danger },
             ]}
-            placeholder={rest.placeholder}
+            placeholder={placeholder}
             placeholderTextColor={colors.textDim}
             value={field.value as string}
             onChangeText={field.onChange}
             onBlur={field.onBlur}
-            {...rest}
+            {...inputRest}
           />
           {fieldState.error?.message && (
             <Text style={styles.fieldError}>{fieldState.error.message}</Text>

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, type Resolver } from "react-hook-form";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -39,7 +39,7 @@ export default function NewDailyReport() {
   const [serverError, setServerError] = useState<string | null>(null);
 
   const { control, handleSubmit, formState } = useForm<DailyReportInput>({
-    resolver: zodResolver(dailyReportSchema),
+    resolver: zodResolver(dailyReportSchema) as Resolver<DailyReportInput>,
     defaultValues: {
       report_date: today(),
       manpower_count: 0,
@@ -60,18 +60,19 @@ export default function NewDailyReport() {
         remarks: values.remarks || null,
       });
       if (photos.length > 0) {
+        const reportId = (report as { id: string }).id;
         await supabase.from("attachments").insert(
           photos.map((p) => ({
             entity_type: "epc_daily_report",
-            entity_id: report.id,
+            entity_id: reportId,
             storage_path: p.path,
             mime_type: "image/jpeg",
-          }))
+          })) as never
         );
         await logActivity(
           "attach_photos",
           "epc_daily_reports",
-          report.id,
+          reportId,
           { count: photos.length }
         );
       }

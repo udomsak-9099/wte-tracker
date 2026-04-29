@@ -5,8 +5,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
+import type { SafetyIncident } from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, severityColor, space } from "@/lib/theme";
+
+type Severity = SafetyIncident["severity"];
 
 export default function Safety() {
   const { current } = useProject();
@@ -17,7 +20,7 @@ export default function Safety() {
     profile?.role === "epc_pm" ||
     profile?.role === "safety_officer";
 
-  const incidents = useQuery({
+  const incidents = useQuery<SafetyIncident[]>({
     enabled: !!current,
     queryKey: ["safety-incidents", current?.id],
     queryFn: async () => {
@@ -28,7 +31,7 @@ export default function Safety() {
         .order("incident_date", { ascending: false })
         .limit(50);
       if (error) throw error;
-      return data;
+      return (data ?? []) as SafetyIncident[];
     },
   });
 
@@ -65,7 +68,7 @@ export default function Safety() {
                   styles.badge,
                   {
                     backgroundColor:
-                      severityColor[item.severity ?? "medium"],
+                      severityColor[(item.severity ?? "medium") as NonNullable<Severity>],
                   },
                 ]}
               >
