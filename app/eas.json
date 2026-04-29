@@ -27,7 +27,11 @@
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "TODO_FILL_AFTER_FIRST_BUILD"
+        "ascAppId": "TODO_FILL_AFTER_FIRST_BUILD",
+        "appleTeamId": "TODO_FILL_AFTER_FIRST_BUILD",
+        "ascApiKeyPath": "../../.apple/AuthKey_FHN56XY972.p8",
+        "ascApiKeyId": "FHN56XY972",
+        "ascApiKeyIssuerId": "2a6e6cb7-29f8-40bc-828c-8e0cbde9d12a"
       },
       "android": {
         "track": "internal"
