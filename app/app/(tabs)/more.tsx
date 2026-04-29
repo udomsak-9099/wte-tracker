@@ -2,9 +2,12 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/auth";
+import { useProject } from "@/contexts/project";
+import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
 export default function More() {
   const { profile, signOut } = useAuth();
+  const { current, projects, setCurrent } = useProject();
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
@@ -13,6 +16,26 @@ export default function More() {
           <Text style={styles.name}>{profile?.full_name ?? "—"}</Text>
           <Text style={styles.role}>{profile?.role}</Text>
         </View>
+
+        {projects.length > 1 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Project</Text>
+            <View style={styles.menu}>
+              {projects.map((p) => (
+                <Pressable
+                  key={p.id}
+                  style={styles.item}
+                  onPress={() => setCurrent(p.id)}
+                >
+                  <Text style={styles.itemText}>{p.name}</Text>
+                  <Text style={styles.chev}>
+                    {p.id === current?.id ? "✓" : ""}
+                  </Text>
+                </Pressable>
+              ))}
+            </View>
+          </View>
+        )}
 
         <View style={styles.menu}>
           <MenuItem label="Permits & Licensing" />
@@ -41,42 +64,58 @@ function MenuItem({ label }: { label: string }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0f1225" },
-  content: { padding: 16, gap: 16, flex: 1 },
+  safe: { flex: 1, backgroundColor: colors.bg },
+  content: { padding: space.lg, gap: space.lg, flex: 1 },
   profileCard: {
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
     padding: 18,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
   },
-  name: { color: "#fff", fontSize: 18, fontWeight: "700" },
-  role: { color: "#7eb1ff", fontSize: 13, textTransform: "uppercase", marginTop: 4 },
+  name: { color: colors.text, fontSize: fontSize.lg, fontWeight: fontWeight.bold },
+  role: {
+    color: colors.textLink,
+    fontSize: fontSize.sm,
+    textTransform: "uppercase",
+    marginTop: 4,
+  },
+  section: { gap: space.sm },
+  sectionTitle: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    textTransform: "uppercase",
+    marginLeft: 4,
+  },
   menu: {
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
     overflow: "hidden",
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 16,
+    padding: space.lg,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#2a3050",
+    borderBottomColor: colors.border,
   },
-  itemText: { color: "#fff", fontSize: 15 },
-  chev: { color: "#7a8099", fontSize: 20 },
+  itemText: { color: colors.text, fontSize: fontSize.base },
+  chev: { color: colors.textDim, fontSize: 20 },
   signOut: {
-    backgroundColor: "#2a1a1a",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.dangerSoft,
+    borderRadius: radius.md,
+    padding: space.lg,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#5a2a2a",
+    borderColor: colors.dangerBorder,
     marginTop: "auto",
   },
-  signOutText: { color: "#ff6b6b", fontSize: 15, fontWeight: "600" },
+  signOutText: {
+    color: colors.danger,
+    fontSize: fontSize.base,
+    fontWeight: fontWeight.semibold,
+  },
 });

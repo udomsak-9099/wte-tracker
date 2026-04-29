@@ -1,31 +1,37 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useProject } from "@/contexts/project";
 import { supabase } from "@/lib/supabase";
-import type { EpcSystem } from "@/lib/database.types";
+import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
 export default function Epc() {
-  const [systems, setSystems] = useState<EpcSystem[]>([]);
+  const { current } = useProject();
 
-  useEffect(() => {
-    supabase
-      .from("epc_systems")
-      .select("*")
-      .order("display_order", { ascending: true })
-      .then(({ data }) => setSystems(data ?? []));
-  }, []);
+  const systems = useQuery({
+    enabled: !!current,
+    queryKey: ["epc-systems", current?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("epc_systems")
+        .select("*")
+        .eq("project_id", current!.id)
+        .order("display_order", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
       <FlatList
         contentContainerStyle={styles.content}
-        data={systems}
+        data={systems.data ?? []}
         keyExtractor={(s) => s.id}
         ListEmptyComponent={
           <Text style={styles.empty}>
-            No EPC systems yet. Admins can add the 19 standard systems from
-            Settings.
+            {systems.isLoading ? "Loading…" : "No EPC systems for this project."}
           </Text>
         }
         renderItem={({ item }) => (
@@ -49,19 +55,34 @@ export default function Epc() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0f1225" },
-  content: { padding: 16, gap: 12 },
-  empty: { color: "#a0a8c0", textAlign: "center", marginTop: 40, paddingHorizontal: 24 },
+  safe: { flex: 1, backgroundColor: colors.bg },
+  content: { padding: space.lg, gap: space.md },
+  empty: {
+    color: colors.textMuted,
+    textAlign: "center",
+    marginTop: 40,
+    paddingHorizontal: space.xl,
+  },
   card: {
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
   },
-  name: { color: "#fff", fontSize: 16, fontWeight: "600" },
-  cat: { color: "#7eb1ff", fontSize: 12, marginTop: 2 },
-  bar: { height: 8, backgroundColor: "#2a3050", borderRadius: 4, marginTop: 10 },
-  barFill: { height: "100%", backgroundColor: "#3b82f6", borderRadius: 4 },
-  pct: { color: "#a0a8c0", fontSize: 12, marginTop: 4, textAlign: "right" },
+  name: { color: colors.text, fontSize: fontSize.md, fontWeight: fontWeight.semibold },
+  cat: { color: colors.textLink, fontSize: fontSize.xs, marginTop: 2 },
+  bar: {
+    height: 8,
+    backgroundColor: colors.border,
+    borderRadius: 4,
+    marginTop: space.sm + 2,
+  },
+  barFill: { height: "100%", backgroundColor: colors.primary, borderRadius: 4 },
+  pct: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    marginTop: 4,
+    textAlign: "right",
+  },
 });

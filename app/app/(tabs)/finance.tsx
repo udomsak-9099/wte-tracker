@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/auth";
+import { useProject } from "@/contexts/project";
 import { supabase } from "@/lib/supabase";
-import type { LoanDrawdown, EquityCall, PaymentMilestone } from "@/lib/database.types";
+import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
 function fmt(n: number) {
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 }).format(n);
@@ -12,34 +13,59 @@ function fmt(n: number) {
 
 export default function Finance() {
   const { profile } = useAuth();
-  const [loans, setLoans] = useState<LoanDrawdown[]>([]);
-  const [equity, setEquity] = useState<EquityCall[]>([]);
-  const [milestones, setMilestones] = useState<PaymentMilestone[]>([]);
-
+  const { current } = useProject();
   const canSeeEquity = profile?.role !== "bank";
 
-  useEffect(() => {
-    supabase
-      .from("loan_drawdowns")
-      .select("*")
-      .order("drawdown_date", { ascending: false })
-      .then(({ data }) => setLoans(data ?? []));
-    if (canSeeEquity) {
-      supabase
+  const loans = useQuery({
+    enabled: !!current,
+    queryKey: ["loans", current?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("loan_drawdowns")
+        .select("*")
+        .eq("project_id", current!.id)
+        .order("drawdown_date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const equity = useQuery({
+    enabled: !!current && canSeeEquity,
+    queryKey: ["equity", current?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from("equity_calls")
         .select("*")
-        .order("call_date", { ascending: false })
-        .then(({ data }) => setEquity(data ?? []));
-    }
-    supabase
-      .from("payment_milestones")
-      .select("*")
-      .order("due_date", { ascending: true })
-      .then(({ data }) => setMilestones(data ?? []));
-  }, [canSeeEquity]);
+        .eq("project_id", current!.id)
+        .order("call_date", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
 
-  const totalLoan = loans.reduce((s, l) => s + Number(l.amount), 0);
-  const totalEquity = equity.reduce((s, e) => s + Number(e.amount), 0);
+  const milestones = useQuery({
+    enabled: !!current,
+    queryKey: ["milestones", current?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("payment_milestones")
+        .select("*")
+        .eq("project_id", current!.id)
+        .order("due_date", { ascending: true });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const totalLoan = (loans.data ?? []).reduce(
+    (s, l) => s + Number(l.amount),
+    0
+  );
+  const totalEquity = (equity.data ?? []).reduce(
+    (s, e) => s + Number(e.amount),
+    0
+  );
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
@@ -53,10 +79,12 @@ export default function Finance() {
         </View>
 
         <Text style={styles.h}>Upcoming milestones</Text>
-        {milestones.length === 0 && (
-          <Text style={styles.empty}>No payment milestones yet.</Text>
+        {(milestones.data ?? []).length === 0 && (
+          <Text style={styles.empty}>
+            {milestones.isLoading ? "Loading…" : "No payment milestones yet."}
+          </Text>
         )}
-        {milestones.map((m) => (
+        {(milestones.data ?? []).map((m) => (
           <View key={m.id} style={styles.card}>
             <Text style={styles.name}>{m.name}</Text>
             <Text style={styles.amount}>฿{fmt(Number(m.amount))}</Text>
@@ -80,29 +108,44 @@ function Card({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0f1225" },
-  content: { padding: 16, gap: 12 },
-  h: { color: "#a0a8c0", fontSize: 13, textTransform: "uppercase", marginTop: 8 },
-  empty: { color: "#a0a8c0", textAlign: "center", marginVertical: 16 },
-  row: { flexDirection: "row", gap: 12 },
+  safe: { flex: 1, backgroundColor: colors.bg },
+  content: { padding: space.lg, gap: space.md },
+  h: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+    textTransform: "uppercase",
+    marginTop: space.sm,
+  },
+  empty: { color: colors.textMuted, textAlign: "center", marginVertical: space.lg },
+  row: { flexDirection: "row", gap: space.md },
   statCard: {
     flex: 1,
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
+    padding: space.lg,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
   },
-  statLabel: { color: "#a0a8c0", fontSize: 12, textTransform: "uppercase" },
-  statValue: { color: "#fff", fontSize: 22, fontWeight: "700", marginTop: 4 },
+  statLabel: { color: colors.textMuted, fontSize: fontSize.xs, textTransform: "uppercase" },
+  statValue: {
+    color: colors.text,
+    fontSize: fontSize.xl,
+    fontWeight: fontWeight.bold,
+    marginTop: 4,
+  },
   card: {
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
   },
-  name: { color: "#fff", fontSize: 15, fontWeight: "600" },
-  amount: { color: "#3b82f6", fontSize: 18, fontWeight: "700", marginTop: 2 },
-  meta: { color: "#7a8099", fontSize: 12, marginTop: 4 },
+  name: { color: colors.text, fontSize: fontSize.base, fontWeight: fontWeight.semibold },
+  amount: {
+    color: colors.primary,
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    marginTop: 2,
+  },
+  meta: { color: colors.textDim, fontSize: fontSize.xs, marginTop: 4 },
 });

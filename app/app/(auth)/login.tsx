@@ -1,4 +1,6 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -12,26 +14,38 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAuth } from "@/contexts/auth";
+import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
+import {
+  signInSchema,
+  signUpSchema,
+  type SignUpInput,
+} from "@/lib/validators";
+
+type Mode = "signin" | "signup";
 
 export default function Login() {
   const { signIn, signUp } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [mode, setMode] = useState<Mode>("signin");
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  async function submit() {
-    setError(null);
-    setBusy(true);
+  const schema = mode === "signin" ? signInSchema : signUpSchema;
+  const { control, handleSubmit, formState } = useForm<SignUpInput>({
+    resolver: zodResolver(schema as never),
+    defaultValues: { email: "", password: "", fullName: "" },
+  });
+
+  const onSubmit = handleSubmit(async (values) => {
+    setServerError(null);
     const { error } =
       mode === "signin"
-        ? await signIn(email, password)
-        : await signUp(email, password, fullName || email.split("@")[0]);
-    setBusy(false);
-    if (error) setError(error);
-  }
+        ? await signIn(values.email, values.password)
+        : await signUp(
+            values.email,
+            values.password,
+            values.fullName || values.email.split("@")[0]
+          );
+    if (error) setServerError(error);
+  });
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -46,45 +60,39 @@ export default function Login() {
           </Text>
 
           {mode === "signup" && (
-            <TextInput
-              style={styles.input}
+            <Field
+              control={control}
+              name="fullName"
               placeholder="Full name"
-              placeholderTextColor="#7a8099"
-              value={fullName}
-              onChangeText={setFullName}
               autoCapitalize="words"
             />
           )}
 
-          <TextInput
-            style={styles.input}
+          <Field
+            control={control}
+            name="email"
             placeholder="Email"
-            placeholderTextColor="#7a8099"
-            value={email}
-            onChangeText={setEmail}
             autoCapitalize="none"
             keyboardType="email-address"
             autoComplete="email"
           />
 
-          <TextInput
-            style={styles.input}
+          <Field
+            control={control}
+            name="password"
             placeholder="Password"
-            placeholderTextColor="#7a8099"
-            value={password}
-            onChangeText={setPassword}
             secureTextEntry
             autoComplete="password"
           />
 
-          {error && <Text style={styles.error}>{error}</Text>}
+          {serverError && <Text style={styles.error}>{serverError}</Text>}
 
           <Pressable
-            style={[styles.button, busy && { opacity: 0.6 }]}
-            onPress={submit}
-            disabled={busy}
+            style={[styles.button, formState.isSubmitting && { opacity: 0.6 }]}
+            onPress={onSubmit}
+            disabled={formState.isSubmitting}
           >
-            {busy ? (
+            {formState.isSubmitting ? (
               <ActivityIndicator color="#fff" />
             ) : (
               <Text style={styles.buttonText}>
@@ -108,53 +116,96 @@ export default function Login() {
   );
 }
 
+type FieldProps = {
+  control: ReturnType<typeof useForm<SignUpInput>>["control"];
+  name: keyof SignUpInput;
+  placeholder: string;
+  secureTextEntry?: boolean;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  keyboardType?: "default" | "email-address";
+  autoComplete?: "email" | "password" | "off";
+};
+
+function Field({ control, name, ...rest }: FieldProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, fieldState }) => (
+        <View>
+          <TextInput
+            style={[
+              styles.input,
+              fieldState.error && { borderColor: colors.danger },
+            ]}
+            placeholder={rest.placeholder}
+            placeholderTextColor={colors.textDim}
+            value={field.value as string}
+            onChangeText={field.onChange}
+            onBlur={field.onBlur}
+            {...rest}
+          />
+          {fieldState.error?.message && (
+            <Text style={styles.fieldError}>{fieldState.error.message}</Text>
+          )}
+        </View>
+      )}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0f1225" },
+  safe: { flex: 1, backgroundColor: colors.bg },
   kb: { flex: 1 },
   container: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 24,
-    gap: 12,
+    paddingHorizontal: space.xl,
+    gap: space.md,
     maxWidth: 480,
     width: "100%",
     alignSelf: "center",
   },
   title: {
     fontSize: 32,
-    fontWeight: "700",
-    color: "#fff",
+    fontWeight: fontWeight.bold,
+    color: colors.text,
     textAlign: "center",
   },
   subtitle: {
-    fontSize: 14,
-    color: "#a0a8c0",
+    fontSize: fontSize.sm,
+    color: colors.textMuted,
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: space.xl,
   },
   input: {
-    backgroundColor: "#1a1f3a",
-    color: "#fff",
-    borderRadius: 12,
-    paddingHorizontal: 16,
+    backgroundColor: colors.bgElevated,
+    color: colors.text,
+    borderRadius: radius.md,
+    paddingHorizontal: space.lg,
     paddingVertical: 14,
-    fontSize: 16,
+    fontSize: fontSize.md,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
   },
   button: {
-    backgroundColor: "#3b82f6",
-    borderRadius: 12,
+    backgroundColor: colors.primary,
+    borderRadius: radius.md,
     paddingVertical: 14,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: space.sm,
   },
-  buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  buttonText: {
+    color: colors.text,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
+  },
   switch: {
-    color: "#7eb1ff",
+    color: colors.textLink,
     textAlign: "center",
-    marginTop: 8,
-    fontSize: 14,
+    marginTop: space.sm,
+    fontSize: fontSize.sm,
   },
-  error: { color: "#ff6b6b", textAlign: "center", fontSize: 13 },
+  error: { color: colors.danger, textAlign: "center", fontSize: fontSize.sm },
+  fieldError: { color: colors.danger, fontSize: fontSize.xs, marginTop: 4, marginLeft: 4 },
 });

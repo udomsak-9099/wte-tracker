@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import "react-native-reanimated";
 
 import { AuthProvider, useAuth } from "@/contexts/auth";
+import { ProjectProvider } from "@/contexts/project";
+import { QueryProvider } from "@/lib/query-client";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 function RootNav() {
@@ -31,10 +33,14 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <RootNav />
-        <StatusBar style="auto" />
-      </AuthProvider>
+      <QueryProvider>
+        <AuthProvider>
+          <ProjectProvider>
+            <RootNav />
+            <StatusBar style="auto" />
+          </ProjectProvider>
+        </AuthProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

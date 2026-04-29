@@ -1,37 +1,41 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useProject } from "@/contexts/project";
 import { supabase } from "@/lib/supabase";
-import type { SafetyIncident } from "@/lib/database.types";
-
-const SEVERITY_COLOR: Record<string, string> = {
-  critical: "#ef4444",
-  high: "#f97316",
-  medium: "#eab308",
-  low: "#22c55e",
-};
+import { colors, fontSize, fontWeight, radius, severityColor, space } from "@/lib/theme";
 
 export default function Safety() {
-  const [incidents, setIncidents] = useState<SafetyIncident[]>([]);
+  const { current } = useProject();
 
-  useEffect(() => {
-    supabase
-      .from("safety_incidents")
-      .select("*")
-      .order("incident_date", { ascending: false })
-      .limit(50)
-      .then(({ data }) => setIncidents(data ?? []));
-  }, []);
+  const incidents = useQuery({
+    enabled: !!current,
+    queryKey: ["safety-incidents", current?.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("safety_incidents")
+        .select("*")
+        .eq("project_id", current!.id)
+        .order("incident_date", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      return data;
+    },
+  });
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
       <FlatList
         contentContainerStyle={styles.content}
-        data={incidents}
+        data={incidents.data ?? []}
         keyExtractor={(i) => i.id}
         ListHeaderComponent={<Text style={styles.h}>Recent incidents</Text>}
-        ListEmptyComponent={<Text style={styles.empty}>No incidents recorded.</Text>}
+        ListEmptyComponent={
+          <Text style={styles.empty}>
+            {incidents.isLoading ? "Loading…" : "No incidents recorded."}
+          </Text>
+        }
         renderItem={({ item }) => (
           <View style={styles.card}>
             <View style={styles.head}>
@@ -39,7 +43,10 @@ export default function Safety() {
               <View
                 style={[
                   styles.badge,
-                  { backgroundColor: SEVERITY_COLOR[item.severity ?? "medium"] },
+                  {
+                    backgroundColor:
+                      severityColor[item.severity ?? "medium"],
+                  },
                 ]}
               >
                 <Text style={styles.badgeText}>{item.severity}</Text>
@@ -56,23 +63,37 @@ export default function Safety() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#0f1225" },
-  content: { padding: 16, gap: 12 },
-  h: { color: "#a0a8c0", fontSize: 13, textTransform: "uppercase", marginBottom: 4 },
-  empty: { color: "#a0a8c0", textAlign: "center", marginTop: 40 },
+  safe: { flex: 1, backgroundColor: colors.bg },
+  content: { padding: space.lg, gap: space.md },
+  h: {
+    color: colors.textMuted,
+    fontSize: fontSize.sm,
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
+  empty: { color: colors.textMuted, textAlign: "center", marginTop: 40 },
   card: {
-    backgroundColor: "#1a1f3a",
-    borderRadius: 12,
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
     padding: 14,
     borderWidth: 1,
-    borderColor: "#2a3050",
+    borderColor: colors.border,
     gap: 4,
   },
-  head: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  date: { color: "#7eb1ff", fontSize: 13 },
-  badge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
-  badgeText: { color: "#fff", fontSize: 11, fontWeight: "600", textTransform: "uppercase" },
-  type: { color: "#fff", fontSize: 15, fontWeight: "600" },
-  desc: { color: "#a0a8c0", fontSize: 13 },
-  loc: { color: "#7a8099", fontSize: 12 },
+  head: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  date: { color: colors.textLink, fontSize: fontSize.sm },
+  badge: { paddingHorizontal: space.sm, paddingVertical: 2, borderRadius: radius.sm },
+  badgeText: {
+    color: colors.text,
+    fontSize: fontSize.xs,
+    fontWeight: fontWeight.semibold,
+    textTransform: "uppercase",
+  },
+  type: { color: colors.text, fontSize: fontSize.base, fontWeight: fontWeight.semibold },
+  desc: { color: colors.textMuted, fontSize: fontSize.sm },
+  loc: { color: colors.textDim, fontSize: fontSize.xs },
 });
