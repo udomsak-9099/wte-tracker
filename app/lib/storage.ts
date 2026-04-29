@@ -1,6 +1,4 @@
 import { decode as decodeBase64 } from "base64-arraybuffer";
-import * as FileSystem from "expo-file-system";
-import { Platform } from "react-native";
 
 import { supabase } from "./supabase";
 
@@ -11,6 +9,7 @@ type UploadInput = {
   fileUri: string;
   fileName: string;
   contentType: string;
+  base64?: string;
 };
 
 export async function uploadFile({
@@ -20,19 +19,17 @@ export async function uploadFile({
   fileUri,
   fileName,
   contentType,
+  base64,
 }: UploadInput): Promise<{ path: string }> {
   const safeName = `${Date.now()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
   const path = `${projectId}/${entityType}/${safeName}`;
 
   let body: ArrayBuffer | Blob;
-  if (Platform.OS === "web") {
+  if (base64) {
+    body = decodeBase64(base64);
+  } else {
     const res = await fetch(fileUri);
     body = await res.blob();
-  } else {
-    const base64 = await FileSystem.readAsStringAsync(fileUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    body = decodeBase64(base64);
   }
 
   const { error } = await supabase.storage

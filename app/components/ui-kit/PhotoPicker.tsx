@@ -50,6 +50,7 @@ export function PhotoPicker({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.7,
       allowsMultipleSelection: false,
+      base64: Platform.OS !== "web",
     });
     if (result.canceled || !result.assets?.[0]) return;
     const asset = result.assets[0];
@@ -65,6 +66,7 @@ export function PhotoPicker({
         fileUri: asset.uri,
         fileName,
         contentType,
+        base64: asset.base64 ?? undefined,
       });
       onChange([...photos, { path, localUri: asset.uri }]);
     } catch (e) {

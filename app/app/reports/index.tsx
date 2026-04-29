@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Stack } from "expo-router";
 import { useMemo } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useProject } from "@/contexts/project";
+import { exportCsv, rowsToCsv } from "@/lib/csv";
+import { trackEvent } from "@/lib/observability";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
@@ -52,9 +54,51 @@ export default function ReportsScreen() {
     [reports.data]
   );
 
+  function handleExport() {
+    const all = reports.data ?? [];
+    if (all.length === 0) return;
+    const csv = rowsToCsv(
+      all.map((r) => ({
+        date: r.report_date,
+        system: r.epc_systems?.name ?? "",
+        manpower: r.manpower_count ?? 0,
+        weather: r.weather ?? "",
+        activities: r.activities ?? "",
+        remarks: r.remarks ?? "",
+      })),
+      [
+        { key: "date", header: "Date" },
+        { key: "system", header: "System" },
+        { key: "manpower", header: "Manpower" },
+        { key: "weather", header: "Weather" },
+        { key: "activities", header: "Activities" },
+        { key: "remarks", header: "Remarks" },
+      ]
+    );
+    const projectCode = current?.code ?? "project";
+    const today = new Date().toISOString().slice(0, 10);
+    void exportCsv(`${projectCode}-reports-${today}.csv`, csv);
+    trackEvent("reports_csv_exported", { count: all.length });
+  }
+
   return (
     <>
-      <Stack.Screen options={{ title: "Reports" }} />
+      <Stack.Screen
+        options={{
+          title: "Reports",
+          headerRight: () =>
+            (reports.data ?? []).length > 0 ? (
+              <Pressable
+                onPress={handleExport}
+                style={{ paddingHorizontal: space.md }}
+              >
+                <Text style={{ color: colors.primary, fontSize: fontSize.md }}>
+                  Export CSV
+                </Text>
+              </Pressable>
+            ) : null,
+        }}
+      />
       <FlatList
         contentContainerStyle={styles.content}
         data={grouped}
