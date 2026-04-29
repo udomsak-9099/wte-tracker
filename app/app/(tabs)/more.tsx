@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -8,6 +9,7 @@ import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 export default function More() {
   const { profile, signOut } = useAuth();
   const { current, projects, setCurrent } = useProject();
+  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
@@ -38,7 +40,10 @@ export default function More() {
         )}
 
         <View style={styles.menu}>
-          <MenuItem label="Permits & Licensing" />
+          <MenuItem
+            label="Permits & Licensing"
+            onPress={() => router.push("/permits")}
+          />
           <MenuItem label="Equipment & Shipments" />
           <MenuItem label="Reports" />
           <MenuItem label="Environmental" />
@@ -54,9 +59,15 @@ export default function More() {
   );
 }
 
-function MenuItem({ label }: { label: string }) {
+function MenuItem({
+  label,
+  onPress,
+}: {
+  label: string;
+  onPress?: () => void;
+}) {
   return (
-    <Pressable style={styles.item}>
+    <Pressable style={styles.item} onPress={onPress}>
       <Text style={styles.itemText}>{label}</Text>
       <Text style={styles.chev}>›</Text>
     </Pressable>

@@ -1,27 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useProject } from "@/contexts/project";
-import { supabase } from "@/lib/supabase";
+import { useEpcSystems } from "@/features/epc/queries";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
 export default function Epc() {
   const { current } = useProject();
-
-  const systems = useQuery({
-    enabled: !!current,
-    queryKey: ["epc-systems", current?.id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("epc_systems")
-        .select("*")
-        .eq("project_id", current!.id)
-        .order("display_order", { ascending: true });
-      if (error) throw error;
-      return data;
-    },
-  });
+  const systems = useEpcSystems(current?.id);
+  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
@@ -35,7 +23,10 @@ export default function Epc() {
           </Text>
         }
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <Pressable
+            style={styles.card}
+            onPress={() => router.push(`/epc/${item.id}`)}
+          >
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.cat}>{item.category ?? ""}</Text>
             <View style={styles.bar}>
@@ -47,7 +38,7 @@ export default function Epc() {
               />
             </View>
             <Text style={styles.pct}>{Math.round(item.progress ?? 0)}%</Text>
-          </View>
+          </Pressable>
         )}
       />
     </SafeAreaView>

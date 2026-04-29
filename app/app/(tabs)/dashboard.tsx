@@ -1,9 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SCurveChart } from "@/components/ui-kit/SCurveChart";
 import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
+import { useRealtimeAlerts } from "@/hooks/data/useRealtimeAlerts";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 
@@ -14,13 +16,16 @@ function daysUntil(date: Date): number {
 export default function Dashboard() {
   const { profile } = useAuth();
   const { current } = useProject();
+  const { width } = useWindowDimensions();
+  const chartWidth = Math.min(width - space.lg * 2 - 24, 600);
+  useRealtimeAlerts();
 
   const counts = useQuery({
     enabled: !!current,
     queryKey: ["dashboard-counts", current?.id],
     queryFn: async () => {
       if (!current) return null;
-      const [tasks, openIssues, permitsTotal, permitsObtained] =
+      const [tasks, openIssues, permitsTotal, permitsObtained, phases] =
         await Promise.all([
           supabase
             .from("tasks")
@@ -40,12 +45,23 @@ export default function Dashboard() {
             .select("*", { count: "exact", head: true })
             .eq("project_id", current.id)
             .eq("status", "obtained"),
+          supabase
+            .from("phases")
+            .select("progress")
+            .eq("project_id", current.id),
         ]);
+      const phaseRows = phases.data ?? [];
+      const overallProgress =
+        phaseRows.length === 0
+          ? 0
+          : phaseRows.reduce((s, p) => s + (p.progress ?? 0), 0) /
+            phaseRows.length;
       return {
         tasks: tasks.count ?? 0,
         issuesOpen: openIssues.count ?? 0,
         permitsObtained: permitsObtained.count ?? 0,
         permitsTotal: permitsTotal.count ?? 0,
+        overallProgress,
       };
     },
   });
@@ -74,6 +90,19 @@ export default function Dashboard() {
             Target: {cod?.toLocaleDateString() ?? "Not set"}
           </Text>
         </View>
+
+        {current?.start_date && current?.cod_target_date && (
+          <View style={styles.chartCard}>
+            <Text style={styles.cardTitle}>Progress curve</Text>
+            <SCurveChart
+              startDate={current.start_date}
+              endDate={current.cod_target_date}
+              actualProgress={counts.data?.overallProgress ?? 0}
+              width={chartWidth}
+              height={180}
+            />
+          </View>
+        )}
 
         <View style={styles.row}>
           <Stat label="Tasks" value={counts.data?.tasks ?? 0} />
@@ -135,6 +164,19 @@ const styles = StyleSheet.create({
     marginVertical: 4,
   },
   heroSub: { color: colors.textMuted, fontSize: fontSize.sm },
+  chartCard: {
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.lg,
+    padding: space.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cardTitle: {
+    color: colors.textMuted,
+    fontSize: fontSize.xs,
+    textTransform: "uppercase",
+    marginBottom: space.sm,
+  },
   row: { flexDirection: "row", gap: space.md },
   statCard: {
     flex: 1,
