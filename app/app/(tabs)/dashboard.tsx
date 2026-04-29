@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { useRouter } from "expo-router";
+import { Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SCurveChart } from "@/components/ui-kit/SCurveChart";
@@ -16,6 +17,7 @@ function daysUntil(date: Date): number {
 export default function Dashboard() {
   const { profile } = useAuth();
   const { current } = useProject();
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const chartWidth = Math.min(width - space.lg * 2 - 24, 600);
   useRealtimeAlerts();
@@ -106,12 +108,17 @@ export default function Dashboard() {
 
         <View style={styles.row}>
           <Stat label="Tasks" value={counts.data?.tasks ?? 0} />
-          <Stat label="Open Issues" value={counts.data?.issuesOpen ?? 0} />
+          <Stat
+            label="Open Issues"
+            value={counts.data?.issuesOpen ?? 0}
+            onPress={() => router.push("/issues")}
+          />
         </View>
         <View style={styles.row}>
           <Stat
             label="Permits"
             value={`${counts.data?.permitsObtained ?? 0}/${counts.data?.permitsTotal ?? 0}`}
+            onPress={() => router.push("/permits")}
           />
           <Stat
             label="Capacity"
@@ -126,15 +133,21 @@ export default function Dashboard() {
 function Stat({
   label,
   value,
+  onPress,
 }: {
   label: string;
   value: string | number;
+  onPress?: () => void;
 }) {
+  const Wrap = onPress ? Pressable : View;
   return (
-    <View style={styles.statCard}>
-      <Text style={styles.statLabel}>{label}</Text>
+    <Wrap style={styles.statCard} onPress={onPress}>
+      <Text style={styles.statLabel}>
+        {label}
+        {onPress ? "  ›" : ""}
+      </Text>
       <Text style={styles.statValue}>{value}</Text>
-    </View>
+    </Wrap>
   );
 }
 

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Stack } from "expo-router";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 
 import { useProject } from "@/contexts/project";
 import { supabase } from "@/lib/supabase";
@@ -16,6 +16,7 @@ const STATUS_COLOR: Record<string, string> = {
 
 export default function PermitsScreen() {
   const { current } = useProject();
+  const router = useRouter();
 
   const permits = useQuery({
     enabled: !!current,
@@ -33,13 +34,7 @@ export default function PermitsScreen() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Permits & Licensing",
-          headerStyle: { backgroundColor: colors.bg },
-          headerTintColor: colors.text,
-        }}
-      />
+      <Stack.Screen options={{ title: "Permits & Licensing" }} />
       <View style={styles.container}>
         <FlatList
           contentContainerStyle={styles.content}
@@ -51,7 +46,10 @@ export default function PermitsScreen() {
             </Text>
           }
           renderItem={({ item }) => (
-            <View style={styles.card}>
+            <Pressable
+              style={styles.card}
+              onPress={() => router.push(`/permits/${item.id}`)}
+            >
               <View style={styles.head}>
                 <Text style={styles.name}>{item.name}</Text>
                 <View
@@ -78,7 +76,7 @@ export default function PermitsScreen() {
               {item.expiry_date && (
                 <Text style={styles.meta}>Expires: {item.expiry_date}</Text>
               )}
-            </View>
+            </Pressable>
           )}
         />
       </View>

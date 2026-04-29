@@ -44,7 +44,14 @@ export default function More() {
             label="Permits & Licensing"
             onPress={() => router.push("/permits")}
           />
-          <MenuItem label="Equipment & Shipments" />
+          <MenuItem
+            label="Equipment & Shipments"
+            onPress={() => router.push("/equipment")}
+          />
+          <MenuItem
+            label="Issues"
+            onPress={() => router.push("/issues")}
+          />
           <MenuItem label="Reports" />
           <MenuItem label="Environmental" />
           <MenuItem label="Activity Log" />

@@ -1,13 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, severityColor, space } from "@/lib/theme";
 
 export default function Safety() {
   const { current } = useProject();
+  const { profile } = useAuth();
+  const router = useRouter();
+  const canReport =
+    profile?.role === "admin" ||
+    profile?.role === "epc_pm" ||
+    profile?.role === "safety_officer";
 
   const incidents = useQuery({
     enabled: !!current,
@@ -30,7 +38,19 @@ export default function Safety() {
         contentContainerStyle={styles.content}
         data={incidents.data ?? []}
         keyExtractor={(i) => i.id}
-        ListHeaderComponent={<Text style={styles.h}>Recent incidents</Text>}
+        ListHeaderComponent={
+          <View style={styles.headerRow}>
+            <Text style={styles.h}>Recent incidents</Text>
+            {canReport && (
+              <Pressable
+                style={styles.reportBtn}
+                onPress={() => router.push("/safety-incidents/new")}
+              >
+                <Text style={styles.reportBtnText}>+ Report</Text>
+              </Pressable>
+            )}
+          </View>
+        }
         ListEmptyComponent={
           <Text style={styles.empty}>
             {incidents.isLoading ? "Loading…" : "No incidents recorded."}
@@ -96,4 +116,21 @@ const styles = StyleSheet.create({
   type: { color: colors.text, fontSize: fontSize.base, fontWeight: fontWeight.semibold },
   desc: { color: colors.textMuted, fontSize: fontSize.sm },
   loc: { color: colors.textDim, fontSize: fontSize.xs },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  reportBtn: {
+    backgroundColor: colors.danger,
+    paddingHorizontal: space.md,
+    paddingVertical: 6,
+    borderRadius: radius.md,
+  },
+  reportBtnText: {
+    color: colors.text,
+    fontSize: fontSize.sm,
+    fontWeight: fontWeight.semibold,
+  },
 });
