@@ -14,10 +14,14 @@ export default function More() {
   return (
     <SafeAreaView style={styles.safe} edges={["bottom"]}>
       <View style={styles.content}>
-        <View style={styles.profileCard}>
+        <Pressable
+          style={styles.profileCard}
+          onPress={() => router.push("/profile")}
+        >
           <Text style={styles.name}>{profile?.full_name ?? "—"}</Text>
           <Text style={styles.role}>{profile?.role}</Text>
-        </View>
+          <Text style={styles.profileEdit}>Edit profile ›</Text>
+        </Pressable>
 
         {projects.length > 1 && (
           <View style={styles.section}>
@@ -52,10 +56,22 @@ export default function More() {
             label="Issues"
             onPress={() => router.push("/issues")}
           />
-          <MenuItem label="Reports" />
-          <MenuItem label="Environmental" />
-          <MenuItem label="Activity Log" />
-          <MenuItem label="Settings" />
+          <MenuItem
+            label="Permit to Work"
+            onPress={() => router.push("/ptw")}
+          />
+          <MenuItem
+            label="Reports"
+            onPress={() => router.push("/reports")}
+          />
+          <MenuItem
+            label="Environmental"
+            onPress={() => router.push("/environment")}
+          />
+          <MenuItem
+            label="Activity Log"
+            onPress={() => router.push("/activity")}
+          />
         </View>
 
         <Pressable style={styles.signOut} onPress={signOut}>
@@ -97,6 +113,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     textTransform: "uppercase",
     marginTop: 4,
+  },
+  profileEdit: {
+    color: colors.textDim,
+    fontSize: fontSize.xs,
+    marginTop: 6,
   },
   section: { gap: space.sm },
   sectionTitle: {
