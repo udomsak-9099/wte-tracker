@@ -18,6 +18,7 @@ import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
 import {
   signInSchema,
   signUpSchema,
+  usernameToEmail,
   type SignUpInput,
 } from "@/lib/validators";
 
@@ -36,14 +37,11 @@ export default function Login() {
 
   const onSubmit = handleSubmit(async (values) => {
     setServerError(null);
+    const email = usernameToEmail(values.email);
     const { error } =
       mode === "signin"
-        ? await signIn(values.email, values.password)
-        : await signUp(
-            values.email,
-            values.password,
-            values.fullName || values.email.split("@")[0]
-          );
+        ? await signIn(email, values.password)
+        : await signUp(email, values.password, values.fullName || values.email);
     if (error) setServerError(error);
   });
 
@@ -71,10 +69,10 @@ export default function Login() {
           <Field
             control={control}
             name="email"
-            placeholder="Email"
+            placeholder="Username"
             autoCapitalize="none"
-            keyboardType="email-address"
-            autoComplete="email"
+            keyboardType="default"
+            autoComplete="off"
           />
 
           <Field
