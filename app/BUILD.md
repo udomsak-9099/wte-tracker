@@ -63,6 +63,29 @@ npx eas-cli submit --platform android
   - Save path in `eas.json` under `submit.production.android.serviceAccountKeyPath`
 - **Google Play**: identity verification must be approved before publishing
 
+## EAS environment variables
+
+Local `.env` is gitignored AND not uploaded to EAS Build. Public env vars
+that the bundle needs (e.g. `EXPO_PUBLIC_SUPABASE_URL`) must be set in
+the EAS environment per build profile:
+
+```bash
+npx eas-cli env:create --scope project \
+  --name EXPO_PUBLIC_SUPABASE_URL \
+  --value "https://wfgwjjshspduiujoaatw.supabase.co" \
+  --visibility plaintext --environment preview
+
+npx eas-cli env:create --scope project \
+  --name EXPO_PUBLIC_SUPABASE_ANON_KEY \
+  --value "sb_publishable_..." \
+  --visibility plaintext --environment preview
+```
+
+Already set in this project (preview environment): `EXPO_PUBLIC_SUPABASE_URL`,
+`EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+
+For production, set them again under `--environment production`.
+
 ## OTA updates
 
 After production build, push JS-only updates without store review:
