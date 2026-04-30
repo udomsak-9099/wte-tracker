@@ -53,6 +53,10 @@ export default function More() {
             onPress={() => router.push("/equipment")}
           />
           <MenuItem
+            label="CPM / PERT Schedule"
+            onPress={() => router.push("/cpm" as never)}
+          />
+          <MenuItem
             label="Issues"
             onPress={() => router.push("/issues")}
           />

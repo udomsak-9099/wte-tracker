@@ -6,6 +6,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SCurveChart } from "@/components/ui-kit/SCurveChart";
 import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
+import {
+  pertProbability,
+  useCpmSummary,
+  useCpmTasks,
+} from "@/features/cpm/queries";
 import { useRealtimeAlerts } from "@/hooks/data/useRealtimeAlerts";
 import { supabase } from "@/lib/supabase";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
@@ -21,6 +26,23 @@ export default function Dashboard() {
   const { width } = useWindowDimensions();
   const chartWidth = Math.min(width - space.lg * 2 - 24, 600);
   useRealtimeAlerts();
+  const cpmTasks = useCpmTasks(current?.id);
+  const cpmSummary = useCpmSummary(cpmTasks.data);
+  const pert = (() => {
+    if (!current?.cod_target_date || !current?.start_date) return null;
+    const start = new Date(current.start_date).getTime();
+    const cod = new Date(current.cod_target_date).getTime();
+    const codDays = Math.max(0, Math.round((cod - start) / 86_400_000));
+    return {
+      codDays,
+      probability: pertProbability(
+        cpmSummary.projectFinishDays,
+        cpmSummary.criticalPathVariance,
+        codDays
+      ),
+      slack: codDays - cpmSummary.projectFinishDays,
+    };
+  })();
 
   const counts = useQuery({
     enabled: !!current,
@@ -125,6 +147,62 @@ export default function Dashboard() {
             value={current?.capacity_mw ? `${current.capacity_mw} MW` : "—"}
           />
         </View>
+
+        {pert && cpmSummary.totalTasks > 0 && (
+          <Pressable
+            style={styles.cpmCard}
+            onPress={() => router.push("/cpm" as never)}
+          >
+            <View style={styles.cpmHead}>
+              <Text style={styles.cardTitle}>CPM / PERT</Text>
+              <Text style={styles.cpmLink}>open ›</Text>
+            </View>
+            <View style={styles.cpmRow}>
+              <View>
+                <Text
+                  style={[
+                    styles.cpmProb,
+                    {
+                      color:
+                        pert.probability < 0.5
+                          ? colors.danger
+                          : pert.probability < 0.8
+                            ? colors.warning
+                            : colors.success,
+                    },
+                  ]}
+                >
+                  {(pert.probability * 100).toFixed(0)}%
+                </Text>
+                <Text style={styles.cpmProbSub}>chance to meet COD</Text>
+              </View>
+              <View style={styles.cpmStats}>
+                <Text style={styles.cpmStat}>
+                  {cpmSummary.criticalTasks} critical / {cpmSummary.totalTasks}
+                </Text>
+                <Text style={styles.cpmStat}>
+                  μ {cpmSummary.projectFinishDays}d, σ{" "}
+                  {Math.sqrt(cpmSummary.criticalPathVariance).toFixed(1)}d
+                </Text>
+                <Text
+                  style={[
+                    styles.cpmStat,
+                    {
+                      color:
+                        pert.slack < 7
+                          ? colors.danger
+                          : pert.slack < 14
+                            ? colors.warning
+                            : colors.success,
+                    },
+                  ]}
+                >
+                  buffer {pert.slack}d
+                </Text>
+              </View>
+            </View>
+          </Pressable>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -190,6 +268,25 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     marginBottom: space.sm,
   },
+  cpmCard: {
+    backgroundColor: colors.bgElevated,
+    borderRadius: radius.md,
+    padding: space.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  cpmHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
+  cpmLink: { color: colors.textLink, fontSize: fontSize.xs },
+  cpmRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: space.sm,
+  },
+  cpmProb: { fontSize: 32, fontWeight: fontWeight.extrabold },
+  cpmProbSub: { color: colors.textDim, fontSize: fontSize.xs },
+  cpmStats: { gap: 2, alignItems: "flex-end" },
+  cpmStat: { color: colors.textMuted, fontSize: fontSize.sm },
   row: { flexDirection: "row", gap: space.md },
   statCard: {
     flex: 1,
