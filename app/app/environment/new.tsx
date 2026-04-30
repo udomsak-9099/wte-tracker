@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { DateField } from "@/components/ui-kit/DateField";
 import { Select } from "@/components/ui-kit/Select";
 import { useProject } from "@/contexts/project";
 import { useCreateEnvRecord } from "@/features/environment/queries";
@@ -83,11 +84,10 @@ export default function NewEnvRecord() {
             control={control}
             name="record_date"
             render={({ field, fieldState }) => (
-              <Field
+              <DateField
                 label="Date"
-                placeholder="YYYY-MM-DD"
                 value={field.value}
-                onChangeText={field.onChange}
+                onChange={field.onChange}
                 error={fieldState.error?.message}
               />
             )}

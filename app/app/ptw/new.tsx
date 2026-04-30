@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { DateField } from "@/components/ui-kit/DateField";
 import { Select } from "@/components/ui-kit/Select";
 import { useProject } from "@/contexts/project";
 import { useCreatePtw } from "@/features/ptw/queries";
@@ -124,38 +125,32 @@ export default function NewPtw() {
             )}
           />
 
-          <View style={styles.row}>
-            <View style={styles.flex}>
-              <Controller
-                control={control}
-                name="start_time"
-                render={({ field, fieldState }) => (
-                  <Field
-                    label="Start (YYYY-MM-DDTHH:MM)"
-                    placeholder="2026-04-29T08:00"
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    error={fieldState.error?.message}
-                  />
-                )}
+          <Controller
+            control={control}
+            name="start_time"
+            render={({ field, fieldState }) => (
+              <DateField
+                label="Start"
+                mode="datetime"
+                value={field.value}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
               />
-            </View>
-            <View style={styles.flex}>
-              <Controller
-                control={control}
-                name="end_time"
-                render={({ field, fieldState }) => (
-                  <Field
-                    label="End (YYYY-MM-DDTHH:MM)"
-                    placeholder="2026-04-29T17:00"
-                    value={field.value}
-                    onChangeText={field.onChange}
-                    error={fieldState.error?.message}
-                  />
-                )}
+            )}
+          />
+          <Controller
+            control={control}
+            name="end_time"
+            render={({ field, fieldState }) => (
+              <DateField
+                label="End"
+                mode="datetime"
+                value={field.value}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
               />
-            </View>
-          </View>
+            )}
+          />
 
           {serverError && <Text style={styles.error}>{serverError}</Text>}
 

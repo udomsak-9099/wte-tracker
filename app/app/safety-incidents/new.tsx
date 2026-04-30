@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { DateField } from "@/components/ui-kit/DateField";
 import { PhotoPicker, type PhotoUpload } from "@/components/ui-kit/PhotoPicker";
 import { Select } from "@/components/ui-kit/Select";
 import { useProject } from "@/contexts/project";
@@ -102,11 +103,10 @@ export default function NewSafetyIncident() {
             control={control}
             name="incident_date"
             render={({ field, fieldState }) => (
-              <Field
-                label="Date (YYYY-MM-DD)"
-                placeholder="2026-04-29"
+              <DateField
+                label="Date"
                 value={field.value}
-                onChangeText={field.onChange}
+                onChange={field.onChange}
                 error={fieldState.error?.message}
               />
             )}

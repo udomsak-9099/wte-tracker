@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 
+import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { useProject } from "@/contexts/project";
 import { useProjectIssues } from "@/features/issues/queries";
 import { colors, fontSize, fontWeight, radius, severityColor, space } from "@/lib/theme";
@@ -38,10 +39,23 @@ export default function IssuesList() {
         contentContainerStyle={styles.content}
         data={issues.data ?? []}
         keyExtractor={(i) => i.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={issues.isRefetching}
+            onRefresh={() => issues.refetch()}
+            tintColor={colors.primary}
+          />
+        }
         ListEmptyComponent={
-          <Text style={styles.empty}>
-            {issues.isLoading ? "Loading…" : "No issues reported."}
-          </Text>
+          issues.isLoading ? null : (
+            <EmptyState
+              icon="📝"
+              title="No issues"
+              description="Report a blocker, defect, or risk to keep the team in sync."
+              actionLabel="+ Report issue"
+              onAction={() => router.push("/issues/new")}
+            />
+          )
         }
         renderItem={({ item }) => (
           <View style={styles.card}>

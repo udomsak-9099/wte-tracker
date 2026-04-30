@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
 
+import { HomeButton } from "@/components/ui-kit/HomeButton";
 import { colors } from "@/lib/theme";
 
 export default function EpcLayout() {
@@ -10,6 +11,7 @@ export default function EpcLayout() {
         headerTintColor: colors.text,
         headerTitleStyle: { color: colors.text },
         contentStyle: { backgroundColor: colors.bg },
+        headerRight: () => <HomeButton />,
       }}
     />
   );

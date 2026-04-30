@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Stack, useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 
+import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { useProject } from "@/contexts/project";
 import type { Permit } from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
@@ -41,10 +42,21 @@ export default function PermitsScreen() {
           contentContainerStyle={styles.content}
           data={permits.data ?? []}
           keyExtractor={(p) => p.id}
+          refreshControl={
+            <RefreshControl
+              refreshing={permits.isRefetching}
+              onRefresh={() => permits.refetch()}
+              tintColor={colors.primary}
+            />
+          }
           ListEmptyComponent={
-            <Text style={styles.empty}>
-              {permits.isLoading ? "Loading…" : "No permits yet."}
-            </Text>
+            permits.isLoading ? null : (
+              <EmptyState
+                icon="📋"
+                title="No permits"
+                description="PPA, BOI, Construction permits and more will be tracked here."
+              />
+            )
           }
           renderItem={({ item }) => (
             <Pressable

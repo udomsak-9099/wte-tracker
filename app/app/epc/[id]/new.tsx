@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { DateField } from "@/components/ui-kit/DateField";
 import { PhotoPicker, type PhotoUpload } from "@/components/ui-kit/PhotoPicker";
 import { useProject } from "@/contexts/project";
 import { useCreateDailyReport, useEpcSystem } from "@/features/epc/queries";
@@ -103,11 +104,17 @@ export default function NewDailyReport() {
           contentContainerStyle={styles.content}
           keyboardShouldPersistTaps="handled"
         >
-          <Field
+          <Controller
             control={control}
             name="report_date"
-            label="Report date (YYYY-MM-DD)"
-            placeholder="2026-04-29"
+            render={({ field, fieldState }) => (
+              <DateField
+                label="Report date"
+                value={field.value}
+                onChange={field.onChange}
+                error={fieldState.error?.message}
+              />
+            )}
           />
           <Field
             control={control}

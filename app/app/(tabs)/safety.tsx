@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { useAuth } from "@/contexts/auth";
 import { useProject } from "@/contexts/project";
 import type { SafetyIncident } from "@/lib/database.types";
@@ -54,10 +55,27 @@ export default function Safety() {
             )}
           </View>
         }
+        refreshControl={
+          <RefreshControl
+            refreshing={incidents.isRefetching}
+            onRefresh={() => incidents.refetch()}
+            tintColor={colors.primary}
+          />
+        }
         ListEmptyComponent={
-          <Text style={styles.empty}>
-            {incidents.isLoading ? "Loading…" : "No incidents recorded."}
-          </Text>
+          incidents.isLoading ? null : (
+            <EmptyState
+              icon="🦺"
+              title="No incidents"
+              description="Safe so far — incidents reported here once filed."
+              actionLabel={canReport ? "+ Report incident" : undefined}
+              onAction={
+                canReport
+                  ? () => router.push("/safety-incidents/new")
+                  : undefined
+              }
+            />
+          )
         }
         renderItem={({ item }) => (
           <View style={styles.card}>

@@ -1,7 +1,8 @@
 import { useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { useProject } from "@/contexts/project";
 import { useEpcSystems } from "@/features/epc/queries";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
@@ -17,10 +18,21 @@ export default function Epc() {
         contentContainerStyle={styles.content}
         data={systems.data ?? []}
         keyExtractor={(s) => s.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={systems.isRefetching}
+            onRefresh={() => systems.refetch()}
+            tintColor={colors.primary}
+          />
+        }
         ListEmptyComponent={
-          <Text style={styles.empty}>
-            {systems.isLoading ? "Loading…" : "No EPC systems for this project."}
-          </Text>
+          systems.isLoading ? null : (
+            <EmptyState
+              icon="🏗️"
+              title="No EPC systems"
+              description="The 19 standard systems will appear here once seeded by an admin."
+            />
+          )
         }
         renderItem={({ item }) => (
           <Pressable

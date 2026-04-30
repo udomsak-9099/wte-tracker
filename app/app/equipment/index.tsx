@@ -1,6 +1,7 @@
 import { Stack, useRouter } from "expo-router";
-import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from "react-native";
 
+import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { useProject } from "@/contexts/project";
 import { useEquipmentItems } from "@/features/equipment/queries";
 import { colors, fontSize, fontWeight, radius, space } from "@/lib/theme";
@@ -17,12 +18,21 @@ export default function EquipmentList() {
         contentContainerStyle={styles.content}
         data={items.data ?? []}
         keyExtractor={(it) => it.id}
+        refreshControl={
+          <RefreshControl
+            refreshing={items.isRefetching}
+            onRefresh={() => items.refetch()}
+            tintColor={colors.primary}
+          />
+        }
         ListEmptyComponent={
-          <Text style={styles.empty}>
-            {items.isLoading
-              ? "Loading…"
-              : "No equipment yet. Admins can add equipment from Settings."}
-          </Text>
+          items.isLoading ? null : (
+            <EmptyState
+              icon="📦"
+              title="No equipment"
+              description="Equipment items + shipment timelines appear here once added."
+            />
+          )
         }
         renderItem={({ item }) => (
           <Pressable
